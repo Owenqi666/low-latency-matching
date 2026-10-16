@@ -103,7 +103,7 @@ struct Item {
     protocol::Frame frame;
     State state{State::Unscheduled};
     Failure failure{};
-    Ns scheduled{}, first_attempt{}, write_completed{}, complete{};
+    Ns first_attempt{}, write_completed{}, complete{};
     Sequence command_seq{};
     Ns events{}, trades{}, checksum{fnv_basis};
     CompletionStatus completion{};
@@ -391,9 +391,11 @@ private:
         const auto maximum = static_cast<Ns>(std::numeric_limits<std::int64_t>::max());
         const auto last = offsets_.empty() ? 0 : offsets_.back();
         const auto drain = options_.drain_ms * 1000000;
-        if (last > maximum - started_ || drain > maximum - started_ - last)
+        if (last > maximum - started_ || drain > maximum - started_ - last) {
+            started_ = 0;
             return finish(Failure::Startup, "schedule exceeds representable steady_clock time");
-        for (std::size_t i = 0; i < offsets_.size(); ++i) items_[setup_count_ + i].scheduled = started_ + offsets_[i];
+        }
+        // Offsets were prepared before startup; do no plan-sized work after this clock anchor.
         deadline_.expires_at(at_ns(started_ + last + drain));
         deadline_.async_wait([this](const ErrorCode& error) { if (!error) finish(Failure::Deadline, "drain deadline exceeded"); });
         schedule();
@@ -403,13 +405,13 @@ private:
         if (finished_) return;
         const auto now = now_ns();
         std::size_t budget = 256;
-        while (next_ < offsets_.size() && items_[setup_count_ + next_].scheduled <= now && budget != 0) {
+        while (next_ < offsets_.size() && started_ + offsets_[next_] <= now && budget != 0) {
             (void)enqueue(setup_count_ + next_);
             ++next_;
             --budget;
         }
         if (next_ == offsets_.size()) return maybe_finish();
-        schedule_timer_.expires_at(at_ns(items_[setup_count_ + next_].scheduled));
+        schedule_timer_.expires_at(at_ns(started_ + offsets_[next_]));
         schedule_timer_.async_wait([this](const ErrorCode& error) { if (!error) schedule(); });
     }
 
@@ -443,10 +445,11 @@ private:
         for (std::size_t i = begin; i < end; ++i) {
             const auto& item = items_[i];
             out << i - begin << ',' << item.command.client << ',' << connections_[item.command.client - 1]->actual << ',' << item.command.request << ',';
-            optional(item.scheduled); optional(item.first_attempt); optional(item.write_completed); optional(item.complete);
+            const auto scheduled = started_ != 0 && i >= setup_count_ ? started_ + offsets_[i - setup_count_] : 0;
+            optional(scheduled); optional(item.first_attempt); optional(item.write_completed); optional(item.complete);
             out << item.command_seq << ',' << item.events << ',' << item.trades << ',' << item.checksum << ','
                 << static_cast<unsigned>(item.completion) << ',' << outcome(item.state) << ',' << failure_name(item.failure) << ',';
-            if (item.first_attempt != 0 && item.scheduled != 0) out << item.first_attempt - item.scheduled;
+            if (item.first_attempt != 0 && scheduled != 0) out << item.first_attempt - scheduled;
             out << ',';
             if (item.complete != 0) out << item.complete - item.first_attempt;
             out << ',';

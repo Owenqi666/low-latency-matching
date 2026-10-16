@@ -56,6 +56,13 @@ def run(directory, port, connections=1, expected=0, extra=()):
             if row["scheduled_ns"] and row["first_attempt_ns"]:
                 assert int(row["send_lag_ns"]) == int(row["first_attempt_ns"]) - int(row["scheduled_ns"])
                 assert int(row["send_lag_ns"]) >= 0
+    offsets = [int(value) for value in (directory / "schedule.txt").read_text().splitlines()]
+    for row, offset in zip(rows, offsets):
+        if report["measurement_start_ns"]:
+            assert int(row["scheduled_ns"]) == report["measurement_start_ns"] + offset
+        else:
+            assert row["scheduled_ns"] == ""
+    assert all(row["scheduled_ns"] == "" for row in setup)
     assert report["exit_status"] == expected
     assert report["inflight_high_water"] <= report["max_inflight"]
     assert all(value["send_high_water"] <= report["max_send_bytes"] for value in report["logical_to_actual"])
