@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "source_commit": "59a29316a8d91b33bcb5572438eb731a8bc0b96f",
+  "provenance": "Supplementary audited manifest derived after measurement from retained workload metadata, verified summary and a full scan of each measured input.trace; original raw run manifests remain unchanged.",
+  "runs": [
+    {
+      "scenario": "cancel_heavy",
+      "capacity": 1000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261017,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10015
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": [
+        11000,
+        11015
+      ],
+      "working_depth": 64,
+      "setup_live_orders": 500,
+      "end_live_orders": 499,
+      "observed_live_orders": {
+        "min": 499,
+        "max": 500,
+        "mean": 499.51219,
+        "p50": 500,
+        "p99": 500
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:60ea05670d075bca",
+          "path": "config.txt",
+          "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:7706ac56705469f5",
+          "path": "input.trace",
+          "sha256": "c16c04ea2b6a812160acb5d77b642d2214dfaaf02cd95429cf20b2aa8e303105"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:cf1410dba7b9f97d",
+          "path": "setup.trace",
+          "sha256": "056f7043a2a838af8873761f5595faade372a621b7f88c0a3916fa6f6dc834eb"
+        }
+      }
+    },
+    {
+      "scenario": "cancel_heavy",
+      "capacity": 10000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261017,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10015
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": [
+        11000,
+        11015
+      ],
+      "working_depth": 64,
+      "setup_live_orders": 5000,
+      "end_live_orders": 4999,
+      "observed_live_orders": {
+        "min": 4999,
+        "max": 5000,
+        "mean": 4999.51219,
+        "p50": 5000,
+        "p99": 5000
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:318ca97dcc5ff790",
+          "path": "config.txt",
+          "sha256": "5ccaf43608c2e9b24ff3fc796543adfa2642b8db8b915bfae28f9eebc7370f42"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:dfb5da4c22eedf7c",
+          "path": "input.trace",
+          "sha256": "da78c95779b09ed41db767efa2b8cbe8aca0cde80fd132baeeb5d6d605950f7f"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:b0ef31c3205327d3",
+          "path": "setup.trace",
+          "sha256": "3dccba6661e6b3b755dee73353a5a1845f677a84c047fb7c7b538278f42f9af2"
+        }
+      }
+    },
+    {
+      "scenario": "clustered",
+      "capacity": 1000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261019,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10022
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": null,
+      "working_depth": 64,
+      "setup_live_orders": 500,
+      "end_live_orders": 507,
+      "observed_live_orders": {
+        "min": 500,
+        "max": 564,
+        "mean": 526.88827,
+        "p50": 524,
+        "p99": 564
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:60ea05670d075bca",
+          "path": "config.txt",
+          "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:76542595663ff953",
+          "path": "input.trace",
+          "sha256": "d38095ead552b98abf6d7ad3085e8e6a6858398518d87724ac9c56a7f75848f4"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:b923e3824affb689",
+          "path": "setup.trace",
+          "sha256": "f960663118253df96c0ede035d27778cd83547d42a3b2b02e2c8d4d1c8ed2979"
+        }
+      }
+    },
+    {
+      "scenario": "clustered",
+      "capacity": 10000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261019,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10022
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": null,
+      "working_depth": 64,
+      "setup_live_orders": 5000,
+      "end_live_orders": 5007,
+      "observed_live_orders": {
+        "min": 5000,
+        "max": 5064,
+        "mean": 5026.88827,
+        "p50": 5024,
+        "p99": 5064
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:318ca97dcc5ff790",
+          "path": "config.txt",
+          "sha256": "5ccaf43608c2e9b24ff3fc796543adfa2642b8db8b915bfae28f9eebc7370f42"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:3cabaf0d1a7db610",
+          "path": "input.trace",
+          "sha256": "ff759a4f9a2f5bfaa1bb0e2fec5eb5d428f7aa5ba26dc89323f016ba817f534f"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:13f9be8e83aa7d27",
+          "path": "setup.trace",
+          "sha256": "ee39482d3aecca172fada0b5b2863e38e2e6a6a36bf94a9684491390b4deecab"
+        }
+      }
+    },
+    {
+      "scenario": "mixed",
+      "capacity": 1000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261016,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10031
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": [
+        11000,
+        11015
+      ],
+      "working_depth": 64,
+      "setup_live_orders": 500,
+      "end_live_orders": 500,
+      "observed_live_orders": {
+        "min": 500,
+        "max": 501,
+        "mean": 500.66667,
+        "p50": 501,
+        "p99": 501
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:60ea05670d075bca",
+          "path": "config.txt",
+          "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:993fceef57fdf4b4",
+          "path": "input.trace",
+          "sha256": "a7674517388dbb4f558acd2777763f1620cb1b7fbfd55f809557c0a77ad8d99c"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:83dea5a018515ffd",
+          "path": "setup.trace",
+          "sha256": "96d73cc0d1e45c9b3061faa0460fd7e7f32fb2c059d6d576e23ab3db427e9d41"
+        }
+      }
+    },
+    {
+      "scenario": "mixed",
+      "capacity": 10000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261016,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10031
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": [
+        11000,
+        11015
+      ],
+      "working_depth": 64,
+      "setup_live_orders": 5000,
+      "end_live_orders": 5000,
+      "observed_live_orders": {
+        "min": 5000,
+        "max": 5001,
+        "mean": 5000.66667,
+        "p50": 5001,
+        "p99": 5001
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:318ca97dcc5ff790",
+          "path": "config.txt",
+          "sha256": "5ccaf43608c2e9b24ff3fc796543adfa2642b8db8b915bfae28f9eebc7370f42"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:d921f63d67ac4ecc",
+          "path": "input.trace",
+          "sha256": "32337a8a18ab82540321b18d2c0d9166593165db4ea0a0054bdefe35e0a89167"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:c4c32fd94daf113f",
+          "path": "setup.trace",
+          "sha256": "bdb3e09a64654a13ff646848724f6b00084a78df6abe11edc0c05126a7f29800"
+        }
+      }
+    },
+    {
+      "scenario": "sweep",
+      "capacity": 1000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261018,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10022
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": null,
+      "working_depth": 64,
+      "setup_live_orders": 500,
+      "end_live_orders": 530,
+      "observed_live_orders": {
+        "min": 500,
+        "max": 564,
+        "mean": 531.99505,
+        "p50": 532,
+        "p99": 564
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:60ea05670d075bca",
+          "path": "config.txt",
+          "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:20a84e1a04ada619",
+          "path": "input.trace",
+          "sha256": "cff8ec7453badb4e24ef5e119eadbd91264575d26b8009f44bdc400eed1ec091"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:b923e3824affb689",
+          "path": "setup.trace",
+          "sha256": "f960663118253df96c0ede035d27778cd83547d42a3b2b02e2c8d4d1c8ed2979"
+        }
+      }
+    },
+    {
+      "scenario": "sweep",
+      "capacity": 10000,
+      "generator_version": "m1-workloads-v1",
+      "seed": 20261018,
+      "commands": 100000,
+      "config_price_range": [
+        1,
+        20000
+      ],
+      "observed_input_limit_price_range": [
+        10000,
+        10022
+      ],
+      "background_bid_prices": [
+        9000,
+        9015
+      ],
+      "background_ask_prices": null,
+      "working_depth": 64,
+      "setup_live_orders": 5000,
+      "end_live_orders": 5030,
+      "observed_live_orders": {
+        "min": 5000,
+        "max": 5064,
+        "mean": 5031.99505,
+        "p50": 5032,
+        "p99": 5064
+      },
+      "initial_state_definition": "empty engine followed by the exact setup.trace identified below",
+      "inputs": {
+        "config": {
+          "fnv1a64": "fnv1a64:318ca97dcc5ff790",
+          "path": "config.txt",
+          "sha256": "5ccaf43608c2e9b24ff3fc796543adfa2642b8db8b915bfae28f9eebc7370f42"
+        },
+        "input": {
+          "fnv1a64": "fnv1a64:d28a52f07fb2eb57",
+          "path": "input.trace",
+          "sha256": "09c36a82105bf6fb2d09ed3236b887bd9bfe83f7a9d82638c7d3be14e254b82e"
+        },
+        "setup": {
+          "fnv1a64": "fnv1a64:13f9be8e83aa7d27",
+          "path": "setup.trace",
+          "sha256": "ee39482d3aecca172fada0b5b2863e38e2e6a6a36bf94a9684491390b4deecab"
+        }
+      }
+    }
+  ]
+}

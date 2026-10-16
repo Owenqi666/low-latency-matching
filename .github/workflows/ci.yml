@@ -1,24 +1,98 @@
 name: ci
-on: [push, pull_request, workflow_dispatch]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  verify:
+    name: ${{ matrix.preset }} / Ubuntu 24.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         preset: [debug, release, asan-ubsan]
+    env:
+      CXX: g++
+      CI_PRESET: ${{ matrix.preset }}
+      CI_LOG_DIR: build/ci-evidence/${{ matrix.preset }}
     steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build
-      - run: cmake --preset ${{ matrix.preset }}
-      - run: cmake --build --preset ${{ matrix.preset }} --parallel 2
-      - run: ctest --preset ${{ matrix.preset }} --output-on-failure --no-tests=error
-      - uses: actions/upload-artifact@v4
-        if: failure()
+      - name: Check out the tested revision
+        uses: actions/checkout@v4
         with:
-          name: failure-${{ matrix.preset }}
+          persist-credentials: false
+
+      - name: Record actual checkout and operating system
+        run: |
+          set -euo pipefail
+          mkdir -p "$CI_LOG_DIR"
+          git rev-parse HEAD | tee "$CI_LOG_DIR/checkout-sha.log"
+          uname -a | tee "$CI_LOG_DIR/uname.log"
+          cat /etc/os-release | tee "$CI_LOG_DIR/os-release.log"
+
+      - name: Install C++ build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update 2>&1 | tee "$CI_LOG_DIR/apt-update.log"
+          sudo apt-get install -y --no-install-recommends g++ cmake ninja-build python3 2>&1 | tee "$CI_LOG_DIR/apt-install.log"
+
+      - name: Record actual toolchain
+        run: |
+          set -euo pipefail
+          "$CXX" --version 2>&1 | tee "$CI_LOG_DIR/compiler.log"
+          cmake --version 2>&1 | tee "$CI_LOG_DIR/cmake.log"
+          ninja --version 2>&1 | tee "$CI_LOG_DIR/ninja.log"
+          python3 --version 2>&1 | tee "$CI_LOG_DIR/python.log"
+
+      - name: Configure from a clean build directory
+        run: |
+          set -euo pipefail
+          cmake --preset "$CI_PRESET" 2>&1 | tee "$CI_LOG_DIR/configure.log"
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          cmake --build --preset "$CI_PRESET" --parallel 2 2>&1 | tee "$CI_LOG_DIR/build.log"
+
+      - name: Run a nonempty test suite
+        run: |
+          set -euo pipefail
+          ctest --preset "$CI_PRESET" --output-on-failure --no-tests=error 2>&1 | tee "$CI_LOG_DIR/ctest.log"
+
+      - name: Run Release benchmark and validate evidence
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/run_bench.py --binary build/release/bench_core \
+            --manifest data/workloads/smoke.manifest --repeats 1 \
+            --output-dir build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/benchmark.log"
+          python3 scripts/summarize_bench.py build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/report-check.log"
+
+      - name: Save logs and failure reproduction files
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-evidence-${{ matrix.preset }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
           path: |
+            build/ci-evidence/${{ matrix.preset }}/
+            build/${{ matrix.preset }}/CMakeCache.txt
             build/${{ matrix.preset }}/Testing/Temporary/
             build/${{ matrix.preset }}/failures/
+            build/benchmark-smoke/
