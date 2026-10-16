@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.24)
+project(llmatch VERSION 0.1.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+option(LLMATCH_SANITIZERS "Enable AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+
+add_library(llmatch_options INTERFACE)
+target_compile_options(llmatch_options INTERFACE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+if(LLMATCH_SANITIZERS)
+  target_compile_options(llmatch_options INTERFACE -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer)
+  target_link_options(llmatch_options INTERFACE -fsanitize=address,undefined -fno-sanitize-recover=all)
+endif()
+
+add_library(llmatch_contract INTERFACE)
+target_include_directories(llmatch_contract INTERFACE ${PROJECT_SOURCE_DIR}/include)
+add_library(llmatch_core INTERFACE)
+target_link_libraries(llmatch_core INTERFACE llmatch_contract llmatch_options)
+
+include(CTest)
+if(BUILD_TESTING)
+  include(cmake/Dependencies.cmake)
+  add_executable(llmatch_tests tests/contract_test.cpp)
+  target_link_libraries(llmatch_tests PRIVATE llmatch_core GTest::gtest_main)
+  include(GoogleTest)
+  gtest_discover_tests(llmatch_tests DISCOVERY_TIMEOUT 30)
+endif()

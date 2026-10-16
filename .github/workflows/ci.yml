@@ -1,0 +1,24 @@
+name: ci
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [debug, release, asan-ubsan]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - run: cmake --preset ${{ matrix.preset }}
+      - run: cmake --build --preset ${{ matrix.preset }} --parallel 2
+      - run: ctest --preset ${{ matrix.preset }} --output-on-failure --no-tests=error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failure-${{ matrix.preset }}
+          path: |
+            build/${{ matrix.preset }}/Testing/Temporary/
+            build/${{ matrix.preset }}/failures/
