@@ -5,6 +5,7 @@ LLMATCH_SERVICE_ARTIFACTS overrides the output root; LLMATCH_SERVICE_KEEP_SUCCES
 removes successful cases. Unexpected failures always retain their run directories.
 """
 from pathlib import Path
+import json
 import socket
 import struct
 import sys
@@ -17,6 +18,19 @@ SERVER = Path(sys.argv.pop(1)).resolve()
 
 
 class ServiceTest(unittest.TestCase):
+    def linux_connection_fd(self, server, client):
+        peer_port = client.socket.getsockname()[1]
+        sockets = Path(f"/proc/{server.process.pid}/net/tcp").read_text().splitlines()[1:]
+        inodes = [row.split()[9] for row in sockets
+                  if int(row.split()[1].split(":")[1], 16) == server.port
+                  and int(row.split()[2].split(":")[1], 16) == peer_port
+                  and row.split()[3] == "01"]
+        self.assertEqual(len(inodes), 1, "expected one established server-side socket")
+        descriptors = [int(path.name) for path in Path(f"/proc/{server.process.pid}/fd").iterdir()
+                       if str(path.readlink()) == f"socket:[{inodes[0]}]"]
+        self.assertEqual(len(descriptors), 1)
+        return descriptors[0]
+
     def assert_drained(self, report, admitted):
         self.assertEqual(report["admitted"], admitted)
         self.assertEqual(report["completed"], admitted)
@@ -124,8 +138,18 @@ class ServiceTest(unittest.TestCase):
             old = server.connect()
             old.send(limit(1, 10, 1, 100, 3))
             old.through_complete()
+            old_fd = self.linux_connection_fd(server, old) if sys.platform.startswith("linux") else None
+            old.socket.shutdown(socket.SHUT_WR)
+            self.assertEqual(old.through_eof(), []) # Observe the server's close before reconnecting.
             old.socket.close()
             new = server.connect()
+            new_fd = self.linux_connection_fd(server, new) if old_fd is not None else None
+            if old_fd is not None:
+                self.assertEqual(new_fd, old_fd, "Linux test must exercise actual descriptor reuse")
+            (server.directory / "fd-reuse.json").write_text(json.dumps({
+                "platform": sys.platform, "old_fd": old_fd, "new_fd": new_fd,
+                "observed": old_fd is not None and old_fd == new_fd,
+                "old_client": old.client_id, "new_client": new.client_id}) + "\n")
             self.assertGreater(new.client_id, old.client_id)
             self.assertEqual(new.initial_bbo["ask_qty"], 3)
             new.send(cancel(1, 10))
@@ -138,6 +162,27 @@ class ServiceTest(unittest.TestCase):
             self.assert_drained(report, 3)
             self.assertGreater(report["missing_business_recipients"] + report["discarded_business_frames"], 0)
             self.assertEqual((server.directory / "final.snapshot").read_text(), "BOOK 1\n")
+
+    def test_process_restart_starts_empty_and_cannot_cancel_previous_orders(self):
+        with ServerRun(SERVER, "restart-before") as first:
+            old = first.connect()
+            old.send(limit(1, 10, 1, 100, 3))
+            old.through_complete()
+            self.assert_drained(first.finish(), 1)
+            self.assertIn("A 100 3", (first.directory / "final.snapshot").read_text())
+            old.through_eof()
+        with ServerRun(SERVER, "restart-after") as second:
+            new = second.connect()
+            self.assertEqual(new.initial_bbo, {"type": 6, "bid_present": 0, "ask_present": 0,
+                "bid_price": 0, "bid_qty": 0, "ask_price": 0, "ask_qty": 0,
+                "command_seq": 0, "as_of_event_seq": 0})
+            new.send(cancel(1, 10))
+            result = new.through_complete()
+            self.assertEqual(business(result, 1)[0]["reject_reason"], 8) # UnknownOrder, not NotOwner.
+            self.assertEqual(business(result, 5)[0]["command_seq"], 1)
+            self.assertFalse(any(message["type"] == 6 for message in result))
+            self.assert_drained(second.finish(), 1)
+            self.assertEqual((second.directory / "final.snapshot").read_text(), "BOOK 1\n")
 
     def test_event_capacities_one_two_four_sweep_64_makers(self):
         for capacity in (1, 2, 4):

@@ -306,6 +306,100 @@ TEST(PipelineTest, AbortWakesOutputBlockedWorkerWithoutCompletingUnpublishedComm
     EXPECT_FALSE(signal.timed_out());
 }
 
+TEST(PipelineTest, AbortAfterFirstTradePreservesCompletedPrefixAndPartialBook) {
+    const PipelineConfig config{{8, 1000, 1000}, 1, 1, 4};
+    const std::array<Command, 2> setup{{
+        {1, 1, LimitOrder{10, Side::Sell, 100, 2}},
+        {1, 2, LimitOrder{20, Side::Sell, 101, 5}}
+    }};
+    const Command sweep{2, 1, MarketOrder{30, Side::Buy, 4}};
+    GatewaySignal signal;
+    // First maker: pop + Accepted/Rested/BBO/Complete = 5 notifications.
+    // Deep second maker: 4. Then sweep pop, Accepted, and its first Trade.
+    signal.hold_notification(12);
+    MatchingPipeline pipeline(config, [&] { signal.notify(); });
+    std::vector<Event> actual;
+    auto next_message = [&](ServiceMessage& message) {
+        const auto deadline = Clock::now() + 5s;
+        for (;;) {
+            const auto previous = signal.generation();
+            if (pipeline.try_pop(message)) return true;
+            if (!signal.wait_change(previous, deadline)) return false;
+        }
+    };
+    for (const auto& command : setup) {
+        ASSERT_EQ(pipeline.try_submit(command, steady_now_ns()), SubmitResult::Admitted);
+        for (;;) {
+            ServiceMessage message;
+            ASSERT_TRUE(next_message(message));
+            if (const auto* event = std::get_if<Event>(&message)) {
+                actual.push_back(*event);
+                if (event->kind == EventKind::CommandComplete) break;
+            }
+        }
+    }
+    ASSERT_EQ(pipeline.try_submit(sweep, steady_now_ns()), SubmitResult::Admitted);
+    ServiceMessage message;
+    ASSERT_TRUE(next_message(message));
+    ASSERT_EQ(std::get<Event>(message).kind, EventKind::Accepted);
+    actual.push_back(std::get<Event>(message));
+    ASSERT_TRUE(signal.wait_held()); // First Trade is published; no second fill can occur.
+    ASSERT_TRUE(pipeline.has_output());
+    ASSERT_EQ(pipeline.try_submit({1, 3, CancelOrder{20}}, steady_now_ns()), SubmitResult::Admitted);
+    EXPECT_FALSE(pipeline.has_command_space());
+    pipeline.request_abort();
+    signal.release();
+    const auto deadline = Clock::now() + 5s;
+    while (!pipeline.done()) {
+        const auto previous = signal.generation();
+        if (pipeline.done()) break;
+        ASSERT_TRUE(signal.wait_change(previous, deadline));
+    }
+    pipeline.join();
+    ASSERT_TRUE(pipeline.try_pop(message));
+    ASSERT_EQ(std::get<Event>(message).kind, EventKind::Trade);
+    actual.push_back(std::get<Event>(message));
+    EXPECT_FALSE(pipeline.try_pop(message));
+
+    ReferenceEngine reference(config.engine);
+    std::vector<Event> buffer(reference.required_event_capacity()), expected;
+    for (const auto& command : setup) {
+        const auto result = reference.process(command, buffer);
+        const auto events = std::span{buffer}.first(result.event_count);
+        expected.insert(expected.end(), events.begin(), events.end());
+    }
+    const auto result = reference.process(sweep, buffer);
+    ASSERT_EQ(result.event_count, 4U); // Accepted, two Trades, Complete in a full run.
+    expected.insert(expected.end(), buffer.begin(), buffer.begin() + 2);
+    EXPECT_EQ(actual, expected);
+    EXPECT_TRUE(pipeline.aborted());
+    EXPECT_TRUE(pipeline.failure().empty());
+    EXPECT_EQ(pipeline.admitted(), 4U);
+    ASSERT_EQ(pipeline.admissions().size(), 4U);
+    EXPECT_EQ(pipeline.admissions()[2].command, sweep);
+    EXPECT_EQ(pipeline.admissions()[3].command, (Command{1, 3, CancelOrder{20}}));
+    EXPECT_EQ(pipeline.stats().completed, 2U);
+    EXPECT_EQ(pipeline.stats().current_admission, 3U);
+    EXPECT_STREQ(pipeline.stats().phase, "waiting_output");
+    EXPECT_EQ(pipeline.stats().events, 8U);
+    EXPECT_EQ(pipeline.stats().last_event_seq, 8U);
+    ASSERT_EQ(pipeline.completions().size(), 2U);
+    for (std::size_t i = 0; i < 2; ++i) {
+        const auto& completion = pipeline.completions()[i];
+        EXPECT_EQ(completion.command_seq, i + 1);
+        EXPECT_EQ(completion.events, 3U);
+        EXPECT_EQ(completion.status, CompletionStatus::Accepted);
+        std::uint64_t checksum = checksum_basis;
+        for (std::size_t j = i * 3; j < i * 3 + 3; ++j) checksum = event_checksum(checksum, expected[j]);
+        EXPECT_EQ(completion.checksum, checksum);
+    }
+    BookSnapshot partial;
+    partial.asks.push_back({101, 5, {{20, 1, Side::Sell, 101, 5, 2}}});
+    EXPECT_EQ(pipeline.final_snapshot(), partial); // First maker removed; second fill/cancel never ran.
+    EXPECT_NE(pipeline.final_snapshot(), reference.snapshot()); // Full-trace replay is not this partial state.
+    EXPECT_FALSE(signal.timed_out());
+}
+
 TEST(PipelineTest, EmptyDrainAndIdleAbortWakeWorker) {
     for (const bool abort : {false, true}) {
         GatewaySignal signal;

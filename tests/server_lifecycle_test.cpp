@@ -1,6 +1,7 @@
 #include "llmatch/server.hpp"
 
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 namespace llmatch {
 
@@ -18,6 +19,9 @@ struct ServerTestAccess {
     static void drain_and_join(MatchingServer& server) {
         server.pipeline_->request_drain();
         server.pipeline_->join();
+    }
+    static void post_consumer_failure(MatchingServer& server) {
+        boost::asio::post(server.io_, [] { throw std::runtime_error("injected Gateway consumer failure"); });
     }
 };
 
@@ -46,6 +50,24 @@ TEST(ServerLifecycle, CoalescedWorkerDoneFinishesAtPumpRearm) {
     EXPECT_FALSE(ServerTestAccess::pump_scheduled(server));
     EXPECT_TRUE(server.failure().empty());
     EXPECT_FALSE(server.pipeline().aborted());
+}
+
+TEST(ServerLifecycle, GatewayCallbackExceptionAbortsAndJoinsWorker) {
+    ServerConfig config;
+    config.port = 0;
+    MatchingServer server(config);
+    ServerTestAccess::post_consumer_failure(server);
+
+    EXPECT_EQ(server.run(), 1);
+    EXPECT_EQ(server.failure(), "injected Gateway consumer failure");
+    EXPECT_TRUE(server.pipeline().done());
+    EXPECT_TRUE(server.pipeline().aborted());
+    EXPECT_EQ(server.pipeline().admitted(), 0U);
+    EXPECT_EQ(server.pipeline().stats().completed, 0U);
+    EXPECT_EQ(server.pipeline().stats().current_admission, 0U);
+    EXPECT_STREQ(server.pipeline().stats().phase, "idle");
+    // final_snapshot requires a joined worker, not merely a notified stop flag.
+    EXPECT_EQ(server.pipeline().final_snapshot(), BookSnapshot{});
 }
 
 } // namespace llmatch

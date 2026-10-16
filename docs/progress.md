@@ -32,17 +32,21 @@ is claimed before the corresponding evidence exists.
 
 | Task | State | Evidence / next check |
 |---|---|---|
-| M2-T00 | Local runtime checked; final Linux acceptance pending | Boost 1.89.0 pinned, protocol/default capacities fixed; Linux Clang 18 clean/race TSan probes observed |
-| M2-T01 | Local tests passed | Pausable production state machine and synchronous adapter; 8 focused tests plus existing M1 regression suite |
-| M2-T02 | Local tests passed | 12 protocol cases, independent golden bytes, fragmented/coalesced frames and business rejection boundaries |
-| M2-T03 | Local tests passed | 8 pipeline cases: tiny queues, 64-maker sweeps, double congestion, bounded records, wake/drain/abort |
-| M2-T04 | Local integration passed | Real TCP service tests and independently encoded CLI peer tests; Linux/remote checks pending |
-| M2-T05 | Local full-event comparison passed | 18 commands across three clients checked against independent Reference events, route lists and final-state BBO |
-| M2-T06 | Local lifecycle cases passed | Slow peer closes while healthy peer progresses; timeout is nonzero; abort retains current admission and phase |
-| M2-T07 | In progress | Actual-admission replay/digest verifier and corrupted-evidence negative cases; 100,000-command service validation pending |
-| M2-T08 | In progress | CI includes independent TSan, real service/CLI/loadgen groups and network smoke; remote failure/recovery and final PR/main checks pending |
-| M2-T09 | In progress | Bounded open-loop loadgen and runner implemented; independent summary validation in integration; formal Linux matrix/profiling pending |
-| M2-T10 | Pending | Clean Linux reproduction, PR/main verification and M2 release |
+| M2-T00 | Verified on recorded revisions | Pinned dependencies; four Linux configurations; [clean first installation](m2_clean_checkout.md) |
+| M2-T01 | Linux/remote tests passed | Pausable state machine and synchronous adapter; independent Reference and M1 regression suite |
+| M2-T02 | Linux/remote tests passed | 12 protocol cases, independent golden bytes, fragmented/coalesced frames and rejection boundaries |
+| M2-T03 | Linux/remote tests passed; new regression awaits CI | Tiny queues, 64-maker sweeps, double congestion and wake/drain/abort; first-Trade partial-abort regression passed locally |
+| M2-T04 | Verified on recorded revisions | Real TCP service, independently encoded CLI peer tests and two-client clean Linux demonstration |
+| M2-T05 | Verified on recorded revisions | Full routed-event/BBO comparison; Linux observed fd 9 reuse with ClientId 1 to 2 |
+| M2-T06 | Follow-up tests passed locally/Linux; latest CI pending | Slow-peer isolation, finite drain, callback exception, partial sweep and actual process restart |
+| M2-T07 | Verified | [120,000 measured service commands](m2_long_validation.md), actual-admission Reference replay and negative evidence checks |
+| M2-T08 | Failure/recovery verified; final PR/main pending | [Downloaded remote failure, exact replay and four-job recovery](m2_ci_evidence.md); two earlier PR runs inspected |
+| M2-T09 | Formal rates locked; measurements pending | [All calibration attempts and rate selection](m2_rate_selection.md); seven-row five-round matrix/profiling remain |
+| M2-T10 | Clean reproduction verified; final delivery pending | [Fresh public Linux checkout](m2_clean_checkout.md); final PR/main, long-term archive and release remain |
+
+The detailed [acceptance mapping](m2_acceptance.md) distinguishes the revisions
+and environments covered by each result. Tests added after a recorded CI run
+still require the new run; previous green checks are not transferred to a new SHA.
 
 Original planning documents remain local. Ordinary implementation decisions do
 not expand the scope into persistence, custom queues, allocation optimizations

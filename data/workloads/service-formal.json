@@ -2,8 +2,8 @@
   "schema_version": 1,
   "generator_version": "m2-service-workloads-v1",
   "mode": "formal",
-  "rates_locked": false,
-  "rate_selection": "Pending short calibration on the stated Linux Release environment. Save calibration evidence, set all rates, then lock this manifest before formal runs; do not tune after seeing formal results.",
+  "rates_locked": true,
+  "rate_selection": "Frozen from Linux Release calibration at 85de7f3 on the documented 4-vCPU QEMU/HVF guest. Ordinary=10000/s; burst=2000/s with 100ms period/10ms window; near=45000/s (90% of the highest loss-free short mixed probe, 50000/s); overload=80000/s. All calibration attempts are retained; see docs/m2_rate_selection.md. Do not tune from formal outcomes.",
   "capacity": 1000,
   "background_depth": 500,
   "working_depth": 64,
@@ -26,12 +26,56 @@
     "timeout_slack_seconds": 10
   },
   "rows": [
-    {"id": "mixed_4", "scenario": "mixed", "connections": 4, "target_rate_per_sec": null, "rate_role": "ordinary"},
-    {"id": "cancel_heavy_4", "scenario": "cancel_heavy", "connections": 4, "target_rate_per_sec": null, "rate_role": "ordinary"},
-    {"id": "sweep_4", "scenario": "sweep", "connections": 4, "target_rate_per_sec": null, "rate_role": "ordinary"},
-    {"id": "burst_4", "scenario": "burst", "connections": 4, "target_rate_per_sec": null, "rate_role": "ordinary", "burst_period_ns": 100000000, "burst_window_ns": 10000000},
-    {"id": "mixed_1", "scenario": "mixed", "connections": 1, "target_rate_per_sec": null, "rate_role": "ordinary"},
-    {"id": "mixed_4_near", "scenario": "mixed", "connections": 4, "target_rate_per_sec": null, "rate_role": "near_capacity"},
-    {"id": "mixed_4_overload", "scenario": "mixed", "connections": 4, "target_rate_per_sec": null, "rate_role": "overload"}
+    {
+      "id": "mixed_4",
+      "scenario": "mixed",
+      "connections": 4,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "cancel_heavy_4",
+      "scenario": "cancel_heavy",
+      "connections": 4,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "sweep_4",
+      "scenario": "sweep",
+      "connections": 4,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "burst_4",
+      "scenario": "burst",
+      "connections": 4,
+      "target_rate_per_sec": 2000,
+      "rate_role": "ordinary",
+      "burst_period_ns": 100000000,
+      "burst_window_ns": 10000000
+    },
+    {
+      "id": "mixed_1",
+      "scenario": "mixed",
+      "connections": 1,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "mixed_4_near",
+      "scenario": "mixed",
+      "connections": 4,
+      "target_rate_per_sec": 45000,
+      "rate_role": "near_capacity"
+    },
+    {
+      "id": "mixed_4_overload",
+      "scenario": "mixed",
+      "connections": 4,
+      "target_rate_per_sec": 80000,
+      "rate_role": "overload"
+    }
   ]
 }
