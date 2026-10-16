@@ -189,9 +189,20 @@ def validate_run(directory):
 
 def summarize(directory):
     directory = Path(directory)
-    files = sorted(directory.rglob("summary.json"))
-    require(bool(files), f"{directory}: no benchmark summary.json files")
-    runs = [validate_run(path.parent) for path in files]
+    # Derived reports describe a successful validation of the current evidence.
+    # A failed revalidation must not leave a previous success report in place.
+    for name in ("report.json", "report.md"):
+        (directory / name).unlink(missing_ok=True)
+    expected = {path.parent for path in directory.rglob("run_manifest.json")}
+    measured = {path.parent for path in directory.rglob("summary.json")}
+    missing = expected - measured
+    orphaned = measured - expected
+    require(not missing, "missing benchmark summary.json for recorded run: " +
+            ", ".join(str(path) for path in sorted(missing)))
+    require(not orphaned, "orphan benchmark summary.json without run_manifest.json: " +
+            ", ".join(str(path) for path in sorted(orphaned)))
+    require(bool(expected), f"{directory}: no benchmark run_manifest.json files")
+    runs = [validate_run(path) for path in sorted(expected)]
     report = {"schema_version": 1, "validation": "passed", "quantile_algorithm": "nearest-rank",
               "p99_note": "The 100000-sample reporting threshold does not establish statistical stability.",
               "runs": runs}

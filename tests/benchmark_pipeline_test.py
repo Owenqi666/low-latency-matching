@@ -144,7 +144,23 @@ def main():
             invoke([sys.executable, scripts / "summarize_bench.py", damaged], success=False, diagnostic=diagnostic)
             assert not (damaged / "report.json").exists(), "invalid evidence produced a success report"
 
-    print("Benchmark pipeline: four deterministic scenarios, real Release smoke, separated outcomes and five corrupted-evidence failures passed")
+        # Revalidate a previously successful multi-run directory after losing a
+        # complete run summary or its manifest. Other complete runs must not
+        # conceal the loss, and the old aggregate success report must disappear.
+        for missing_file, diagnostic in (
+            ("summary.json", "missing benchmark summary.json for recorded run"),
+            ("run_manifest.json", "orphan benchmark summary.json without run_manifest.json"),
+        ):
+            damaged = work / ("missing_" + missing_file)
+            shutil.copytree(output, damaged)
+            assert (damaged / "report.json").is_file() and (damaged / "report.md").is_file()
+            (damaged / "mixed" / "capacity_128" / missing_file).unlink()
+            invoke([sys.executable, scripts / "summarize_bench.py", damaged], success=False, diagnostic=diagnostic)
+            assert not (damaged / "report.json").exists(), "failed revalidation retained a stale success report"
+            assert not (damaged / "report.md").exists(), "failed revalidation retained a stale Markdown report"
+            assert (damaged / "mixed" / "capacity_128" / "input.trace").is_file()
+
+    print("Benchmark pipeline: four deterministic scenarios, real Release smoke, separated outcomes and seven corrupted-evidence failures passed")
 
 
 if __name__ == "__main__":
