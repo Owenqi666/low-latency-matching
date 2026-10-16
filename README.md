@@ -21,7 +21,10 @@ ctest --preset debug --output-on-failure --no-tests=error
 Replace `debug` with `release` or `asan-ubsan` for the other configurations.
 The sanitizer flags apply to project code, not just the test entry point.
 
-Implementation and acceptance progress: [docs/progress.md](docs/progress.md).
+M1 implementation and reproduction acceptance are complete. See the
+[baseline report](docs/m1_report.md), [evidence index](docs/evidence_index.md),
+and [task mapping](docs/progress.md). The [M1 release](https://github.com/Owenqi666/low-latency-matching/releases/tag/m1-baseline)
+records publication and final main CI separately from the measured source commit.
 
 ```sh
 ./build/debug/replay --engine compare --config data/fixtures/basic.config \

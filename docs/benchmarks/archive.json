@@ -1,0 +1,9 @@
+{
+  "filename": "m1-evidence.tar.gz",
+  "bytes": 39727615,
+  "sha256": "3f330e1877ee32852632392e554daf35bfd05f6b8616f5466874f285baea2f39",
+  "file_count": 526,
+  "download_url": "https://github.com/Owenqi666/low-latency-matching/releases/download/m1-baseline/m1-evidence.tar.gz",
+  "source_commit": "59a29316a8d91b33bcb5572438eb731a8bc0b96f",
+  "contents": "All formal and pre-report-fix benchmark rounds, generated inputs, clock probes, correctness/CI logs, independent clean-checkout evidence. No original planning documents."
+}

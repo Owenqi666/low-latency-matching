@@ -1,25 +1,25 @@
 # M1 implementation progress
 
-Original specifications remain unchanged. Only observed results count as acceptance.
+M1 technical implementation and reproduction acceptance are complete at source
+revision `59a29316a8d91b33bcb5572438eb731a8bc0b96f`. Later delivery commits add
+reports and evidence. Final publication, merge SHA and main push CI are recorded
+in the [M1 release](https://github.com/Owenqi666/low-latency-matching/releases/tag/m1-baseline).
+Original planning documents remain unchanged and local.
 
-| Task | State | Evidence / remaining work |
+| Task | State | Evidence |
 |---|---|---|
-| T00 | Verified | Local Debug/Release; actual CI success, deliberate failure and recovery in ci_evidence.md |
-| T01 | Implemented / tested | Value/event/snapshot contracts, exact semantics and hand-calculated fixtures; negative oracle probe recorded |
-| T02 | Implemented / tested | Independent vector model; shared exact expected events and snapshots |
-| T03 | Implemented / tested | map/list/hash book; seven book tests and ASan/UBSan lifetime checks |
-| T04 | Implemented / tested | Limit matching both directions, multi-price sweep and output boundaries |
-| T05 | Implemented / tested | IOC, cancel, reject precedence, numeric/sequence edges, reused output buffer |
-| T06 | Implemented / tested | 40,000 + 1,000,000 differential commands; actual price mutation reduced 2,000 commands to 2; permanent regression and CLI tests |
-| T07 | Core verified | Three-job PR CI passed; actual failure traces downloaded/replayed and recovery CI passed (ci_trace_evidence.md); Release benchmark CI pending |
-| T08 | Implemented / measuring next | Benchmark, four workload generators and strict report checks implemented; formal five-round measurements pending |
-| T09 | In progress | README, ADRs and learning material written; clean-checkout and final report pending |
+| T00 | Verified | Three presets, pinned GoogleTest, local builds; actual CI failure/recovery in ci_evidence.md |
+| T01 | Verified | Value contracts, semantics, full hand-calculated events/snapshots; deliberately wrong oracle fails |
+| T02 | Verified | Independent vector model; exact expectations and swap-delete FIFO coverage |
+| T03 | Verified | map/list/hash book, explicit invariants, lifetime/index tests under sanitizers |
+| T04 | Verified | Bid/ask limit matching, partial fills, multi-price sweeps, output boundaries |
+| T05 | Verified | IOC, owner cancel, reject precedence, ID/request reuse, numeric/sequence boundaries |
+| T06 | Verified | 40,000-command CI test and 1,000,000-command local check; 2,000-command price mutation reduced to 2 and permanently regressed |
+| T07 | Verified | Debug 59 / Release 60 / ASan+UBSan 59 in actual PR CI; downloaded failure artifacts replayed; Release smoke and independent report validation |
+| T08 | Verified | Four scenarios, two capacities, 100,000 commands, five rounds per mode; all 4,000,000 latency samples and earlier measurements retained |
+| T09 | Verified | Independent fresh checkout, 60 tests, fixture/random replay, repeated short benchmark; README, two ADRs, report, learning guide and evidence index |
 
-Initial local tools: Apple clang 21.0.0 (arm64-apple-darwin25.6.0),
-CMake 4.4.4, Ninja 1.13.2. A later targeted hardware query verified Apple M5 Pro,
-18 physical/logical cores and 48 GiB memory. Remote: https://github.com/Owenqi666/low-latency-matching;
-the existing initial commit is preserved. GoogleTest 1.17.0 is pinned by archive SHA256.
-
-The integrated core + trace suite passed 48/48 in Debug and ASan/UBSan.
-Release and final feature-branch CI are tracked separately. Development now uses
-`feat/m1-baseline` -> PR -> verified merge -> main push verification.
+See [acceptance mapping](acceptance.md), [M1 report](m1_report.md), and
+[evidence index](evidence_index.md). Learning exercises provide auditable
+explanations without claiming that the user has already mastered them. No M2
+networking, concurrency, queues or persistence work has been started.

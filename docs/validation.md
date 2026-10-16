@@ -39,3 +39,22 @@ Final delivery still requires the final PR head and merged main to pass.
 For intentional CI failure/recovery runs see [ci_evidence.md](ci_evidence.md).
 For generator, local mutation and reduction evidence see [t06_evidence.md](t06_evidence.md).
 The reduced maker-price case is permanently registered as `regression_maker_price`.
+
+## Final M1 source verification
+
+The implementation revision is `59a29316a8d91b33bcb5572438eb731a8bc0b96f`.
+Debug and ASan/UBSan passed 59/59 locally; Release passed 60/60, including the
+benchmark pipeline's four scenarios and seven corrupt-evidence rejection cases.
+The fixed-seed long test was rerun against this implementation: 100 seeds,
+10,000 commands each, capacities 1/2/16/128, 1,000,000 comparisons, zero failures.
+Its actual XML and log are `correctness/m1-final-long.xml` and `.log` in the
+[evidence archive](benchmarks/archive.json).
+
+[PR evidence](pr_ci_evidence.md) records actual merge checkout
+`d2aa42b91cd9466afb757130efe1d22abffcfbe5`, with Debug 59, Release 60 and
+ASan/UBSan 59 passing; Release benchmark smoke and standalone summary checks
+also passed. These artifacts were downloaded and independently validated.
+[Clean checkout evidence](clean_checkout.md) confirms first-download build and
+reproduction without files from the development workspace. The final main
+publication run is separately linked in the release notes, not inferred from
+this earlier PR result.
