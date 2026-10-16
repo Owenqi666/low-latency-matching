@@ -2,7 +2,9 @@
 
 A single-threaded, in-memory C++20 matching core under development. The original
 planning documents remain local; public contracts will live in `docs/semantics.md`.
-No matching engine or performance result is available at the initial scaffold.
+Limit orders, market IOC, owner-checked cancellation and an independent reference
+model are implemented and tested. Replay tools and benchmark delivery are in
+progress; no performance claims are published yet.
 
 Requires a C++20 compiler, CMake >= 3.24, Ninja, and network access for the first
 GoogleTest 1.17.0 download. GoogleTest is a test-only dependency, configured using
