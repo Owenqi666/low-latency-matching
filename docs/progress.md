@@ -11,13 +11,13 @@ Original specifications remain unchanged. Only observed results count as accepta
 | T04 | Implemented / tested | Limit matching both directions, multi-price sweep and output boundaries |
 | T05 | Implemented / tested | IOC, cancel, reject precedence, numeric/sequence edges, reused output buffer |
 | T06 | Implemented / tested | 40,000 + 1,000,000 differential commands; actual price mutation reduced 2,000 commands to 2; permanent regression and CLI tests |
-| T07 | In progress | Full local sanitizer suite passed; new PR CI and remote trace-artifact probe pending |
-| T08 | In progress | Benchmark and reproducible workload/report tools being implemented; no formal measurements yet |
-| T09 | Pending | Clean-checkout delivery and learning material |
+| T07 | Core verified | Three-job PR CI passed; actual failure traces downloaded/replayed and recovery CI passed (ci_trace_evidence.md); Release benchmark CI pending |
+| T08 | Implemented / measuring next | Benchmark, four workload generators and strict report checks implemented; formal five-round measurements pending |
+| T09 | In progress | README, ADRs and learning material written; clean-checkout and final report pending |
 
 Initial local tools: Apple clang 21.0.0 (arm64-apple-darwin25.6.0),
-CMake 4.4.4, Ninja 1.13.2. CPU model/memory sysctl was denied by the sandbox;
-no hardware details are inferred. Remote: https://github.com/Owenqi666/low-latency-matching;
+CMake 4.4.4, Ninja 1.13.2. A later targeted hardware query verified Apple M5 Pro,
+18 physical/logical cores and 48 GiB memory. Remote: https://github.com/Owenqi666/low-latency-matching;
 the existing initial commit is preserved. GoogleTest 1.17.0 is pinned by archive SHA256.
 
 The integrated core + trace suite passed 48/48 in Debug and ASan/UBSan.

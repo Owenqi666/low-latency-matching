@@ -33,6 +33,10 @@ add_executable(generate_workload tools/workload_generator.cpp)
 target_link_libraries(generate_workload PRIVATE llmatch_validation llmatch_options)
 add_executable(shrink_failure tools/shrink_failure.cpp)
 target_link_libraries(shrink_failure PRIVATE llmatch_validation llmatch_options)
+add_executable(bench_core bench/core_bench.cpp)
+target_link_libraries(bench_core PRIVATE llmatch_core llmatch_reference llmatch_trace llmatch_options)
+add_executable(clock_probe bench/clock_probe.cpp)
+target_link_libraries(clock_probe PRIVATE llmatch_options)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -60,4 +64,9 @@ if(BUILD_TESTING)
   add_test(NAME cli_contract COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/cli_test.py
     $<TARGET_FILE:replay> $<TARGET_FILE:shrink_failure> $<TARGET_FILE:generate_workload>
     ${PROJECT_SOURCE_DIR}/data/fixtures)
+  if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT LLMATCH_SANITIZERS)
+    add_test(NAME benchmark_pipeline COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/benchmark_pipeline_test.py
+      $<TARGET_FILE:bench_core> $<TARGET_FILE:clock_probe>)
+  endif()
 endif()

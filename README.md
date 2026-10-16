@@ -1,11 +1,12 @@
 # llmatch — M1 matching core
 
-A single-threaded, in-memory C++20 matching core under development. The original
-planning documents remain local; public contracts will live in `docs/semantics.md`.
+A single-threaded, in-memory C++20 matching core. The public contract is
+[docs/semantics.md](docs/semantics.md).
 Limit orders, market IOC, owner-checked cancellation and an independent reference
 model are implemented and tested. Deterministic replay, differential validation,
-failure reduction and versioned text traces are available. Benchmark delivery
-is in progress; no performance claims are published yet.
+failure reduction and versioned text traces are available. Core benchmarks
+measure per-command latency and separate batch throughput, including result
+generation. They do not measure network latency or concurrent service capacity.
 
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 download. GoogleTest is a test-only dependency, configured using
@@ -39,6 +40,36 @@ actual input, configuration and both outputs under the test working directory's
 `failures/`. `shrink_failure --config FILE --input FILE --output FILE` requires
 an input that still fails on the current binaries; a correctly fixed input will
 report that there is no failure to shrink.
+
+Build `release`, then run a short benchmark and independently check its report:
+
+```sh
+python3 scripts/run_bench.py --binary build/release/bench_core \
+  --manifest data/workloads/smoke.manifest --repeats 1 \
+  --output-dir build/results/smoke
+python3 scripts/summarize_bench.py build/results/smoke
+```
+
+For the full baseline, run all four manifests, retaining five rounds of each
+mode at capacities 1,000 and 10,000. Choose a new output directory for each run;
+the runner preserves existing evidence instead of overwriting it.
+
+```sh
+for scenario in mixed cancel_heavy sweep clustered; do
+  python3 scripts/run_bench.py --binary build/release/bench_core \
+    --manifest "data/workloads/$scenario.manifest" --repeats 5 \
+    --output-dir build/results/baseline
+done
+python3 scripts/summarize_bench.py build/results/baseline
+```
+
+Every formal input has 100,000 commands. Inputs are generated before timing;
+the independent reference checks full events, and each measured round must
+match verified counts, event checksum and final snapshot. Raw samples, all
+rounds, hashes, build/environment metadata and clock probes remain under the
+output directory. See [benchmark methodology](docs/benchmark_method.md) and the
+[core walkthrough](docs/learning.md). The CI smoke checks evidence integrity
+without imposing a latency threshold on shared runners.
 
 [Semantics](docs/semantics.md) specify active-ID reuse, no RequestId deduplication,
 owner checks, allowed self-trades and conservative full-book limit rejection.

@@ -74,9 +74,14 @@ jobs:
           set -euo pipefail
           ctest --preset "$CI_PRESET" --output-on-failure --no-tests=error 2>&1 | tee "$CI_LOG_DIR/ctest.log"
 
-      # T08: add a Release-only benchmark smoke step after the benchmark tools
-      # and report checks exist. CI will check execution and evidence fields,
-      # not enforce latency thresholds on shared runners.
+      - name: Run Release benchmark and validate evidence
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/run_bench.py --binary build/release/bench_core \
+            --manifest data/workloads/smoke.manifest --repeats 1 \
+            --output-dir build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/benchmark.log"
+          python3 scripts/summarize_bench.py build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/report-check.log"
 
       - name: Save logs and failure reproduction files
         uses: actions/upload-artifact@v4
@@ -90,3 +95,4 @@ jobs:
             build/${{ matrix.preset }}/CMakeCache.txt
             build/${{ matrix.preset }}/Testing/Temporary/
             build/${{ matrix.preset }}/failures/
+            build/benchmark-smoke/

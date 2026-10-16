@@ -1,0 +1,1 @@
+{"schema_version":1,"generator_version":"m1-workloads-v1","scenario":"sweep","capacities":[1000,10000],"commands":100000,"seed":20261018,"working_depth":64}
