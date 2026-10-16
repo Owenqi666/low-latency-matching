@@ -11,7 +11,7 @@ have been verified. M1 results retain their original platform and scope.
 | Core latency | Preconstructed command enters synchronous `process` | All business events are in its no-wait receiver |
 | Service completion | Timestamp immediately before successful command-queue publication | Complete is successfully published to the event queue |
 | Client RTT | First actual `async_write` attempt for the request | Read callback receives the complete Complete frame |
-| Gateway wait | Full frame is selected for decode/admission | Successful queue admission |
+| Gateway wait | Read callback receives the final byte of a frame | Successful queue admission |
 | Send lag | Planned send time | First actual write attempt |
 
 Service latency includes command queuing, matching, BBO publication and output
@@ -21,6 +21,11 @@ write completion. A callback-entry timestamp avoids moving RTT's end after diges
 calculation. Differences use one process's steady clock; clocks on different hosts
 are never subtracted. Core timing has its existing clock probe; loadgen also saves
 clock interval and timestamp-recording overhead without subtracting a constant.
+
+Frames coalesced into one read share its readiness timestamp, including frames
+waiting behind an earlier pending command. Another read is issued only when the
+leading buffered frame is incomplete, so this timestamp also represents the
+arrival of a fragmented frame's final bytes.
 
 ## Bounded workload and outcomes
 

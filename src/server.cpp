@@ -40,6 +40,7 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     ClientId id;
     std::array<std::uint8_t, 4096> receive{};
     std::size_t used{};
+    std::uint64_t receive_ready_ns{};
     bool reading{};
     bool writing{};
     bool closed{};
@@ -121,6 +122,7 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
         reading = true;
         socket.async_read_some(asio::buffer(receive.data() + used, receive.size() - used),
             [self = shared_from_this()](error_code error, std::size_t count) {
+                const auto received_at = steady_now_ns();
                 self->reading = false;
                 if (self->closed || self->server.draining_) return;
                 if (error) {
@@ -131,6 +133,7 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
                     return;
                 }
                 self->used += count;
+                self->receive_ready_ns = received_at;
                 self->process_input();
             });
     }
@@ -161,7 +164,9 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
                 return;
             }
             if (info.status == protocol::FrameStatus::NeedMore) { read(); return; }
-            pending_ready_ns = steady_now_ns();
+            // All complete frames still in this buffer became available on
+            // the last read. Preserve their wait behind earlier admissions.
+            pending_ready_ns = receive_ready_ns;
             pending = protocol::decode_request({receive.data(), info.frame_size}, id);
             used -= info.frame_size;
             std::memmove(receive.data(), receive.data() + info.frame_size, used);
