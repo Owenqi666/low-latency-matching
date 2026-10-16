@@ -10,9 +10,9 @@ Original specifications remain unchanged. Only observed results count as accepta
 | T03 | Implemented / tested | map/list/hash book; seven book tests and ASan/UBSan lifetime checks |
 | T04 | Implemented / tested | Limit matching both directions, multi-price sweep and output boundaries |
 | T05 | Implemented / tested | IOC, cancel, reject precedence, numeric/sequence edges, reused output buffer |
-| T06 | In progress | Strict text IO integrated; differential/replay/shrinking under development |
-| T07 | Pending | Sanitizers, actual CI and failure evidence |
-| T08 | Pending | Reproducible core benchmark |
+| T06 | Implemented / tested | 40,000 + 1,000,000 differential commands; actual price mutation reduced 2,000 commands to 2; permanent regression and CLI tests |
+| T07 | In progress | Full local sanitizer suite passed; new PR CI and remote trace-artifact probe pending |
+| T08 | In progress | Benchmark and reproducible workload/report tools being implemented; no formal measurements yet |
 | T09 | Pending | Clean-checkout delivery and learning material |
 
 Initial local tools: Apple clang 21.0.0 (arm64-apple-darwin25.6.0),
