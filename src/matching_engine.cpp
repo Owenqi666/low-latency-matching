@@ -54,95 +54,137 @@ RejectReason MatchingEngine::validate(const Command& command) const {
     return RejectReason::None;
 }
 
-ProcessResult MatchingEngine::process(const Command& command, std::span<Event> output) {
-    if (output.size() < event_capacity_) return {ProcessStatus::OutputBufferTooSmall, 0};
+CallError MatchingEngine::begin(const Command& command) {
+    if (active()) return CallError::Busy;
     const auto max_seq = std::numeric_limits<Sequence>::max();
     if (command_seq_ == max_seq || event_capacity_ > max_seq - event_seq_) {
+        return CallError::SequenceExhausted;
+    }
+
+    current_ = command;
+    ++command_seq_;
+    rejection_ = validate(command);
+    remaining_ = filled_ = resting_ = cancelled_ = 0;
+    if (rejection_ == RejectReason::None) {
+        if (const auto* limit = std::get_if<LimitOrder>(&command.payload)) {
+            remaining_ = limit->qty;
+        } else if (const auto* market = std::get_if<MarketOrder>(&command.payload)) {
+            remaining_ = market->qty;
+        }
+    }
+    phase_ = Phase::Admission;
+    return CallError::None;
+}
+
+bool MatchingEngine::active() const noexcept { return phase_ != Phase::Idle; }
+
+Event MatchingEngine::make_event(EventKind kind) {
+    Event event{};
+    event.kind = kind;
+    event.command_kind = command_kind(current_);
+    event.command_seq = command_seq_;
+    event.event_seq = ++event_seq_;
+    event.client = current_.client;
+    event.request = current_.request;
+    event.order_id = order_id(current_);
+    return event;
+}
+
+bool MatchingEngine::next(Event& output) {
+    if (!active()) return false;
+    if (phase_ == Phase::Admission) {
+        if (rejection_ != RejectReason::None) {
+            output = make_event(EventKind::Rejected);
+            output.reject_reason = rejection_;
+            phase_ = Phase::Complete;
+        } else {
+            output = make_event(EventKind::Accepted);
+            phase_ = Phase::Execution;
+        }
+        return true;
+    }
+    if (phase_ == Phase::Complete) {
+        output = make_event(EventKind::CommandComplete);
+        output.completion = rejection_ == RejectReason::None
+            ? CompletionStatus::Accepted : CompletionStatus::Rejected;
+        output.filled_qty = filled_;
+        output.resting_qty = resting_;
+        output.cancelled_qty = cancelled_;
+        phase_ = Phase::Idle;
+        return true;
+    }
+
+    assert(phase_ == Phase::Execution);
+    const OrderId id = order_id(current_);
+    if (std::holds_alternative<CancelOrder>(current_.payload)) {
+        cancelled_ = book_.erase_resting(id);
+        output = make_event(EventKind::Cancelled);
+        output.qty = cancelled_;
+        output.cancel_reason = CancelReason::UserCancel;
+        phase_ = Phase::Complete;
+        return true;
+    }
+
+    const auto* limit = std::get_if<LimitOrder>(&current_.payload);
+    const Side side = limit ? limit->side : std::get<MarketOrder>(current_.payload).side;
+    assert(remaining_ > 0);
+    const Order* next_maker = book_.best_opposite(side);
+    const bool crosses = next_maker && (!limit ||
+        (side == Side::Buy ? next_maker->price <= limit->price : next_maker->price >= limit->price));
+    if (crosses) {
+        // apply_fill may erase both the maker node and its price level.
+        const Order maker = *next_maker;
+        const Quantity qty = std::min(remaining_, maker.remaining);
+        book_.apply_fill(maker.id, qty);
+        remaining_ -= qty;
+        filled_ += qty; // Bounded by the validated submitted quantity.
+        output = make_event(EventKind::Trade);
+        output.price = maker.price;
+        output.qty = qty;
+        output.maker_id = maker.id;
+        output.taker_id = id;
+        output.maker_client = maker.owner;
+        output.taker_client = current_.client;
+        output.maker_arrival_seq = maker.arrival_seq;
+        output.taker_arrival_seq = command_seq_;
+        if (remaining_ == 0) phase_ = Phase::Complete;
+        return true;
+    }
+
+    if (limit) {
+        book_.insert_resting({id, current_.client, side, limit->price, remaining_, command_seq_});
+        resting_ = remaining_;
+        output = make_event(EventKind::Rested);
+        output.side = side;
+        output.price = limit->price;
+        output.qty = remaining_;
+        output.arrival_seq = command_seq_;
+    } else {
+        cancelled_ = remaining_;
+        output = make_event(EventKind::Cancelled);
+        output.qty = remaining_;
+        output.cancel_reason = CancelReason::IocRemainder;
+    }
+    remaining_ = 0;
+    phase_ = Phase::Complete;
+    return true;
+}
+
+ProcessResult MatchingEngine::process(const Command& command, std::span<Event> output) {
+    if (output.size() < event_capacity_) return {ProcessStatus::OutputBufferTooSmall, 0};
+    if (active()) throw std::logic_error("process requires an idle engine");
+    if (begin(command) == CallError::SequenceExhausted) {
         return {ProcessStatus::SequenceExhausted, 0};
     }
-
-    ++command_seq_;
     std::size_t count = 0;
-    const CommandKind kind = command_kind(command);
-    const OrderId id = order_id(command);
-    const auto emit = [&](EventKind event_kind) -> Event& {
+    while (active()) {
         assert(count < output.size());
-        Event& event = output[count++];
-        event = Event{};
-        event.kind = event_kind;
-        event.command_kind = kind;
-        event.command_seq = command_seq_;
-        event.event_seq = ++event_seq_;
-        event.client = command.client;
-        event.request = command.request;
-        event.order_id = id;
-        return event;
-    };
-
-    const RejectReason rejection = validate(command);
-    if (rejection != RejectReason::None) {
-        emit(EventKind::Rejected).reject_reason = rejection;
-        emit(EventKind::CommandComplete).completion = CompletionStatus::Rejected;
-        return {ProcessStatus::Processed, count};
+        next(output[count++]);
     }
-
-    emit(EventKind::Accepted);
-    Quantity filled = 0;
-    Quantity resting = 0;
-    Quantity cancelled = 0;
-    if (kind == CommandKind::Cancel) {
-        cancelled = book_.erase_resting(id);
-        auto& event = emit(EventKind::Cancelled);
-        event.qty = cancelled;
-        event.cancel_reason = CancelReason::UserCancel;
-    } else {
-        const auto* limit = std::get_if<LimitOrder>(&command.payload);
-        const Side side = limit ? limit->side : std::get<MarketOrder>(command.payload).side;
-        Quantity remaining = limit ? limit->qty : std::get<MarketOrder>(command.payload).qty;
-        while (remaining > 0) {
-            const Order* next = book_.best_opposite(side);
-            if (next == nullptr) break;
-            if (limit && (side == Side::Buy ? next->price > limit->price : next->price < limit->price)) {
-                break;
-            }
-            // apply_fill may erase both the maker node and its price level.
-            const Order maker = *next;
-            const Quantity qty = std::min(remaining, maker.remaining);
-            book_.apply_fill(maker.id, qty);
-            remaining -= qty;
-            filled += qty; // Bounded by the validated submitted quantity.
-            auto& trade = emit(EventKind::Trade);
-            trade.price = maker.price;
-            trade.qty = qty;
-            trade.maker_id = maker.id;
-            trade.taker_id = id;
-            trade.maker_client = maker.owner;
-            trade.taker_client = command.client;
-            trade.maker_arrival_seq = maker.arrival_seq;
-            trade.taker_arrival_seq = command_seq_;
-        }
-        if (remaining > 0 && limit) {
-            book_.insert_resting({id, command.client, side, limit->price, remaining, command_seq_});
-            resting = remaining;
-            auto& event = emit(EventKind::Rested);
-            event.side = side;
-            event.price = limit->price;
-            event.qty = remaining;
-            event.arrival_seq = command_seq_;
-        } else if (remaining > 0) {
-            cancelled = remaining;
-            auto& event = emit(EventKind::Cancelled);
-            event.qty = remaining;
-            event.cancel_reason = CancelReason::IocRemainder;
-        }
-    }
-    auto& complete = emit(EventKind::CommandComplete);
-    complete.completion = CompletionStatus::Accepted;
-    complete.filled_qty = filled;
-    complete.resting_qty = resting;
-    complete.cancelled_qty = cancelled;
     return {ProcessStatus::Processed, count};
 }
+
+TopOfBook MatchingEngine::top_of_book() const noexcept { return book_.top_of_book(); }
 
 BookSnapshot MatchingEngine::snapshot() const { return book_.snapshot(); }
 
