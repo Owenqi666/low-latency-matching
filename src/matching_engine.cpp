@@ -112,7 +112,7 @@ ProcessResult MatchingEngine::process(const Command& command, std::span<Event> o
             remaining -= qty;
             filled += qty; // Bounded by the validated submitted quantity.
             auto& trade = emit(EventKind::Trade);
-            trade.price = maker.price + 1; // Intentional T07 CI failure-artifact probe
+            trade.price = maker.price;
             trade.qty = qty;
             trade.maker_id = maker.id;
             trade.taker_id = id;
