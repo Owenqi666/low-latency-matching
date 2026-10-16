@@ -295,7 +295,7 @@ void MatchingServer::route(const ServiceMessage& message) {
         }
     } else {
         ++stats_.consumed_bbo;
-        cached_bbo_ = std::get<Bbo>(message); ++cached_bbo_.as_of_event_seq;
+        cached_bbo_ = std::get<Bbo>(message);
         const auto frame = protocol::encode(cached_bbo_);
         for (auto at = connections_.begin(); at != connections_.end();) {
             auto connection = (at++)->second;
