@@ -79,6 +79,23 @@ Quantity OrderBook::erase_resting(OrderId id) {
     return qty;
 }
 
+TopOfBook OrderBook::top_of_book() const noexcept {
+    TopOfBook result;
+    if (!bids_.empty()) {
+        const auto& [price, level] = *bids_.rbegin();
+        result.bid_present = true;
+        result.bid_price = price;
+        result.bid_qty = level.total_qty;
+    }
+    if (!asks_.empty()) {
+        const auto& [price, level] = *asks_.begin();
+        result.ask_present = true;
+        result.ask_price = price;
+        result.ask_qty = level.total_qty;
+    }
+    return result;
+}
+
 BookSnapshot OrderBook::snapshot() const {
     BookSnapshot result;
     result.bids.reserve(bids_.size());

@@ -1,4 +1,4 @@
-# llmatch — M1 matching core
+# llmatch — C++ matching core and TCP service
 
 A single-threaded, in-memory C++20 matching core. The public contract is
 [docs/semantics.md](docs/semantics.md).
@@ -8,8 +8,23 @@ failure reduction and versioned text traces are available. Core benchmarks
 measure per-command latency and separate batch throughput, including result
 generation. They do not measure network latency or concurrent service capacity.
 
+M1 is released. M2 technical implementation, Linux verification, formal
+measurement and reporting are complete. The release's `acceptance.json` is the
+authority for final PR/main checks, durable archives and publication. See
+[architecture](docs/service_architecture.md), [wire protocol](docs/protocol.md),
+[task status](docs/progress.md) and the revision-specific
+[acceptance record](docs/m2_acceptance.md). The corrected
+[network report](docs/m2_report.md) records 30 successful measured rounds and
+five overload delivery failures; all 42 warmup/measured attempts drained and
+passed Reference checks. The earlier matrix is retained with its loadgen timing
+limitation. Recorded Linux
+[core measurements](docs/m2_core_measurements.md) and separate
+[service profiling](docs/m2_profiling.md) have their own timing and source boundaries.
+The [evidence index](docs/m2_evidence_index.md) maps those records to release assets.
+
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
-GoogleTest 1.17.0 download. GoogleTest is a test-only dependency, configured using
+GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
+`cmake/Dependencies.cmake`). GoogleTest is a test-only dependency, configured using
 the [official CMake integration](https://google.github.io/googletest/quickstart-cmake.html).
 
 ```sh
@@ -19,6 +34,8 @@ ctest --preset debug --output-on-failure --no-tests=error
 ```
 
 Replace `debug` with `release` or `asan-ubsan` for the other configurations.
+Linux concurrency validation uses a separate `tsan` preset; for example configure
+with `cmake --preset tsan -DCMAKE_CXX_COMPILER=clang++-18`, then build/test that preset.
 The sanitizer flags apply to project code, not just the test entry point.
 
 M1 implementation and reproduction acceptance are complete. See the
@@ -77,4 +94,50 @@ without imposing a latency threshold on shared runners.
 [Semantics](docs/semantics.md) specify active-ID reuse, no RequestId deduplication,
 owner checks, allowed self-trades and conservative full-book limit rejection.
 [Trace format](docs/trace_format.md) separates malformed text from business
-rejections. There is no networking, concurrency, risk engine or crash recovery.
+rejections. The M1 release is the synchronous core baseline; M2 adds the service
+described below. Risk management and crash recovery remain outside its scope.
+
+## Service development and short experiments
+
+The default listener is loopback. Start the server and run two CLI instances in
+separate terminals. Stop the server with SIGINT/SIGTERM to drain admitted work.
+
+```sh
+./build/debug/matching_server --port 19999 --record-limit 10000 --output-dir build/manual-service
+./build/debug/matching_client --port 19999
+```
+
+CLI lines are `limit REQUEST ORDER buy|sell PRICE QTY`,
+`market REQUEST ORDER buy|sell QTY`, `cancel REQUEST ORDER`, and `quit`.
+For example, one client enters `limit 1 101 sell 100 5`; another enters
+`market 1 201 buy 2`; the first can then enter `cancel 2 101`. Both clients
+continuously print business events and BBO, including maker trades while idle.
+Complete ends that request's immediate processing, not the lifetime of a resting
+order. Reconnecting creates a new identity and does not recover prior ownership.
+
+After the server exits, validate its recorded run:
+
+```sh
+./build/debug/verify_service --directory build/manual-service
+```
+
+Use a new output directory for each bounded network experiment:
+
+```sh
+python3 scripts/run_service_bench.py --server build/release/matching_server \
+  --loadgen build/release/loadgen --verifier build/release/verify_service \
+  --manifest data/workloads/service-smoke.json --output-dir build/service-smoke
+python3 scripts/summarize_service_bench.py build/service-smoke
+```
+
+The smoke manifest checks seven workload paths at small scale. Its near/overload
+labels are uncalibrated candidates, not measured capacity claims. The separate
+[formal manifest](data/workloads/service-formal.json) has rates frozen from
+[Linux calibration](docs/m2_rate_selection.md). The corrected network run kept
+those rates: all ordinary and 45000/s near rounds succeeded, while every 80000/s
+overload round failed delivery. Both complete matrices remain in the
+[report](docs/m2_report.md). These finite VM observations do not establish a
+platform-independent sustainable rate. Records keep
+planned, started, completed, failed and unfinished requests separately. The
+independent report rejects missing rounds, inconsistent counts and stale reference
+verification. See [service measurement method](docs/service_benchmark_method.md).

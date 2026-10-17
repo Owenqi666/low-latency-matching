@@ -8,6 +8,16 @@
 
 namespace llmatch {
 
+struct TopOfBook {
+    bool bid_present{};
+    bool ask_present{};
+    Price bid_price{};
+    Quantity bid_qty{};
+    Price ask_price{};
+    Quantity ask_qty{};
+    bool operator==(const TopOfBook&) const = default;
+};
+
 // Owns price levels, FIFO nodes and their index. Business admission belongs to
 // MatchingEngine. Orders supplied to its mutators have already been validated.
 class OrderBook {
@@ -25,6 +35,7 @@ public:
     void insert_resting(const Order& order);
     void apply_fill(OrderId id, Quantity qty);
     Quantity erase_resting(OrderId id);
+    TopOfBook top_of_book() const noexcept;
     BookSnapshot snapshot() const;
     void check_invariants() const;
 

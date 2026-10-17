@@ -42,6 +42,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$CI_LOG_DIR"
           git rev-parse HEAD | tee "$CI_LOG_DIR/checkout-sha.log"
+          printf 'event=%s\nref=%s\nevent_sha=%s\n' "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_SHA" | tee "$CI_LOG_DIR/event.log"
           uname -a | tee "$CI_LOG_DIR/uname.log"
           cat /etc/os-release | tee "$CI_LOG_DIR/os-release.log"
 
@@ -62,17 +63,38 @@ jobs:
       - name: Configure from a clean build directory
         run: |
           set -euo pipefail
-          cmake --preset "$CI_PRESET" 2>&1 | tee "$CI_LOG_DIR/configure.log"
+          cmake --preset "$CI_PRESET" -DCMAKE_CXX_COMPILER="$CXX" 2>&1 | tee "$CI_LOG_DIR/configure.log"
 
       - name: Build
         run: |
           set -euo pipefail
           cmake --build --preset "$CI_PRESET" --parallel 2 2>&1 | tee "$CI_LOG_DIR/build.log"
 
-      - name: Run a nonempty test suite
+      - name: Discover and require the core and M2 test groups
+        id: discovery
         run: |
           set -euo pipefail
-          ctest --preset "$CI_PRESET" --output-on-failure --no-tests=error 2>&1 | tee "$CI_LOG_DIR/ctest.log"
+          ctest --preset "$CI_PRESET" --show-only=json-v1 > "$CI_LOG_DIR/test-discovery.json"
+          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen)
+          if [[ "$CI_PRESET" == release ]]; then groups+=(--require benchmark); fi
+          python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" "${groups[@]}" \
+            2>&1 | tee "$CI_LOG_DIR/test-groups-discovery.log"
+
+      - name: Run all discovered tests and retain JUnit results
+        id: tests
+        run: |
+          set -euo pipefail
+          ctest --preset "$CI_PRESET" --output-on-failure --no-tests=error \
+            --output-junit "$PWD/$CI_LOG_DIR/ctest.xml" 2>&1 | tee "$CI_LOG_DIR/ctest.log"
+
+      - name: Verify every discovered test ran without skipping
+        if: always() && steps.discovery.outcome == 'success' && steps.tests.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen)
+          if [[ "$CI_PRESET" == release ]]; then groups+=(--require benchmark); fi
+          python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" \
+            --junit "$CI_LOG_DIR/ctest.xml" "${groups[@]}" 2>&1 | tee "$CI_LOG_DIR/test-groups-execution.log"
 
       - name: Run Release benchmark and validate evidence
         if: matrix.preset == 'release'
@@ -82,6 +104,22 @@ jobs:
             --manifest data/workloads/smoke.manifest --repeats 1 \
             --output-dir build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/benchmark.log"
           python3 scripts/summarize_bench.py build/benchmark-smoke 2>&1 | tee "$CI_LOG_DIR/report-check.log"
+
+      - name: Run bounded network open-loop smoke
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/run_service_bench.py --server build/release/matching_server \
+            --loadgen build/release/loadgen --verifier build/release/verify_service \
+            --manifest data/workloads/service-smoke.json --output-dir build/service-smoke \
+            2>&1 | tee "$CI_LOG_DIR/network-smoke.log"
+
+      - name: Independently check network smoke evidence
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/summarize_service_bench.py build/service-smoke \
+            2>&1 | tee "$CI_LOG_DIR/network-report-check.log"
 
       - name: Save logs and failure reproduction files
         uses: actions/upload-artifact@v4
@@ -95,4 +133,96 @@ jobs:
             build/${{ matrix.preset }}/CMakeCache.txt
             build/${{ matrix.preset }}/Testing/Temporary/
             build/${{ matrix.preset }}/failures/
+            build/${{ matrix.preset }}/service-artifacts/
+            build/${{ matrix.preset }}/loadgen-test-evidence/
+            build/${{ matrix.preset }}/service-benchmark-evidence/
             build/benchmark-smoke/
+            build/service-smoke/
+
+  tsan:
+    name: tsan / Ubuntu 24.04 / Clang 18
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CXX: clang++-18
+      CI_PRESET: tsan
+      CI_LOG_DIR: build/ci-evidence/tsan
+    steps:
+      - name: Check out the tested revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Record actual checkout and operating system
+        run: |
+          set -euo pipefail
+          mkdir -p "$CI_LOG_DIR"
+          git rev-parse HEAD | tee "$CI_LOG_DIR/checkout-sha.log"
+          printf 'event=%s\nref=%s\nevent_sha=%s\n' "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_SHA" | tee "$CI_LOG_DIR/event.log"
+          uname -a | tee "$CI_LOG_DIR/uname.log"
+          cat /etc/os-release | tee "$CI_LOG_DIR/os-release.log"
+
+      - name: Install the independent TSan toolchain
+        run: |
+          set -euo pipefail
+          sudo apt-get update 2>&1 | tee "$CI_LOG_DIR/apt-update.log"
+          sudo apt-get install -y --no-install-recommends clang-18 libclang-rt-18-dev llvm-18 cmake ninja-build python3 \
+            2>&1 | tee "$CI_LOG_DIR/apt-install.log"
+          printf '%s\n' /usr/lib/llvm-18/bin >> "$GITHUB_PATH"
+
+      - name: Record actual toolchain
+        run: |
+          set -euo pipefail
+          "$CXX" --version 2>&1 | tee "$CI_LOG_DIR/compiler.log"
+          llvm-symbolizer --version 2>&1 | tee "$CI_LOG_DIR/symbolizer.log"
+          cmake --version 2>&1 | tee "$CI_LOG_DIR/cmake.log"
+          ninja --version 2>&1 | tee "$CI_LOG_DIR/ninja.log"
+          python3 --version 2>&1 | tee "$CI_LOG_DIR/python.log"
+
+      - name: Configure TSan from a clean build directory
+        run: |
+          set -euo pipefail
+          cmake --preset "$CI_PRESET" -DCMAKE_CXX_COMPILER="$CXX" 2>&1 | tee "$CI_LOG_DIR/configure.log"
+
+      - name: Build with TSan
+        run: |
+          set -euo pipefail
+          cmake --build --preset "$CI_PRESET" --parallel 2 2>&1 | tee "$CI_LOG_DIR/build.log"
+
+      - name: Require real protocol, concurrency, and service tests
+        id: discovery
+        run: |
+          set -euo pipefail
+          ctest --preset "$CI_PRESET" --show-only=json-v1 > "$CI_LOG_DIR/test-discovery.json"
+          python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" \
+            2>&1 | tee "$CI_LOG_DIR/test-groups-discovery.log"
+
+      - name: Run the full suite under TSan
+        id: tests
+        run: |
+          set -euo pipefail
+          ctest --preset "$CI_PRESET" --output-on-failure --no-tests=error \
+            --output-junit "$PWD/$CI_LOG_DIR/ctest.xml" 2>&1 | tee "$CI_LOG_DIR/ctest.log"
+
+      - name: Verify every discovered TSan test ran without skipping
+        if: always() && steps.discovery.outcome == 'success' && steps.tests.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" \
+            --junit "$CI_LOG_DIR/ctest.xml" 2>&1 | tee "$CI_LOG_DIR/test-groups-execution.log"
+
+      - name: Save TSan logs and failure reproduction files
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-evidence-tsan-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/ci-evidence/tsan/
+            build/tsan/CMakeCache.txt
+            build/tsan/Testing/Temporary/
+            build/tsan/failures/
+            build/tsan/service-artifacts/
+            build/tsan/loadgen-test-evidence/
+            build/tsan/service-benchmark-evidence/
