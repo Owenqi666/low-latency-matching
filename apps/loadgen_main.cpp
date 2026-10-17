@@ -16,6 +16,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <sys/resource.h>
 #include <vector>
 
 namespace {
@@ -466,6 +467,14 @@ private:
     }
 
     void write_evidence() const {
+        rusage usage{};
+        if (getrusage(RUSAGE_SELF, &usage) != 0) throw std::runtime_error("cannot read loadgen resource usage");
+        const auto resource_captured_ns = now_ns();
+        // Process lifetime includes input preparation/setup; exclude evidence formatting and I/O.
+        auto rss_bytes = static_cast<std::uint64_t>(usage.ru_maxrss);
+#ifndef __APPLE__
+        rss_bytes *= 1024;
+#endif
         std::filesystem::create_directories(options_.output);
         csv(options_.output / "client_samples.csv", setup_count_, items_.size());
         csv(options_.output / "setup_samples.csv", 0, setup_count_);
@@ -477,6 +486,11 @@ private:
         out << "},\"measurement_start_ns\":" << started_ << ",\"measurement_end_ns\":" << ended_
             << ",\"input_hash\":" << json(input_hash_) << ",\"setup_hash\":" << json(setup_hash_)
             << ",\"schedule_hash\":" << json(schedule_hash_) << ",\"hash_algorithm\":\"fnv1a64\""
+            << ",\"resource_usage\":{\"scope\":\"process_lifetime_before_evidence\""
+            << ",\"captured_ns\":" << resource_captured_ns
+            << ",\"user_cpu_us\":" << usage.ru_utime.tv_sec * 1000000LL + usage.ru_utime.tv_usec
+            << ",\"system_cpu_us\":" << usage.ru_stime.tv_sec * 1000000LL + usage.ru_stime.tv_usec
+            << ",\"peak_rss_bytes\":" << rss_bytes << '}'
             << ",\"tcp_nodelay\":true"
             << ",\"max_inflight\":" << options_.max_inflight << ",\"max_send_bytes\":" << options_.max_send_bytes
             << ",\"drain_ms\":" << options_.drain_ms << ",\"inflight_high_water\":" << inflight_high_water_

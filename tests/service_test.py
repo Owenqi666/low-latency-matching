@@ -52,6 +52,37 @@ class ServiceTest(unittest.TestCase):
         self.assertEqual(quotes[0][1]["as_of_event_seq"], completes[0][1]["event_seq"] - 1)
         return quotes[0][1]
 
+    def assert_backlogged_write_observations(self, report):
+        frame_limit = report["write_batch_max_frames"]
+        byte_limit = report["write_batch_max_bytes"]
+        frames = report["write_batch_frames"]
+        byte_buckets = report["write_batch_bytes"]
+        width = report["write_batch_bytes_bucket_width"]
+        operations = report["write_operations"]
+        self.assertGreater(operations, 0)
+        self.assertGreater(frame_limit, 0)
+        self.assertLess(frame_limit, len(frames))
+        self.assertEqual(frames[0], 0)
+        self.assertTrue(all(count == 0 for count in frames[frame_limit + 1:]))
+        self.assertEqual(sum(frames), operations)
+        self.assertEqual(sum(size * count for size, count in enumerate(frames)),
+                         report["write_frames_submitted"])
+        self.assertGreater(byte_limit, 0)
+        self.assertGreater(width, 0)
+        self.assertLessEqual(byte_limit, width * len(byte_buckets))
+        self.assertEqual(sum(byte_buckets), operations)
+        last_bucket = (byte_limit + width - 1) // width
+        self.assertTrue(all(count == 0 for count in byte_buckets[last_bucket:]))
+        self.assertLessEqual(sum((i * width + 1) * count for i, count in enumerate(byte_buckets)),
+                             report["write_bytes_submitted"])
+        self.assertLessEqual(report["write_bytes_submitted"],
+                             sum(min((i + 1) * width, byte_limit) * count
+                                 for i, count in enumerate(byte_buckets)))
+        if frame_limit == 1:
+            self.assertEqual(frames[1], operations)
+        else:
+            self.assertGreater(sum(frames[2:]), 0, "backlogged TCP run never exercised a multi-frame write")
+
     def test_fragmented_and_coalesced_requests(self):
         with ServerRun(SERVER, "fragment-coalesce", **{"command-capacity": 1, "event-capacity": 1}) as server:
             client = server.connect()
@@ -248,6 +279,10 @@ class ServiceTest(unittest.TestCase):
             self.assertGreaterEqual(report["close_reasons"]["slow_client"], 1)
             self.assertGreater(report["missing_business_recipients"] + report["discarded_business_frames"], 0)
             self.assertLessEqual(report["send_high_water"], 8192)
+            # The existing 1000-command slow-peer/healthy-peer run supplies
+            # backlog. Require observed use, not a latency or exact batch-size
+            # threshold; the same test also checks the one-frame control.
+            self.assert_backlogged_write_observations(report)
 
     def test_blocked_socket_shutdown_deadline_is_failure_with_delivery_evidence(self):
         with ServerRun(SERVER, "shutdown-deadline", **{"socket-send-buffer": 1024, "send-limit": 1048576,

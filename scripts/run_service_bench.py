@@ -206,6 +206,39 @@ def run_one(root, entry, row, spec, binaries):
     return state
 
 
+def prepare_experiment(root, source_manifest, spec, binaries, repository, host_environment=None):
+    """Create one complete experiment; callers may choose its execution order."""
+    root.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(source_manifest, root / "source_manifest.json")
+    expected = []
+    for row in spec["rows"]:
+        for repeat in range(spec["rounds"] + 1):
+            suffix = "warmup" if repeat == 0 else f"round_{repeat}"
+            expected.append({"id": f"{row['id']}-{suffix}", "row": row["id"], "round": repeat,
+                             "kind": "warmup" if repeat == 0 else "measurement",
+                             "directory": f"runs/{row['id']}/{suffix}", "status": "planned"})
+    manifest = {"schema_version": 1, "generator_version": GENERATOR_VERSION, "mode": spec["mode"],
+                "source_manifest_sha256": sha256(root / "source_manifest.json"), "workload_parameters": spec,
+                "environment": environment(repository, host_environment),
+                "binaries": binaries, "expectedRuns": expected, "status": "running", "started_at_utc": now()}
+    write_json(root / "manifest.json", manifest)
+    return manifest
+
+
+def finish_experiment(root, manifest, summarizer=None):
+    manifest["status"] = "completed" if all(entry["status"] == "completed" for entry in manifest["expectedRuns"]) else "failed"
+    manifest["ended_at_utc"] = now()
+    write_json(root / "manifest.json", manifest)
+    if summarizer is None:
+        return manifest["status"] == "completed"
+    with (root / "summary-check.log").open("wb") as log:
+        manifest["summarizer_exit"] = subprocess.run([sys.executable, str(summarizer.resolve()), str(root)], stdout=log, stderr=subprocess.STDOUT).returncode
+    if manifest["summarizer_exit"]:
+        manifest["status"] = "failed"
+    write_json(root / "manifest.json", manifest)
+    return manifest["status"] == "completed"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--server", required=True, type=Path)
@@ -227,20 +260,8 @@ def main():
         if not sys.platform.startswith("linux") or any(binaries[name]["build_type"] != "Release" or binaries[name]["sanitized"] for name in ("server", "loadgen")):
             raise ValueError("formal measurements require Linux and unsanitized Release server/loadgen builds")
     root = args.output_dir.resolve()
-    root.mkdir(parents=True, exist_ok=False)
-    shutil.copyfile(args.manifest, root / "source_manifest.json")
-    expected = []
-    for row in spec["rows"]:
-        for repeat in range(spec["rounds"] + 1):
-            suffix = "warmup" if repeat == 0 else f"round_{repeat}"
-            expected.append({"id": f"{row['id']}-{suffix}", "row": row["id"], "round": repeat,
-                             "kind": "warmup" if repeat == 0 else "measurement",
-                             "directory": f"runs/{row['id']}/{suffix}", "status": "planned"})
-    manifest = {"schema_version": 1, "generator_version": GENERATOR_VERSION, "mode": spec["mode"],
-                "source_manifest_sha256": sha256(root / "source_manifest.json"), "workload_parameters": spec,
-                "environment": environment(Path(__file__).resolve().parents[1], args.host_environment),
-                "binaries": binaries, "expectedRuns": expected, "status": "running", "started_at_utc": now()}
-    write_json(root / "manifest.json", manifest)
+    manifest = prepare_experiment(root, args.manifest, spec, binaries, Path(__file__).resolve().parents[1], args.host_environment)
+    expected = manifest["expectedRuns"]
     rows = {row["id"]: row for row in spec["rows"]}
     try:
         for entry in expected:
@@ -256,15 +277,7 @@ def main():
         manifest["status"] = "interrupted"
         write_json(root / "manifest.json", manifest)
         raise
-    manifest["status"] = "completed" if all(entry["status"] == "completed" for entry in expected) else "failed"
-    manifest["ended_at_utc"] = now()
-    write_json(root / "manifest.json", manifest)
-    with (root / "summary-check.log").open("wb") as log:
-        manifest["summarizer_exit"] = subprocess.run([sys.executable, str(args.summarizer.resolve()), str(root)], stdout=log, stderr=subprocess.STDOUT).returncode
-    if manifest["summarizer_exit"]:
-        manifest["status"] = "failed"
-    write_json(root / "manifest.json", manifest)
-    return 0 if manifest["status"] == "completed" else 1
+    return 0 if finish_experiment(root, manifest, args.summarizer) else 1
 
 
 if __name__ == "__main__":

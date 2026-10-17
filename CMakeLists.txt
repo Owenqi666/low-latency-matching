@@ -78,6 +78,10 @@ if(BUILD_TESTING)
   add_executable(server_lifecycle_tests tests/server_lifecycle_test.cpp)
   target_link_libraries(server_lifecycle_tests PRIVATE llmatch_server llmatch_options GTest::gtest_main)
   gtest_discover_tests(server_lifecycle_tests PROPERTIES LABELS "service;concurrency" TIMEOUT 30 DISCOVERY_TIMEOUT 30)
+  add_executable(send_queue_tests tests/send_queue_test.cpp)
+  target_include_directories(send_queue_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
+  target_link_libraries(send_queue_tests PRIVATE llmatch_server llmatch_options GTest::gtest_main)
+  gtest_discover_tests(send_queue_tests PROPERTIES LABELS "service" TIMEOUT 30 DISCOVERY_TIMEOUT 30)
   add_test(NAME service_integration COMMAND ${Python3_EXECUTABLE}
     ${PROJECT_SOURCE_DIR}/tests/service_test.py $<TARGET_FILE:matching_server> -v)
   add_test(NAME service_evidence COMMAND ${Python3_EXECUTABLE}
@@ -92,6 +96,9 @@ if(BUILD_TESTING)
   add_test(NAME service_benchmark COMMAND ${Python3_EXECUTABLE}
     ${PROJECT_SOURCE_DIR}/tests/service_benchmark_test.py $<TARGET_FILE:matching_server> $<TARGET_FILE:loadgen> $<TARGET_FILE:verify_service>)
   set_tests_properties(service_benchmark PROPERTIES LABELS "service" TIMEOUT 120)
+  add_test(NAME service_pair COMMAND ${Python3_EXECUTABLE}
+    ${PROJECT_SOURCE_DIR}/tests/service_pair_test.py $<TARGET_FILE:matching_server> $<TARGET_FILE:loadgen> $<TARGET_FILE:verify_service>)
+  set_tests_properties(service_pair PROPERTIES LABELS "service" TIMEOUT 120)
   foreach(fixture basic capacity reverse rejections)
     if(fixture STREQUAL "capacity")
       set(fixture_config capacity)

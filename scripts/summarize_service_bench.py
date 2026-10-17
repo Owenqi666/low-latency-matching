@@ -174,6 +174,13 @@ def validate_run(directory, expected, parameters):
     all_commands = setup + commands
     start, end = client["measurement_start_ns"], client["measurement_end_ns"]
     require(end >= start, "invalid client measurement interval")
+    resources = client.get("resource_usage")
+    if resources is not None:
+        require(resources["scope"] == "process_lifetime_before_evidence", "invalid client resource scope")
+        require(all(type(resources[key]) is int and resources[key] >= 0
+                    for key in ("user_cpu_us", "system_cpu_us", "peak_rss_bytes", "captured_ns")), "invalid client resource values")
+        require(resources["peak_rss_bytes"] > 0 and resources["captured_ns"] >= end,
+                "client resource snapshot predates completion or has no RSS")
     for sample in all_client:
         for key in ("first_attempt_ns", "write_completed_ns", "complete_ns"):
             require(sample[key] is None or sample[key] <= end, "client timestamp lies beyond the measurement end")
@@ -275,7 +282,7 @@ def validate_run(directory, expected, parameters):
             "gateway_wait": distribution([row["gateway_wait_ns"] for row in measured_service]) if drained else None,
             "rtt_groups": [{"command": key[0], "completion_status": key[1], **distribution(values)} for key, values in sorted(groups.items())],
             "normal_sample_target_met": len(completed) >= 100000 and elapsed >= 10,
-            "server_counters": server, "clock_probe": client["clock_probe"]}
+            "server_counters": server, "client_resources": resources, "clock_probe": client["clock_probe"]}
 
 
 def summarize(directory):
@@ -320,7 +327,9 @@ def summarize(directory):
               "quantile_method": "nearest-rank, per run; completed samples only; no fixed clock-cost subtraction",
               "notes": "Service samples exclude setup. Failed drains have no successful service latency conclusion. "
                        "Per-command FNV digests cover requester business events; small full-event/routing tests provide separate coverage. "
-                       "Written frames do not prove peer receipt. Shared CI smoke is not a formal performance result.",
+                       "Written frames do not prove peer receipt. Shared CI smoke is not a formal performance result. "
+                       "Client resources cover process lifetime including input preparation and setup, before evidence output; "
+                       "null means an older loadgen did not record them.",
               "runs": results}
     (directory / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     lines = ["# M2 service measurements", "", f"Mode: {manifest['mode']}. All declared attempts are included.", "",

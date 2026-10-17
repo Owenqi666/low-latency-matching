@@ -68,6 +68,12 @@ def run(directory, port, connections=1, expected=0, extra=()):
     assert all(value["send_high_water"] <= report["max_send_bytes"] for value in report["logical_to_actual"])
     assert report["clock_probe"]["samples"] == 10000
     assert report["tcp_nodelay"] is True
+    resources = report["resource_usage"]
+    assert resources["scope"] == "process_lifetime_before_evidence"
+    assert all(type(resources[key]) is int and resources[key] >= 0
+               for key in ("user_cpu_us", "system_cpu_us", "peak_rss_bytes", "captured_ns"))
+    assert resources["peak_rss_bytes"] > 0
+    assert resources["captured_ns"] >= report["measurement_end_ns"]
     return report, rows, setup
 
 

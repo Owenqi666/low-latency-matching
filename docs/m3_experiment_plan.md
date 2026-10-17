@@ -1,8 +1,8 @@
 # M3 experiment plan
 
-Status: baseline verified; targeted diagnosis in progress. No performance result
-or candidate adoption is claimed. The experiment decision and parameters below
-will be frozen before candidate implementation and formal measurement.
+Status: E1 selected after two new baseline diagnostics on 2026-10-17. Candidate
+parameters and the decision rule below are frozen before implementing batching.
+This is an experiment hypothesis, not an adoption or speedup claim.
 
 ## Baseline and scope
 
@@ -38,11 +38,64 @@ write/send calls or call chains, outbound backlog, request send lag and loss.
 Unavailable hardware/kernel events remain unavailable rather than zero.
 Profiler-assisted timings are excluded from the formal comparison.
 
-The first candidate is bounded gather-write of existing queued frames. This
-would change how many frames one Asio composed write carries; it would not wait
-for a batch to fill. Diagnosis must support this as a useful experiment before
-implementation. A single waiting-coordination experiment may replace it if the
-new evidence points there; both mechanisms will not change together.
+The first two 10,000/s diagnostics each completed all 100,001 measured requests
+and passed the actual-admission Reference check and independent summary. Gateway
+`sendto` counts were 701,795 and 701,793, exactly their respective written-frame
+counts, with zero `sendmsg`/`write`/`writev`. Gateway task-clock was 2.653/2.657 s,
+versus Matching 0.891/0.910 s over roughly 10.1 s. Loadgen lifetime CPU was
+2.284/2.261 s. The new samples include kernel paths and also show futex activity;
+they do not establish that socket writes are the only bottleneck.
+
+These observations select bounded gather-write as E1. It changes how many
+already queued frames one Asio composed write carries, with no wait-to-fill or
+flush timer. Fix the batch at **16 frames and 4,096 bytes**, keeping all M2 queue,
+send, socket and request limits. Current v1 output frames are at most 138 bytes,
+so 16 such frames total 2,208 bytes; the byte limit is not the active bound for
+this protocol. No waiting-strategy change or parameter search is included.
+
+The [diagnostic record](m3_diagnostics.md) indexes all four runs, exact commands
+and copied evidence at `build/m3-diagnostics/baseline-run-1/`. All 203 original
+files passed host SHA-256 verification, and independent host summaries match
+the guest summaries. These are current-source
+diagnostics, not formal A/B timings. The rebooted guest runs kernel
+`6.8.0-147-generic`; the M2 release measurements ran `6.8.0-142-generic`.
+
+## Isolated implementation and adoption rule
+
+First preserve a one-frame control with the same concrete send-queue extraction
+and bounded observational counters used by the candidate. Identify it as
+**M2 plus observation and local send-queue extraction**, not an unmodified M2
+binary. Then change only the compile-time selected frame bound from 1 to 16.
+Both sides retain the same descriptor-array storage and accounting code, and
+the original M2 tag and exact diff remain reproducible. The extraction permits
+deterministic asynchronous write/cancel tests without a second transport backend.
+
+The primary adoption metric is server lifetime CPU seconds per client-completed
+request in the four-client 45,000/s scene, using only fully delivered paired
+runs. Adopt only if its paired median reduction is at least 10%, at least four
+of five pairs improve, and the correctness and tradeoff checks below hold. This
+is a predeclared engineering decision rule, not a confidence interval or a CI
+performance gate. Syscall/write-count reductions support mechanism attribution
+but cannot substitute for this outcome.
+
+- Both variants must fully deliver all five ordinary scenes and the high-load
+  scene in every measured round; an observed failure is retained and prevents a
+  loss-free adoption claim rather than being replaced by a convenient repeat.
+- For each of those six scenes, the median paired RTT p99 increase must not
+  exceed 10%. Report every pair and compare variation; a noisy or contradictory
+  outcome supports retaining the control rather than claiming a small win.
+- Compare service latency, send lag, server/loadgen CPU and RSS for all scenes.
+  Additional memory must be explainable by the fixed per-connection descriptors,
+  without enlarged queues or send budgets. Any new unbounded work/storage,
+  lifecycle defect or starvation rejects the candidate.
+- Report all overload outcomes and losses at the unchanged 80,000/s schedule.
+  Overload need not become successful; better completed-only latency after peers
+  close is not an adoption benefit.
+
+If these conditions are not met, reject batching, retain the simple production
+path, and preserve candidate source, results and the negative conclusion. Do not
+add another optimization merely to cross the decision threshold. E2 remains
+unstarted without separate core/allocation evidence.
 
 ## Formal comparison
 
@@ -60,10 +113,14 @@ Record each binary's actual source checkout rather than the runner's checkout.
 If observational changes are needed, apply them equally to both variants and
 preserve that source difference from the unmodified M2 tag.
 
-Before measurement, freeze candidate constants, primary metric, expected
-tradeoffs and adoption criteria after the diagnosis. Preserve unsuccessful
-runs and all raw outcomes. Comparison will distinguish evidence validity,
-server drain, client delivery and sufficient latency samples.
+Preserve unsuccessful runs and all raw outcomes. Comparison distinguishes
+evidence validity, server drain, client delivery and sufficient latency samples.
+
+Both variants share the loadgen addition recording user/system CPU and peak
+RSS at process lifetime scope, including input preparation and setup but before
+evidence formatting and output. Its monotonic capture timestamp is retained;
+these are not request-only resource measurements. Historical M2 evidence without
+these fields remains valid but cannot supply the new per-round client resources.
 
 ## Completion and publication
 

@@ -73,9 +73,9 @@ historical evidence, not the new comparison control.
 | Task | State | Evidence / next step |
 |---|---|---|
 | M3-T00 | Baseline verified | Local main, fetched origin/main and m2-service agree; published release and five asset hashes checked; existing local task-book ignore preserved |
-| M3-T01 | In progress | Targeted corrected-loadgen Linux diagnosis; freeze hypothesis and adoption criteria before implementation |
-| M3-T02 | Not started | Candidate requires T01 decision |
-| M3-T03 | Tooling in progress | Reuse per-run execution and independent summaries for paired manifests; candidate tests follow implementation |
+| M3-T01 | Complete | Four diagnosed runs and four warmups verified; 203 copied raw files passed SHA-256 verification; [diagnosis](m3_diagnostics.md), frozen 16-frame/4096-byte plan and adoption rule |
+| M3-T02 | Control locally verified | One-frame observation/control passed 103 Debug tests including seven deterministic send-queue cases and real TCP counters; batching follows separately |
+| M3-T03 | Paired tooling locally verified | Full control Debug execution passed; actual paired smoke, eleven corrupt-evidence negatives and restoration passed; candidate/Linux/remote acceptance remains pending |
 | M3-T04 | Not started | Seven scenes, five pairs each, fixed AB/BA order; no parallel measurement |
 | M3-T05 | Not started | Adopt or reject based on complete comparison |
 | M3-T06 | Conditional, not required | Only after the main experiment and new core/allocation evidence |
