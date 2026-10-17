@@ -8,10 +8,19 @@ failure reduction and versioned text traces are available. Core benchmarks
 measure per-command latency and separate batch throughput, including result
 generation. They do not measure network latency or concurrent service capacity.
 
-M1 is released. M2 service implementation and acceptance are in progress on this
-branch: [architecture](docs/service_architecture.md), [wire protocol](docs/protocol.md),
-and [task status](docs/progress.md). No formal M2 performance or release claim is
-made before Linux, remote CI, measurement and publication evidence is complete.
+M1 is released. M2 technical implementation, Linux verification, formal
+measurement and reporting are complete. The release's `acceptance.json` is the
+authority for final PR/main checks, durable archives and publication. See
+[architecture](docs/service_architecture.md), [wire protocol](docs/protocol.md),
+[task status](docs/progress.md) and the revision-specific
+[acceptance record](docs/m2_acceptance.md). The corrected
+[network report](docs/m2_report.md) records 30 successful measured rounds and
+five overload delivery failures; all 42 warmup/measured attempts drained and
+passed Reference checks. The earlier matrix is retained with its loadgen timing
+limitation. Recorded Linux
+[core measurements](docs/m2_core_measurements.md) and separate
+[service profiling](docs/m2_profiling.md) have their own timing and source boundaries.
+The [evidence index](docs/m2_evidence_index.md) maps those records to release assets.
 
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
@@ -122,8 +131,13 @@ python3 scripts/summarize_service_bench.py build/service-smoke
 ```
 
 The smoke manifest checks seven workload paths at small scale. Its near/overload
-labels are uncalibrated candidates, not measured capacity claims. Formal rates
-must first be calibrated and frozen in a Linux Release manifest. Records keep
+labels are uncalibrated candidates, not measured capacity claims. The separate
+[formal manifest](data/workloads/service-formal.json) has rates frozen from
+[Linux calibration](docs/m2_rate_selection.md). The corrected network run kept
+those rates: all ordinary and 45000/s near rounds succeeded, while every 80000/s
+overload round failed delivery. Both complete matrices remain in the
+[report](docs/m2_report.md). These finite VM observations do not establish a
+platform-independent sustainable rate. Records keep
 planned, started, completed, failed and unfinished requests separately. The
 independent report rejects missing rounds, inconsistent counts and stale reference
 verification. See [service measurement method](docs/service_benchmark_method.md).

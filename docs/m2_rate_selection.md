@@ -70,3 +70,21 @@ Inputs: [locked manifest](../data/workloads/service-formal.json). Raw batch root
 in the long-term evidence archive are `measurement/m2-calibration-ladder/` and
 `measurement/m2-calibration-refine/`; their binary hashes and environment records
 are in each `manifest.json`. See [measurement method](service_benchmark_method.md).
+
+## Later load-generator correction
+
+The first full matrix exposed a plan-sized initialization after the measurement
+clock anchor. At `f58ff79`, the first request was already about 14 ms late for
+the 450,001-command near row and 25 ms late for the 800,001-command overload row.
+Catching up then created an unintended initial burst. The timestamps and losses
+were recorded correctly, but those failures cannot locate sustained service
+capacity. Short calibration was also subject to that initialization cost.
+
+Revision `eb0a109b026c8ac9cf48d987163fad8751980047` removes the loop: prepared
+relative offsets are combined with the start time only when scheduling or
+exporting evidence. It retains timing boundaries, limits and all planned outcomes.
+The full matrix is repeated with exactly the rates and workloads above, without
+selecting new parameters from its results. Both calibration batches and the old
+formal matrix remain in the permanent evidence package. See the [M2 report](m2_report.md)
+for the corrected run and limitations; “near” remains the frozen experimental
+label, not a claim that 45,000/s is the measured stable capacity.

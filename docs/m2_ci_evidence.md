@@ -79,21 +79,39 @@ service summarizer; it returned zero. Raw downloaded artifacts were preserved.
 
 ## Intermediate feature-PR checks
 
-Separate downloaded-artifact inspection records two passing feature-PR stages:
+Separate downloaded-artifact inspection records four passing feature-PR stages:
 
 | PR head | CI run | Actual tested PR merge checkout |
 | --- | --- | --- |
 | `ce9e94f134f6d9894f67922586004c7650a32467` | [38980042883](https://github.com/Owenqi666/low-latency-matching/actions/runs/38980042883) | `09f7f5a8401ca655f26ccd7b87263e8509a510b1` |
 | `85de7f3262bc96a8ff889226592282cee1c57684` | [38980514661](https://github.com/Owenqi666/low-latency-matching/actions/runs/38980514661) | `e89db5f5a217953e967cb4d3ca2b37281bb76d66` |
+| `f58ff79d49fd08c2bcb399ad989eb47ed0830a40` | [38981810190](https://github.com/Owenqi666/low-latency-matching/actions/runs/38981810190) | `f370b4e63a366556ba00cba116fc254e6ce296a1` |
+| `eb0a109b026c8ac9cf48d987163fad8751980047` | [38983432078](https://github.com/Owenqi666/low-latency-matching/actions/runs/38983432078) | `a4bcf6612769b95c17961e1313c49c33bed5a598` |
 
-Both stages executed 93 Debug, 94 Release, 93 ASan/UBSan and 93 TSan tests,
+The first two stages executed 93 Debug, 94 Release, 93 ASan/UBSan and 93 TSan tests,
 without failures or skips. The later stage's downloaded network smoke also
 passed independent summarization for all 14 declared attempts. The inspection
 record is `build/m2-measurement/pr-ci-inspection.json`; a copy is retained with
 this probe's archive materials. These PR merge checkouts differ from the head
 commits and must not be relabelled as tests of those head SHAs alone. The final
-feature PR and post-merge `main` still require checks after the remaining test
-and formal-report changes are committed.
+feature PR and post-merge `main` are separately bound in release `acceptance.json`
+after all report changes pass the same publication gates.
+
+The third stage includes the added partial-sweep abort, Gateway exception and
+restart tests: 95 Debug, 96 Release, 95 ASan/UBSan and 95 TSan entries passed with
+no failures or skips. All four downloaded jobs observed Linux descriptor 9 being
+reused with ClientId changing from 1 to 2. The downloaded Release network smoke
+was independently checked again: all 14 declared attempts succeeded. Its retained
+inspection is `build/m2-ci-f58ff79/inspection.json`; all downloaded files are in
+the [permanent validation archive](m2_evidence_index.md).
+
+The fourth stage removes plan-sized initialization from the load generator's
+measured window. All four jobs again passed 95/96/95/95 tests with no failures
+or skips. Downloaded artifacts were independently checked for required groups,
+actual descriptor reuse, the 14-attempt network smoke and core smoke. The record
+is `build/m2-ci-eb0a109/inspection.json`. Its source is the corrected formal
+network measurement revision; subsequent report-only changes must still pass
+the final PR and main gates identified by the release.
 
 ## Actual local reproduction from the downloaded trace
 
@@ -171,7 +189,6 @@ The source tar files were checked for these exclusions. The preliminary local
 script check, which preceded the CI download, is kept separately in the working
 evidence directory and excluded from the durable bundle.
 
-GitHub artifact retention for these runs ends on 2026-10-30 UTC. Local retrieval
-and validation are complete; durable bundle publication is a separate release
-action. This record does not claim a release was published or the feature was
-merged.
+GitHub artifact retention for these runs ends on 2026-10-30 UTC. Local retrieval and validation are complete. The [M2 evidence index](m2_evidence_index.md)
+maps this retained probe bundle to its permanent release asset; final publication
+and merge identities are recorded by the release acceptance record.

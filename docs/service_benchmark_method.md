@@ -1,8 +1,15 @@
 # M2 service measurement method
 
-Status: tools and acceptance are in development. Formal results will be linked
-from the M2 report after their environment, complete run set and reference checks
-have been verified. M1 results retain their original platform and scope.
+The measurement tools and evidence checks passed Linux PR CI at `eb0a109`.
+Rates were [frozen from calibration](m2_rate_selection.md) before either complete
+seven-row, five-round network matrix. The corrected matrix has 30 successful
+measured runs and five overload delivery failures; all 42 warmup/measured attempts
+drained and passed Reference verification. The [M2 report](m2_report.md)
+distinguishes this matrix from the preserved earlier run with post-start schedule
+initialization. The
+[Linux synchronous core results](m2_core_measurements.md) and separate
+[service profiling](m2_profiling.md) have distinct timing/source boundaries.
+M1 results retain their original platform and scope.
 
 ## Boundaries
 
@@ -34,6 +41,14 @@ schedule. Setup is sequential and outside measurement. Each formal round restart
 the server; warmup uses a different server instance. Logical connection IDs map
 to server-assigned ClientIds and the successful admission trace is preserved.
 Different multi-client arrival orders are verified separately.
+
+The first complete `f58ff79` matrix exposed an O(N) scheduled-timestamp fill
+after measurement start, delaying initial writes and creating catch-up sends.
+The corrected `eb0a109` measurement derives scheduled times from start plus offsets
+prepared beforehand, without traversing the complete plan after starting the
+clock. It has its own complete network run and source identity; the original
+matrix remains available and the frozen rates did not change. The service binary
+was unchanged by this loadgen correction.
 
 The load generator sends on planned offsets while independently receiving frames.
 Per-connection send bytes, total in-flight requests and preallocated experiment
@@ -72,6 +87,13 @@ Lossy overload attempts can still have internally consistent evidence. Reports
 state evidence validity and run success separately. A failed attempt is never
 silently replaced or filtered out of the matrix.
 
+The corrected matrix illustrates the distinction: `evidence_valid=true` and
+`all_runs_succeeded=false`. Thirty of 35 measured runs succeeded; 34 met the
+normal sample threshold, including four failed overload attempts. A sufficient
+number of completed samples does not undo losses or prove stable service at that
+offered rate. The five overload runs are reported with their 2–4 slow-client
+closures and request outcomes, even though every server drained admitted work.
+
 ## Formal matrix and reporting
 
 Use Linux unsanitized Release. Calibrate with short runs, then freeze rates and
@@ -87,6 +109,16 @@ deadline. Nearest-rank p50/p99 are reported per round from completed samples,
 alongside request losses and send lag. A batch mean is not a request percentile.
 p99.9 is not reported without enough samples and repeat stability.
 
+The [locked formal manifest](../data/workloads/service-formal.json) selects
+10000 planned requests/s for ordinary mixed/cancellation/sweep and one-client
+mixed, 2000/s for the temporal burst, 45000/s for the near-capacity candidate,
+and 80000/s for overload. Every row has five fresh measured instances and an
+independent warmup. The near label comes from short calibration; it does not
+guarantee loss-free longer runs. Keep the frozen parameters and every failed
+attempt, report completed-only percentiles with their loss counts, and do not
+infer a sustainable rate from a short successful probe or a failed run's small
+completed subset.
+
 The current summary's rate window runs from measurement start through final
 completion/drain; target schedule rate is shown separately. Setup is excluded from
 latency samples, while process CPU/RSS includes setup and the full server lifetime
@@ -99,3 +131,7 @@ CI uses short correctness smoke without absolute latency/throughput gates.
 Formal Linux VM loopback data describes that VM and resource sharing; it is not
 bare-metal or cross-machine evidence. Long-term delivery archives include inputs,
 all raw samples, original/effective manifests, run logs and environment metadata.
+The release's `acceptance.json` is authoritative for the measured sources,
+separately verified final PR/main revisions, workflows and archive identities.
+A later documentation commit does not silently change the source identity of
+an earlier measurement.
