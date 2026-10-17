@@ -1,4 +1,4 @@
-# M2 service measurement method
+# Service measurement method
 
 The measurement tools and evidence checks passed Linux PR CI at `eb0a109`.
 Rates were [frozen from calibration](m2_rate_selection.md) before either complete
@@ -135,3 +135,78 @@ The release's `acceptance.json` is authoritative for the measured sources,
 separately verified final PR/main revisions, workflows and archive identities.
 A later documentation commit does not silently change the source identity of
 an earlier measurement.
+
+## Paired M3 comparison
+
+The [M3 plan](m3_experiment_plan.md) fixes the one-frame observed control and
+16-frame candidate, their adoption criteria and the unchanged seven-row matrix.
+Use separate clean source/build directories. The control includes the same
+send-queue extraction and bounded counters as the candidate; it is not the pure
+M2 tag. The candidate changes one compile-time frame bound, not a runtime option.
+
+From an existing repository, choose unused paths and build both revisions:
+
+```sh
+git fetch origin
+git worktree add --detach /tmp/llmatch-m3-control 7b8fcd3b074ed39ff24a3488253397e1dfb7094e
+git worktree add --detach /tmp/llmatch-m3-candidate b1ba98c205de3bd717eb0f118fb9771d1f251a25
+for comparison_source in /tmp/llmatch-m3-control /tmp/llmatch-m3-candidate; do
+  (cd "$comparison_source" && cmake --preset release && cmake --build --preset release --parallel 2)
+done
+python3 /tmp/llmatch-m3-candidate/scripts/run_service_pair.py \
+  --baseline-source /tmp/llmatch-m3-control \
+  --baseline-server /tmp/llmatch-m3-control/build/release/matching_server \
+  --candidate-source /tmp/llmatch-m3-candidate \
+  --candidate-server /tmp/llmatch-m3-candidate/build/release/matching_server \
+  --loadgen /tmp/llmatch-m3-candidate/build/release/loadgen \
+  --verifier /tmp/llmatch-m3-candidate/build/release/verify_service \
+  --manifest /tmp/llmatch-m3-candidate/data/workloads/service-formal.json \
+  --output-dir /tmp/llmatch-m3-formal-new
+python3 /tmp/llmatch-m3-candidate/scripts/summarize_service_pair.py /tmp/llmatch-m3-formal-new
+```
+
+Formal mode requires Linux and unsanitized Release. Supply `--host-environment`
+with actual host metadata when running inside a VM. Each scene starts with
+separate A/B warmups, then five pairs: AB on odd rounds and BA on even rounds.
+All 70 measured attempts and 14 warmups remain in two complete variant manifests.
+The original service summary checks each side before the pair checker binds
+input hashes, source/build records, shared tools and actual execution order.
+There is no formal `--row` or `--rounds` shortcut. For a short functional check,
+use `service-smoke.json` and explicit short overrides, and label that result as
+smoke rather than a replacement for the full comparison.
+
+For the recorded T07 representative reproduction, unpack `m3-validation.tar.gz`
+from the release and use its retained wrapper and `representative-45k.json`.
+After building the two worktrees above, run from the archive's extraction root:
+
+```sh
+bash validation/clean-repro/run_representative_pair.sh \
+  /tmp/llmatch-m3-control /tmp/llmatch-m3-candidate /tmp/llmatch-m3-control \
+  /absolute/path/to/current-host-environment.json /tmp/llmatch-m3-short-new
+```
+
+Supply a JSON file describing the actual host/VM and controls, not the archived
+host's identity. This uses the freshly built control's shared loadgen/verifier,
+three pairs of 100,000 requests at 45,000/s and separate 1,000-command warmups.
+The approximately 2.222-second windows are smoke, below the formal duration
+requirement. The wrapper retains the invocation and both exit statuses; its
+independent summary is not a substitute for the full adoption matrix.
+
+The runner exits nonzero when a client-delivery run fails, while the independent
+summary can still validate its evidence. Inspect `summarizer_exit`,
+`evidence_valid`, `all_runs_succeeded` and the individual outcomes before deciding
+whether the tool failed. Failed pairs retain both absolute results; they do not
+produce latency/rate/CPU benefit deltas from a completed subset.
+
+New loadgen `resource_usage` records user/system CPU and peak RSS for process
+lifetime through the capture point, including input preparation and setup,
+before CSV/JSON output. Server resources retain their own lifetime scope.
+Dividing lifetime CPU by measured completions is an amortized cost, not CPU
+spent only inside each request. Older M2 runs have no client resource snapshot;
+their summary explicitly reports null rather than manufacturing a zero.
+
+Server write observations count composed asynchronous operations and submitted
+frames/bytes, with fixed histograms and the compiled batch limits. They are not
+system-call counts. Error or after-close callback bytes and complete-frame
+prefixes remain separate from conservative written/discarded totals; none alone
+establish peer receipt. Actual syscall profiling stays outside formal timing.

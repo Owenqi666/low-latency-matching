@@ -1,8 +1,9 @@
 # M3 experiment plan
 
-Status: E1 selected after two new baseline diagnostics on 2026-10-17. Candidate
-parameters and the decision rule below are frozen before implementing batching.
-This is an experiment hypothesis, not an adoption or speedup claim.
+Status: this plan was frozen before implementing batching on 2026-10-17.
+The completed matrix rejects the candidate under the unchanged rule; see the
+[report](m3_report.md) and [ADR](adr/005-bounded-send-batching.md). Parameters,
+hypotheses and decision criteria below retain their pre-experiment meaning.
 
 ## Baseline and scope
 
@@ -69,6 +70,12 @@ binary. Then change only the compile-time selected frame bound from 1 to 16.
 Both sides retain the same descriptor-array storage and accounting code, and
 the original M2 tag and exact diff remain reproducible. The extraction permits
 deterministic asynchronous write/cancel tests without a second transport backend.
+
+The frozen control is `7b8fcd3b074ed39ff24a3488253397e1dfb7094e`; candidate
+`b1ba98c205de3bd717eb0f118fb9771d1f251a25` changes only the frame limit from
+1 to 16 in `src/send_queue.hpp`. Shared loadgen resource collection, observation
+fields, tests and tools are already in the control. Both passed the 103-test
+local Debug suite; Linux and formal evidence are recorded separately.
 
 The primary adoption metric is server lifetime CPU seconds per client-completed
 request in the four-client 45,000/s scene, using only fully delivered paired

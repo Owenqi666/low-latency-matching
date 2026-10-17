@@ -11,7 +11,7 @@ namespace llmatch::detail {
 
 // The observation baseline remains one frame per application write. A later
 // candidate changes only batch_max_frames; it is not a runtime service mode.
-inline constexpr std::size_t batch_max_frames = 16;
+inline constexpr std::size_t batch_max_frames = 1;
 inline constexpr std::size_t batch_descriptor_capacity = 16;
 inline constexpr std::size_t batch_max_bytes = 4096;
 static_assert(batch_max_frames > 0 && batch_max_frames <= batch_descriptor_capacity);
