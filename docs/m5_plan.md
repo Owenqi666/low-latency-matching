@@ -99,10 +99,14 @@ one local final check close delivery without recursive self-certification.
 | --- | --- | --- |
 | T00 | Baseline verified | Current local/remote main equal accepted M4; original documents and storage retained; local start receipt under build/m5-baseline |
 | T01 | Scope frozen | Message contract in itch_scope.md; bounded real capture has 1,000 AAPL updates; synthetic parameters fixed above |
-| T02 | Implemented; local checks passed | Independent C++ module/CLI, golden bytes and 14 C++ lifecycle tests; Linux CI pending |
-| T03 | Local checks passed; remote pending | Independent raw-byte Python model; 120,000 target updates and 12 full checkpoints passed; local Release discovery/JUnit 124/124; four Linux configurations pending |
+| T02 | Implemented and verified | Independent C++ module/CLI, golden bytes and 14 C++ lifecycle tests; candidate Linux CI passed |
+| T03 | Local and candidate remote checks passed | Independent raw-byte Python model; early 120,000-target-update run and three final-source 800,000-target-update streams passed; local Release 124/124; downloaded candidate CI checked at 120/124/120/120 |
 | T04 | Local semantic checks passed | Continuous real prefix: 1,042,864 messages, 1,000 target updates, 39 final orders/33 levels; four full checkpoints plus final state match; injected overdraw rejected by both implementations |
-| T05 | Pending | Correctness-gated finite Linux matrix |
-| T06 | Pending | Fresh public-source reproduction and report |
-| T07 | Pending | Latest PR, normal merge and exact-main checks |
-| T08 | Pending | Durable archives and verified Release |
+| T05 | Complete | Three million-message inputs; 30 measured intervals, six warmups, independent summary and one real-prefix resource observation |
+| T06 | Reproduction passed; report delivered with this source | New public checkout, new pinned dependencies/build at 7cea5df; all 124 Release tests, two actual CLI clients, ITCH golden/real/negative and all smoke checks passed |
+| T07 | Final gate | Latest report/helper commit must pass PR checks, downloaded-artifact inspection, normal merge and exact-main checks; release acceptance.json records final identities |
+| T08 | Publication gate | Frozen public archives, verified downloads and publication receipt required; release publication-verification.json and the local final check close this gate |
+
+The [acceptance record](m5_acceptance.md) and [evidence index](m5_evidence_index.md)
+separate completed technical work from final delivery. Do not repeat the formal
+matrix or fresh reproduction merely because this table was previously stale.

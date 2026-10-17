@@ -40,10 +40,14 @@ the [report](docs/m4_report.md). See the [evidence index](docs/m4_evidence_index
 Final CI, archive and publication identities are bound by the
 `m4-order-storage` release receipts.
 
-M5 is in progress: an independent offline ITCH 5.0 decoder and single-security
-visible-order-book reconstructor. See the [supported scope and CLI](docs/itch_scope.md)
-and [implementation/acceptance plan](docs/m5_plan.md). Historical feed events are
-applied directly and do not pass through the matching engine.
+M5 adds an independent offline ITCH 5.0 decoder and single-security visible-book
+reconstructor. Golden bytes, an independent raw-byte Python model, three synthetic
+million-message streams and a bounded AAPL historical prefix validate its scope.
+See the [supported messages and CLI](docs/itch_scope.md), [report](docs/m5_report.md),
+[fresh Linux reproduction](docs/m5_reproduction.md), [acceptance record](docs/m5_acceptance.md)
+and [evidence index](docs/m5_evidence_index.md). Historical feed events are applied
+directly and do not pass through the matching engine. Final CI and publication
+identities are recorded in the `m5-itch-reconstruction` release receipts.
 
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
