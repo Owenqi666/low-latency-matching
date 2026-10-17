@@ -61,3 +61,23 @@ transferred to a new SHA.
 Original planning documents remain local. Ordinary implementation decisions do
 not expand the scope into persistence, custom queues, allocation optimizations
 or additional network backends.
+
+## M3 selective performance experiment
+
+M3 execution started on 2026-10-17 from published `m2-service`,
+`db9b74f4181a2dc4a50966c20080949c839bf73f`, on `feat/m3-experiments`.
+The [experiment plan](m3_experiment_plan.md) separates the baseline, diagnosis,
+candidate selection and final acceptance. Historical M2 measurements remain
+historical evidence, not the new comparison control.
+
+| Task | State | Evidence / next step |
+|---|---|---|
+| M3-T00 | Baseline verified | Local main, fetched origin/main and m2-service agree; published release and five asset hashes checked; existing local task-book ignore preserved |
+| M3-T01 | In progress | Targeted corrected-loadgen Linux diagnosis; freeze hypothesis and adoption criteria before implementation |
+| M3-T02 | Not started | Candidate requires T01 decision |
+| M3-T03 | Tooling in progress | Reuse per-run execution and independent summaries for paired manifests; candidate tests follow implementation |
+| M3-T04 | Not started | Seven scenes, five pairs each, fixed AB/BA order; no parallel measurement |
+| M3-T05 | Not started | Adopt or reject based on complete comparison |
+| M3-T06 | Conditional, not required | Only after the main experiment and new core/allocation evidence |
+| M3-T07 | Not started | Report, acceptance and clean Linux reproduction |
+| M3-T08 | Not started | Latest PR, normal merge, exact-main CI and permanent release evidence |
