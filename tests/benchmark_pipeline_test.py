@@ -52,8 +52,15 @@ def check_workload(directory, scenario):
         rows = [{key: int(value) for key, value in row.items()} for row in csv.DictReader(source)]
     rejected = [row for row in rows if row["result"] == 2]
     assert [row["index"] for row in rejected] == metadata["expected_rejection_indices"]
-    assert all(row["command_kind"] == 2 and row["reject_reason"] == 8 for row in rejected)
-    if scenario == "cancel_heavy":
+    if scenario == "near_full_reuse":
+        assert [row["index"] for row in rejected] == list(range(0, 130, 35))
+        assert all(row["command_kind"] == 0 and row["reject_reason"] == 10 for row in rejected)
+        assert min(row["live_orders"] for row in rows) == 127
+        assert max(row["live_orders"] for row in rows) == 128
+        assert kinds["C"] > 0 and kinds["M"] > 0
+        assert any(row["trade_count"] == 1 for row in rows)
+    elif scenario == "cancel_heavy":
+        assert all(row["command_kind"] == 2 and row["reject_reason"] == 8 for row in rejected)
         assert kinds["C"] >= kinds["L"] > 0 and kinds["M"] == 0
         assert 0 < len(rejected) < 13, "deliberate cancel errors must remain a separate minority"
         assert any(row["command_kind"] == 2 and row["result"] == 1 for row in rows)
@@ -73,7 +80,7 @@ def main():
     bench, clock = (Path(argument).resolve() for argument in sys.argv[1:])
     repository = Path(__file__).resolve().parents[1]
     scripts = repository / "scripts"
-    scenarios = ("mixed", "cancel_heavy", "sweep", "clustered")
+    scenarios = ("mixed", "cancel_heavy", "sweep", "clustered", "near_full_reuse")
     with tempfile.TemporaryDirectory(prefix="llmatch-benchmark-pipeline-") as temporary:
         work = Path(temporary)
         invoke([clock, "--output", work / "clock.json"])
@@ -86,7 +93,7 @@ def main():
 
         output = work / "valid"
         for scenario in scenarios:
-            manifest = repository / "data/workloads" / f"{scenario}.manifest"
+            manifest = repository / "data/workloads" / ("near-full-reuse.manifest" if scenario == "near_full_reuse" else f"{scenario}.manifest")
             invoke([sys.executable, scripts / "run_bench.py", "--binary", bench,
                     "--manifest", manifest, "--commands", 130, "--capacity", 128,
                     "--repeats", 1, "--output-dir", output])
@@ -98,8 +105,22 @@ def main():
             for filename in ("config.txt", "setup.trace", "input.trace", "workload.json"):
                 assert (directory / filename).read_bytes() == (regenerated / filename).read_bytes(), (scenario, filename)
 
+        # The reuse generator is byte-identical with Python assertions disabled,
+        # and a prefix ending immediately after a fill reports the vacant slot.
+        reuse_manifest = repository / "data/workloads/near-full-reuse.manifest"
+        invoke([sys.executable, "-O", scripts / "create_bench_workloads.py", "--manifest", reuse_manifest,
+                "--commands", 130, "--capacity", 128, "--output-dir", work / "optimized-python"])
+        for filename in ("config.txt", "setup.trace", "input.trace", "workload.json"):
+            assert (output / "near_full_reuse/capacity_128" / filename).read_bytes() == (work / "optimized-python/near_full_reuse/capacity_128" / filename).read_bytes()
+        prefix = work / "partial-reuse-cycle"
+        invoke([sys.executable, scripts / "run_bench.py", "--binary", bench, "--manifest", reuse_manifest,
+                "--commands", 34, "--capacity", 128, "--repeats", 1, "--output-dir", prefix])
+        partial = read_json(prefix / "near_full_reuse/capacity_128/summary.json")
+        assert partial["verification"]["end_live_orders"] == 127
+        assert partial["verification"]["accepted"] == 33 and partial["verification"]["rejected"] == 1
+
         report = read_json(output / "report.json")
-        assert report["validation"] == "passed" and len(report["runs"]) == 4
+        assert report["validation"] == "passed" and len(report["runs"]) == 5
         assert report["quantile_algorithm"] == "nearest-rank"
         for run in report["runs"]:
             assert run["minimum_five_rounds_met"] is False
@@ -160,7 +181,7 @@ def main():
             assert not (damaged / "report.md").exists(), "failed revalidation retained a stale Markdown report"
             assert (damaged / "mixed" / "capacity_128" / "input.trace").is_file()
 
-    print("Benchmark pipeline: four deterministic scenarios, real Release smoke, separated outcomes and seven corrupted-evidence failures passed")
+    print("Benchmark pipeline: five deterministic scenarios, real Release smoke, separated outcomes and seven corrupted-evidence failures passed")
 
 
 if __name__ == "__main__":

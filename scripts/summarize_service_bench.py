@@ -297,11 +297,12 @@ def summarize(directory):
     expected = manifest["expectedRuns"]
     parameters = manifest["workload_parameters"]
     require(source["mode"] == parameters["mode"] == manifest["mode"], "experiment mode differs from source manifest")
+    require(manifest["mode"] in {"smoke", "calibration", "formal", "m4-formal"}, "unknown service experiment mode")
     planned = {(row["id"], number, "warmup" if number == 0 else "measurement")
                for row in parameters["rows"] for number in range(parameters["rounds"] + 1)}
     require(len(planned) == len(expected) and planned == {(row["row"], row["round"], row["kind"]) for row in expected},
             "expectedRuns omits or duplicates a configured row/round")
-    if manifest["mode"] == "formal":
+    if manifest["mode"] in {"formal", "m4-formal"}:
         require(all(parameters[key] == value for key, value in source.items() if key != "rows"), "formal global parameters differ from locked source")
         require(len(parameters["rows"]) == len(source["rows"]), "formal rows differ from locked source")
         for index, (fixed, original) in enumerate(zip(parameters["rows"], source["rows"])):
@@ -311,8 +312,24 @@ def summarize(directory):
             require(fixed == derived, "formal row differs from locked source")
         require(parameters["rates_locked"] and parameters["rounds"] >= 5 and parameters["commands"] >= 100000 and
                 parameters["minimum_plan_seconds"] >= 10, "formal parameters are incomplete")
-        require({row["id"] for row in parameters["rows"]} == {"mixed_4", "cancel_heavy_4", "sweep_4", "burst_4", "mixed_1", "mixed_4_near", "mixed_4_overload"},
-                "formal matrix is incomplete")
+        if manifest["mode"] == "formal":
+            require({row["id"] for row in parameters["rows"]} == {"mixed_4", "cancel_heavy_4", "sweep_4", "burst_4", "mixed_1", "mixed_4_near", "mixed_4_overload"},
+                    "formal matrix is incomplete")
+        else:
+            fixed = {"capacity": 1000, "background_depth": 500, "working_depth": 64, "commands": 100000,
+                     "rounds": 5, "minimum_plan_seconds": 10, "warmup_commands": 1000, "seed": 20261016}
+            limits = {"max_connections": 64, "max_inflight": 16384, "max_send_bytes": 65536, "drain_ms": 5000,
+                      "command_capacity": 1024, "event_capacity": 1024, "send_limit": 65536, "shutdown_ms": 5000,
+                      "startup_seconds": 15, "setup_budget_seconds": 60, "timeout_slack_seconds": 10}
+            require(all(parameters[key] == value for key, value in fixed.items()) and parameters["limits"] == limits,
+                    "m4-formal parameters differ from the fixed M4 contract")
+            require([(row["id"], row["scenario"], row["connections"], row["target_rate_per_sec"]) for row in parameters["rows"]] ==
+                    [("mixed_1", "mixed", 1, 10000), ("mixed_4", "mixed", 4, 10000),
+                     ("sweep_4", "sweep", 4, 10000), ("burst_4", "burst", 4, 2000)],
+                    "m4-formal requires exactly the four fixed M4 rows and rates")
+            burst = parameters["rows"][-1]
+            require((burst["burst_period_ns"], burst["burst_window_ns"]) == (100000000, 10000000),
+                    "m4-formal burst requires a 100 ms period and 10 ms window")
         require(manifest["environment"]["os"].lower().startswith("linux") and
                 all(manifest["binaries"][key]["build_type"] == "Release" and not manifest["binaries"][key]["sanitized"] for key in ("server", "loadgen")),
                 "formal evidence is not from Linux unsanitized Release")
@@ -322,8 +339,10 @@ def summarize(directory):
     present = {path.parent.resolve() for path in (directory / "runs").rglob("run.json")}
     require(present == declared, f"missing or orphaned run directories: missing={declared - present}, extra={present - declared}")
     results = [validate_run(local_file(directory, item["directory"]), item, parameters) for item in expected]
+    sample_targets_met = all(row["normal_sample_target_met"] for row in results if row["kind"] == "measurement")
     report = {"schema_version": 1, "evidence_valid": True, "mode": manifest["mode"],
               "all_runs_succeeded": all(row["succeeded"] for row in results), "environment": manifest["environment"],
+              "all_measured_sample_targets_met": sample_targets_met,
               "quantile_method": "nearest-rank, per run; completed samples only; no fixed clock-cost subtraction",
               "notes": "Service samples exclude setup. Failed drains have no successful service latency conclusion. "
                        "Per-command FNV digests cover requester business events; small full-event/routing tests provide separate coverage. "
@@ -332,7 +351,7 @@ def summarize(directory):
                        "null means an older loadgen did not record them.",
               "runs": results}
     (directory / "report.json").write_text(json.dumps(report, indent=2) + "\n")
-    lines = ["# M2 service measurements", "", f"Mode: {manifest['mode']}. All declared attempts are included.", "",
+    lines = ["# Service measurements", "", f"Mode: {manifest['mode']}. All declared attempts are included.", "",
              "Nearest-rank p50/p99 in ns, one row per measured attempt. RTT includes only completed requests; losses remain visible.", "",
              "| Run | Complete / planned | Loss % | RTT p50 | RTT p99 | Service p99 | Send lag p99 | Complete/s | Status |",
              "|---|---:|---:|---:|---:|---:|---:|---:|---|"]

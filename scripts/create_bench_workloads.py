@@ -3,11 +3,11 @@
 import argparse
 import hashlib
 import json
-from collections import Counter
+from collections import Counter, deque
 from pathlib import Path
 
 GENERATOR_VERSION = "m1-workloads-v1"
-SCENARIOS = {"mixed", "cancel_heavy", "sweep", "clustered"}
+SCENARIOS = {"mixed", "cancel_heavy", "sweep", "clustered", "near_full_reuse"}
 MASK64 = (1 << 64) - 1
 
 
@@ -40,7 +40,9 @@ def load_manifest(path, commands=None, capacities=None):
         raise ValueError("capacities must contain integers >= 4")
     if len(set(spec["capacities"])) != len(spec["capacities"]):
         raise ValueError("duplicate capacities")
-    if any(spec["working_depth"] > c - c // 2 for c in spec["capacities"]):
+    if spec["scenario"] == "near_full_reuse" and spec["working_depth"] != 16:
+        raise ValueError("near_full_reuse uses exactly 16 cancel/reinsert pairs per cycle")
+    if spec["scenario"] != "near_full_reuse" and any(spec["working_depth"] > c - c // 2 for c in spec["capacities"]):
         raise ValueError("working_depth exceeds capacity remaining after setup")
     if spec["scenario"] == "clustered" and spec["working_depth"] < 2:
         raise ValueError("clustered needs at least two working orders to sweep half")
@@ -79,6 +81,8 @@ def generate(spec, capacity, directory):
              (("config", "config.txt"), ("setup", "setup.trace"), ("input", "input.trace"))}
     if any(path.exists() for path in paths.values()):
         raise ValueError(f"refusing to replace existing workload files in {directory}")
+    if spec["scenario"] == "near_full_reuse":
+        return generate_near_full_reuse(spec, capacity, paths, directory)
     seq = Sequence(spec["seed"])
     scenario, depth = spec["scenario"], spec["working_depth"]
     initial = capacity // 2
@@ -166,6 +170,84 @@ def generate(spec, capacity, directory):
             "sweep": "Buy markets sweep a working ask ladder. Each cycle has working_depth adds and one sweep; whole-stream throughput is not sweep-only throughput.",
             "clustered": "Insert an ask ladder, buy-market half its orders, then cancel the remainder. These are synchronous phases, not network bursts.",
         }[scenario],
+        "files": {name: {"path": path.name, **file_hashes(path)} for name, path in paths.items()},
+    }
+    write_json(directory / "workload.json", metadata)
+    return metadata
+
+
+def generate_near_full_reuse(spec, capacity, paths, directory):
+    """35-command cycles; only one deliberate full-book rejection per cycle."""
+    seq = Sequence(spec["seed"])
+    prices = {order: 8000 + ((order - 1) % 16) * 64 for order in range(1, capacity + 1)}
+    owners = {order: 1 for order in prices}
+    levels = {price: deque() for price in prices.values()}
+    setup = []
+    for order, price in prices.items():
+        seq.new_id()
+        setup.append(seq.command("L", 1, order, 0, price, 10))
+        levels[price].append(order)
+    lines, errors = [], []
+    kinds = Counter()
+    live = capacity
+    minimum = capacity
+    count = 0
+
+    def emit(line, delta=0, rejected=False):
+        nonlocal count, live, minimum
+        if count == spec["commands"]:
+            return False
+        if rejected:
+            lines.append("# expected_rejection CapacityExceeded; one full-book rejection per 35-command cycle")
+            errors.append(count)
+        lines.append(line)
+        kinds[line[0]] += 1
+        live += delta
+        minimum = min(minimum, live)
+        count += 1
+        return True
+
+    while count < spec["commands"]:
+        emit(seq.command("L", 1, seq.new_id(), 0, 8000, 10), rejected=True)
+        for _ in range(16):
+            order = 1 + seq.random(capacity)
+            if not emit(seq.command("C", owners[order], order), -1):
+                break
+            levels[prices[order]].remove(order)
+            owners[order] = 3 - owners[order]
+            if not emit(seq.command("L", owners[order], order, 0, prices[order], 10), 1):
+                break
+            levels[prices[order]].append(order)
+        if count == spec["commands"]:
+            break
+        # All resting orders are bids; sell 10 consumes exactly the oldest order
+        # at the best bid. Market/rejected IDs are fresh and always exceed C.
+        order = levels[max(levels)].popleft()
+        emit(seq.command("M", 3, seq.new_id(), 1, 10), -1)
+        owners[order] = 3 - owners[order]
+        if emit(seq.command("L", owners[order], order, 0, prices[order], 10), 1):
+            levels[prices[order]].append(order)
+
+    paths["config"].write_text(f"LLMATCH_CONFIG 1\n{capacity} 20000 1000000\n", encoding="utf-8")
+    paths["setup"].write_text("LLMATCH_TRACE 1\n" + "\n".join(setup) + "\n", encoding="utf-8")
+    paths["input"].write_text("LLMATCH_TRACE 1\n" + "\n".join(lines) + "\n", encoding="utf-8")
+    metadata = {
+        "schema_version": 1, "generator_version": GENERATOR_VERSION,
+        "scenario": "near_full_reuse", "seed": spec["seed"], "capacity": capacity,
+        "commands": count, "working_depth": spec["working_depth"], "initial_live_orders": capacity,
+        "passive_background_orders": 0, "initial_working_orders": capacity,
+        "planned_end_live_orders": live, "planned_min_live_orders": minimum,
+        "planned_max_live_orders": capacity, "command_counts": dict(kinds),
+        "expected_accepted": count - len(errors), "expected_rejected": len(errors),
+        "expected_rejection_indices": errors, "expected_rejection_reason": 10,
+        "price_range": [1, 20000], "background_bid_prices": None, "background_ask_prices": None,
+        "notes": "Synchronous core commands; setup fills C orders. Active depth is C-1..C. "
+                 "Trace stops after exactly commands, including a possible partial final cycle. "
+                 "All successful reinsertions reuse a terminated OrderId and alternate its owner 1/2.",
+        "pattern": "35-command cycle: one CapacityExceeded limit; 16 seeded cancel/reinsert pairs; "
+                   "one sell-market/reinsert pair. Every order has quantity 10 and fixed bid price "
+                   "8000 + ((OrderId-1) % 16) * 64. Market/rejected IDs increase from C+1. "
+                   "Market quantity 10 consumes the FIFO head at the best bid; client 3 submits markets.",
         "files": {name: {"path": path.name, **file_hashes(path)} for name, path in paths.items()},
     }
     write_json(directory / "workload.json", metadata)

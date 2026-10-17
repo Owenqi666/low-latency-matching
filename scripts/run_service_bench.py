@@ -256,7 +256,7 @@ def main():
     args = parser.parse_args()
     spec = load_manifest(args.manifest, args.row, args.commands, args.rounds, args.rate)
     binaries = {name: binary_record(getattr(args, name)) for name in ("server", "loadgen", "verifier")}
-    if spec["mode"] == "formal":
+    if spec["mode"] in {"formal", "m4-formal"}:
         if not sys.platform.startswith("linux") or any(binaries[name]["build_type"] != "Release" or binaries[name]["sanitized"] for name in ("server", "loadgen")):
             raise ValueError("formal measurements require Linux and unsanitized Release server/loadgen builds")
     root = args.output_dir.resolve()

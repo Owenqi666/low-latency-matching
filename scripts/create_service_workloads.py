@@ -30,9 +30,9 @@ def load_manifest(path, rows=None, commands=None, rounds=None, rate=None):
     spec = json.loads(Path(path).read_text(encoding="utf-8"))
     if spec.get("schema_version") != 1 or spec.get("generator_version") != GENERATOR_VERSION:
         raise ValueError("unsupported service manifest/generator version")
-    if spec.get("mode") not in {"smoke", "calibration", "formal"}:
-        raise ValueError("mode must be smoke, calibration, or formal")
-    if spec["mode"] == "formal":
+    if spec.get("mode") not in {"smoke", "calibration", "formal", "m4-formal"}:
+        raise ValueError("mode must be smoke, calibration, formal, or m4-formal")
+    if spec["mode"] in {"formal", "m4-formal"}:
         if any(value is not None for value in (rows, commands, rounds, rate)):
             raise ValueError("formal parameters must be fixed in the manifest, without CLI overrides")
         if not spec.get("rates_locked"):
@@ -102,6 +102,21 @@ def load_manifest(path, rows=None, commands=None, rounds=None, rate=None):
                     "burst_4": ("burst", 4), "mixed_1": ("mixed", 1), "mixed_4_near": ("mixed", 4), "mixed_4_overload": ("mixed", 4)}
         if any(name not in by_id or (by_id[name]["scenario"], by_id[name]["connections"]) != shape for name, shape in required.items()):
             raise ValueError("formal manifest is missing a required matrix row")
+    if spec["mode"] == "m4-formal":
+        expected = [("mixed_1", "mixed", 1, 10000), ("mixed_4", "mixed", 4, 10000),
+                    ("sweep_4", "sweep", 4, 10000), ("burst_4", "burst", 4, 2000)]
+        if [(row["id"], row["scenario"], row["connections"], row["target_rate_per_sec"]) for row in selected] != expected:
+            raise ValueError("m4-formal requires exactly the four fixed M4 rows and rates")
+        fixed = {"capacity": 1000, "background_depth": 500, "working_depth": 64, "commands": 100000,
+                 "rounds": 5, "minimum_plan_seconds": 10, "warmup_commands": 1000, "seed": 20261016}
+        limits = {"max_connections": 64, "max_inflight": 16384, "max_send_bytes": 65536, "drain_ms": 5000,
+                  "command_capacity": 1024, "event_capacity": 1024, "send_limit": 65536, "shutdown_ms": 5000,
+                  "startup_seconds": 15, "setup_budget_seconds": 60, "timeout_slack_seconds": 10}
+        if any(spec[key] != value for key, value in fixed.items()) or spec["limits"] != limits:
+            raise ValueError("m4-formal parameters differ from the fixed M4 contract")
+        burst = by_id["burst_4"]
+        if (burst["burst_period_ns"], burst["burst_window_ns"]) != (100000000, 10000000):
+            raise ValueError("m4-formal burst requires a 100 ms period and 10 ms window")
     spec["rows"] = selected
     return spec
 

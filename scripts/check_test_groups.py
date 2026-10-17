@@ -24,14 +24,14 @@ CORE_PREFIXES = (
 
 def in_group(test, group):
     name = test["name"]
-    if group in ("protocol", "concurrency", "service"):
+    if group in ("protocol", "concurrency", "service", "benchmark"):
         properties = {item["name"]: item["value"] for item in test.get("properties", [])}
-        return group in properties.get("LABELS", [])
+        return group in properties.get("LABELS", []) or (group == "benchmark" and name == "benchmark_pipeline")
     if group == "core":
         return name.startswith(CORE_PREFIXES)
     if group == "pausable":
         return name.startswith("PausableEngineTest.")
-    return name == {"client": "client_cli", "loadgen": "loadgen_contract", "benchmark": "benchmark_pipeline"}[group]
+    return name == {"client": "client_cli", "loadgen": "loadgen_contract"}[group]
 
 
 def check(discovery, junit, required):

@@ -102,8 +102,9 @@ def validate_run(directory):
             expected_counts["rejected"] == workload["expected_rejected"], "generated workload outcomes differ")
     require([row["index"] for row in reference_rows if row["result"] == 2] == workload["expected_rejection_indices"],
             "unexpected rejection positions")
-    require(all(row["reject_reason"] == 8 for row in reference_rows if row["result"] == 2),
-            "deliberate unknown-order cancellations returned a different rejection")
+    expected_reason = 10 if workload["scenario"] == "near_full_reuse" else 8
+    require(all(row["reject_reason"] == expected_reason for row in reference_rows if row["result"] == 2),
+            "deliberate rejections returned a different reason")
     for key in COUNT_FIELDS:
         require(verification[key] == expected_counts[key], f"verification {key} mismatch")
     require(verification["setup_live_orders"] == workload["initial_live_orders"], "setup depth mismatch")

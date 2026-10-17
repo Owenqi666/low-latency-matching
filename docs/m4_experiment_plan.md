@@ -1,9 +1,9 @@
 # M4 order-storage experiment plan
 
 Status: scope, workload design and adoption rules recorded before candidate
-implementation or formal measurement. Short baseline allocation diagnosis and
-common measurement-tool validation are in progress. Actual frozen A/B commits
-will be recorded after those shared changes are complete.
+implementation or formal measurement. The short baseline [allocation diagnosis](m4_diagnostics.md)
+is complete; common measurement-tool validation is in progress. Actual frozen
+A/B commits will be recorded after those shared changes are complete.
 
 ## Baseline and question
 
