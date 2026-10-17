@@ -210,3 +210,37 @@ frames/bytes, with fixed histograms and the compiled batch limits. They are not
 system-call counts. Error or after-close callback bytes and complete-frame
 prefixes remain separate from conservative written/discarded totals; none alone
 establish peer receipt. Actual syscall profiling stays outside formal timing.
+## M4 service regression subset
+
+Use the two frozen Linux builds described in the
+[core M4 reproduction](benchmark_method.md#paired-m4-order-storage-comparison).
+After builds and tests finish, run the service matrix separately from core
+timing and all other build/test/profiler activity:
+
+```sh
+cd /tmp/llmatch-m4-candidate
+python3 scripts/run_service_pair.py \
+  --baseline-server /tmp/llmatch-m4-control/build/release/matching_server \
+  --baseline-source /tmp/llmatch-m4-control \
+  --candidate-server /tmp/llmatch-m4-candidate/build/release/matching_server \
+  --candidate-source /tmp/llmatch-m4-candidate \
+  --loadgen /tmp/llmatch-m4-candidate/build/release/loadgen \
+  --verifier /tmp/llmatch-m4-candidate/build/release/verify_service \
+  --manifest data/workloads/m4-service-formal.json --output-dir /tmp/m4-service-pair
+python3 /tmp/m4-service-pair/measurement-tools/summarize_service_pair.py /tmp/m4-service-pair
+```
+
+An actual host record can be supplied with `--host-environment FILE`. The
+same loadgen/verifier binaries serve both variants. The four-row `m4-formal`
+manifest fixes mixed_1, mixed_4 and sweep_4 at 10k requests/s and burst_4 at
+2k/s average. It requires five alternating pairs per row, 40 measurements
+and eight separate warmups, all in new server processes. Formal windows and
+sample requirements are independently checked. This is the M4 regression
+subset, not the old seven-row formal capacity matrix. CI still uses the
+existing seven-row network smoke.
+
+Retain every attempt and check actual-admission Reference replay, internal
+drain, client delivery and sample sufficiency separately. Do not change rates
+or buffers to turn a failed attempt green. The [report](m4_report.md) separates
+RTT, service completion, send lag, lifetime CPU/RSS and the core adoption
+criterion; these loads do not establish a new service capacity limit.

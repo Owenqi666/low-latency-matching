@@ -2,10 +2,9 @@
 
 #include "llmatch/snapshot.hpp"
 
-#include <limits>
+#include <list>
 #include <map>
 #include <unordered_map>
-#include <vector>
 
 namespace llmatch {
 
@@ -19,8 +18,8 @@ struct TopOfBook {
     bool operator==(const TopOfBook&) const = default;
 };
 
-// Owns price levels, fixed FIFO slots and their index. Business admission belongs
-// to MatchingEngine. Mutators receive validated orders within the fixed capacity.
+// Owns price levels, FIFO nodes and their index. Business admission belongs to
+// MatchingEngine. Orders supplied to its mutators have already been validated.
 class OrderBook {
 public:
     explicit OrderBook(std::size_t capacity);
@@ -41,34 +40,24 @@ public:
     void check_invariants() const;
 
 private:
-    using SlotIndex = std::size_t;
-    static constexpr SlotIndex no_slot = std::numeric_limits<SlotIndex>::max();
-    struct Slot {
-        Order order{};
-        SlotIndex previous{no_slot};
-        SlotIndex next{no_slot}; // Next FIFO slot when active; next free slot otherwise.
-    };
     struct PriceLevel {
         Quantity total_qty{};
-        SlotIndex head{no_slot};
-        SlotIndex tail{no_slot};
+        std::list<Order> fifo;
     };
     using Levels = std::map<Price, PriceLevel>;
     struct Locator {
         Side side;
         Levels::iterator level;
-        SlotIndex order;
+        std::list<Order>::iterator order;
     };
     using Index = std::unordered_map<OrderId, Locator>;
 
-    // Removes a slot whose quantity has already been deducted from its level.
+    // Removes a node whose quantity has already been deducted from its level.
     void erase_node(Index::iterator entry);
 
     Levels bids_;
     Levels asks_;
     Index by_id_;
-    std::vector<Slot> slots_;
-    SlotIndex free_head_;
 };
 
 }

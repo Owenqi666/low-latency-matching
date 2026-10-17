@@ -2,8 +2,14 @@
 
 Status: scope, workload design and adoption rules recorded before candidate
 implementation or formal measurement. The short baseline [allocation diagnosis](m4_diagnostics.md)
-is complete; common measurement-tool validation is in progress. Actual frozen
-A/B commits will be recorded after those shared changes are complete.
+is complete. The common list control is `97fdc6ee165201b0ab9b3997879f5296fb508d9f`;
+the slot candidate is `4cf669ff2e932c6f27adeca0a9e143ffd03430b1`. Both passed
+local Debug/Release validation. Their only differences are the two OrderBook
+files. Candidate remote CI, both Linux Release suites, the formal core matrix
+and separate resource diagnostics are verified. All 40 service measurements
+and eight warmups pass delivery/drain/Reference and independent revalidation.
+The candidate is rejected because cancel_heavy misses its frozen +5% core
+threshold. The scope and adoption rules below remain unchanged.
 
 ## Baseline and question
 
