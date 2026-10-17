@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "mode": "formal",
+  "capacity": 1000,
+  "commands": 100000,
+  "rounds": 5,
+  "workloads": ["mixed.manifest", "cancel_heavy.manifest", "sweep.manifest", "clustered.manifest", "near-full-reuse.manifest"]
+}

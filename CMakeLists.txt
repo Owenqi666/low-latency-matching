@@ -54,6 +54,11 @@ add_executable(bench_core bench/core_bench.cpp)
 target_link_libraries(bench_core PRIVATE llmatch_core llmatch_reference llmatch_trace llmatch_options)
 add_executable(clock_probe bench/clock_probe.cpp)
 target_link_libraries(clock_probe PRIVATE llmatch_options)
+if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT LLMATCH_SANITIZERS AND NOT LLMATCH_TSAN)
+  # Allocation interception is confined to this separate diagnostic executable.
+  add_executable(storage_probe bench/storage_probe.cpp)
+  target_link_libraries(storage_probe PRIVATE llmatch_core llmatch_reference llmatch_trace llmatch_options)
+endif()
 add_executable(matching_server apps/server_main.cpp)
 target_link_libraries(matching_server PRIVATE llmatch_server llmatch_trace llmatch_options)
 add_executable(matching_client apps/client_main.cpp)
@@ -118,6 +123,12 @@ if(BUILD_TESTING)
     $<TARGET_FILE:replay> $<TARGET_FILE:shrink_failure> $<TARGET_FILE:generate_workload>
     ${PROJECT_SOURCE_DIR}/data/fixtures)
   if(CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT LLMATCH_SANITIZERS AND NOT LLMATCH_TSAN)
+    add_test(NAME storage_probe COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/storage_probe_test.py $<TARGET_FILE:storage_probe>)
+    set_tests_properties(storage_probe PROPERTIES LABELS "benchmark" TIMEOUT 30)
+    add_test(NAME core_pair COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/core_pair_test.py $<TARGET_FILE:bench_core>)
+    set_tests_properties(core_pair PROPERTIES LABELS "benchmark" TIMEOUT 120)
     add_test(NAME benchmark_pipeline COMMAND ${Python3_EXECUTABLE}
       ${PROJECT_SOURCE_DIR}/tests/benchmark_pipeline_test.py
       $<TARGET_FILE:bench_core> $<TARGET_FILE:clock_probe>)

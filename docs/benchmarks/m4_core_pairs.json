@@ -1,0 +1,4876 @@
+{
+  "core_numeric_rules_met": false,
+  "decision_scope": "Core numerical rules only. Adoption also requires service delivery/tails, correctness, startup, memory and complexity assessment.",
+  "formal_matrix_complete": true,
+  "mode": "formal",
+  "pair_count": 25,
+  "scenarios": [
+    {
+      "core_adoption_numeric_rule_met": true,
+      "improved_pairs": 5,
+      "pairs": [
+        {
+          "pair": 1,
+          "throughput_relative_change": 0.05424740534903627,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12277579,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12285,
+                "elapsed_ns": 4717744,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 35008512,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 12841347.082991699,
+                "batch_elapsed_ns": 7787345,
+                "completed": 100000,
+                "completed_per_second": 12841347.082991699,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7789,
+                "elapsed_ns": 7787345,
+                "events": 300000,
+                "max_rss_bytes": 35008512,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4280534.636644453
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 11870497,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11881,
+                "elapsed_ns": 4312582,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89276416,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 13537956.843430415,
+                "batch_elapsed_ns": 7386639,
+                "completed": 100000,
+                "completed_per_second": 13537956.843430415,
+                "cpu_system_us": 3,
+                "cpu_user_us": 7384,
+                "elapsed_ns": 7386639,
+                "events": 300000,
+                "max_rss_bytes": 89276416,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4512742.534189095
+              }
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "throughput_relative_change": 0.05241193134916333,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12262203,
+                "completed": 100000,
+                "cpu_system_us": 3,
+                "cpu_user_us": 12268,
+                "elapsed_ns": 4640321,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89419776,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 12764240.520668687,
+                "batch_elapsed_ns": 7834387,
+                "completed": 100000,
+                "completed_per_second": 12764240.520668687,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7836,
+                "elapsed_ns": 7834387,
+                "events": 300000,
+                "max_rss_bytes": 89419776,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4254831.935159701
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 11818539,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11829,
+                "elapsed_ns": 4261625,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89276416,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 13433239.018562185,
+                "batch_elapsed_ns": 7444221,
+                "completed": 100000,
+                "completed_per_second": 13433239.018562185,
+                "cpu_system_us": 4,
+                "cpu_user_us": 7442,
+                "elapsed_ns": 7444221,
+                "events": 300000,
+                "max_rss_bytes": 89276416,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4477835.8944475185
+              }
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "throughput_relative_change": 0.0206543546810507,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12554994,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12564,
+                "elapsed_ns": 4981178,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89419776,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 12637946.343829487,
+                "batch_elapsed_ns": 7912678,
+                "completed": 100000,
+                "completed_per_second": 12637946.343829487,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7915,
+                "elapsed_ns": 7912678,
+                "events": 300000,
+                "max_rss_bytes": 89419776,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4212733.034252121
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 11933788,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11941,
+                "elapsed_ns": 4416109,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89448448,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 12898974.970055029,
+                "batch_elapsed_ns": 7752554,
+                "completed": 100000,
+                "completed_per_second": 12898974.970055029,
+                "cpu_system_us": 40,
+                "cpu_user_us": 7715,
+                "elapsed_ns": 7752554,
+                "events": 300000,
+                "max_rss_bytes": 89448448,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4299744.316518144
+              }
+            }
+          }
+        },
+        {
+          "pair": 4,
+          "throughput_relative_change": 0.04417263078829592,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12492326,
+                "completed": 100000,
+                "cpu_system_us": 23,
+                "cpu_user_us": 12479,
+                "elapsed_ns": 4890742,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89530368,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 13003317.796535786,
+                "batch_elapsed_ns": 7690345,
+                "completed": 100000,
+                "completed_per_second": 13003317.796535786,
+                "cpu_system_us": 2,
+                "cpu_user_us": 7691,
+                "elapsed_ns": 7690345,
+                "events": 300000,
+                "max_rss_bytes": 89530368,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4334525.954297239
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12037662,
+                "completed": 100000,
+                "cpu_system_us": 3,
+                "cpu_user_us": 12043,
+                "elapsed_ns": 4462583,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89530368,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 13577708.55258504,
+                "batch_elapsed_ns": 7365013,
+                "completed": 100000,
+                "completed_per_second": 13577708.55258504,
+                "cpu_system_us": 16,
+                "cpu_user_us": 7350,
+                "elapsed_ns": 7365013,
+                "events": 300000,
+                "max_rss_bytes": 89530368,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4525993.368918697
+              }
+            }
+          }
+        },
+        {
+          "pair": 5,
+          "throughput_relative_change": 0.13682494067991913,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12389160,
+                "completed": 100000,
+                "cpu_system_us": 15,
+                "cpu_user_us": 12422,
+                "elapsed_ns": 4660414,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89796608,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 11731224.966299124,
+                "batch_elapsed_ns": 8524259,
+                "completed": 100000,
+                "completed_per_second": 11731224.966299124,
+                "cpu_system_us": 0,
+                "cpu_user_us": 8526,
+                "elapsed_ns": 8524259,
+                "events": 300000,
+                "max_rss_bytes": 89796608,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 3910486.5302661504
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12006953,
+                "completed": 100000,
+                "cpu_system_us": 3,
+                "cpu_user_us": 12017,
+                "elapsed_ns": 4346308,
+                "events": 300000,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 50000
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 16667
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 33333
+                  }
+                ],
+                "max_rss_bytes": 89894912,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 33334
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 13336349.126415787,
+                "batch_elapsed_ns": 7498304,
+                "completed": 100000,
+                "completed_per_second": 13336349.126415787,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7500,
+                "elapsed_ns": 7498304,
+                "events": 300000,
+                "max_rss_bytes": 89894912,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 33334,
+                "trades_per_second": 4445538.617799439
+              }
+            }
+          }
+        }
+      ],
+      "scenario": "mixed",
+      "throughput_relative_change": {
+        "max": 0.13682494067991913,
+        "median": 0.05241193134916333,
+        "min": 0.0206543546810507,
+        "values": [
+          0.05424740534903627,
+          0.05241193134916333,
+          0.0206543546810507,
+          0.04417263078829592,
+          0.13682494067991913
+        ]
+      },
+      "workload": {
+        "capacity": 1000,
+        "clock_probe": {
+          "back_to_back_p50_ns": 0,
+          "back_to_back_p99_ns": 42,
+          "clock": "std::chrono::steady_clock",
+          "clock_and_timestamp_record_batch_ns": 1481036,
+          "clock_and_timestamp_record_mean_ns": 14.8104,
+          "is_steady": true,
+          "method": "100000 back-to-back clock pairs, then a separate batch storing one clock timestamp per sample; vectors preallocated; nearest-rank quantiles; empirical resolution differs from nominal period; no constant is subtracted from benchmark samples.",
+          "minimum_positive_interval_ns": 41,
+          "nominal_period_den": 1000000000,
+          "nominal_period_num": 1,
+          "pair_and_duration_record_batch_ns": 3035197,
+          "pair_and_duration_record_mean_ns": 30.352,
+          "recorded_checksum": 1765891149962069343,
+          "samples": 100000,
+          "schema_version": 1,
+          "zero_intervals": 65139
+        },
+        "command_counts": {
+          "C": 33333,
+          "L": 50000,
+          "M": 16667
+        },
+        "commands": 100000,
+        "directory": "/home/m2/m4-measurement/core-run-1/baseline/mixed/pair_1",
+        "end_live_orders": 500,
+        "environment": {
+          "architecture": "aarch64",
+          "binary_name": "bench_core",
+          "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+          "build_flags": {
+            "CMAKE_CXX_FLAGS": "",
+            "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+            "CMAKE_EXE_LINKER_FLAGS": ""
+          },
+          "build_type": "Release",
+          "cmake": {
+            "available": true,
+            "exit_code": 0,
+            "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+          },
+          "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+          "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+          "code_dirty": false,
+          "compiler": {
+            "available": true,
+            "exit_code": 0,
+            "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+          },
+          "cpu": "aarch64",
+          "cpu_controls": {
+            "affinity": "not controlled by this runner",
+            "background_load": [
+              0.193359375,
+              0.1884765625,
+              0.083984375
+            ],
+            "exclusive_core": false,
+            "frequency": "not controlled",
+            "inherited_affinity_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "observed_governors": "unavailable",
+            "turbo": "not controlled"
+          },
+          "environment_policy": "Selected measurements only; no full environment-variable dump.",
+          "logical_cpus": 4,
+          "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+          "physical_cpu_cores": null,
+          "python": "3.12.3",
+          "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+          "sanitizers": "OFF",
+          "system_memory_bytes": 4090662912,
+          "target_compile_flags": {
+            "core_bench.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "matching_engine.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "order_book.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ]
+          },
+          "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+          "virtualization": {
+            "available": true,
+            "exit_code": 0,
+            "output": "qemu"
+          }
+        },
+        "initial_live_orders": 500,
+        "inputs": {
+          "config": {
+            "fnv1a64": "fnv1a64:60ea05670d075bca",
+            "path": "config.txt",
+            "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+          },
+          "input": {
+            "fnv1a64": "fnv1a64:993fceef57fdf4b4",
+            "path": "input.trace",
+            "sha256": "a7674517388dbb4f558acd2777763f1620cb1b7fbfd55f809557c0a77ad8d99c"
+          },
+          "setup": {
+            "fnv1a64": "fnv1a64:83dea5a018515ffd",
+            "path": "setup.trace",
+            "sha256": "96d73cc0d1e45c9b3061faa0460fd7e7f32fb2c059d6d576e23ab3db427e9d41"
+          }
+        },
+        "live_orders_after_commands": {
+          "max": 501,
+          "mean": 500.66667,
+          "min": 500,
+          "p50": 501,
+          "p99": 501
+        },
+        "max_events_per_command": 3,
+        "max_swept_levels": 1,
+        "max_trades_per_command": 1,
+        "minimum_five_rounds_met": false,
+        "output_sink": {
+          "event_bytes": 144,
+          "sink_bytes": 144576,
+          "sink_capacity": 1004
+        },
+        "pattern": "One working order at a time: sell10, buy limit3, buy market2, cancel5, then bid7/cancel.",
+        "rejection_fraction": 0.0,
+        "repeats": 1,
+        "resource_scope": "CPU deltas include the timed loop and harness; RSS is process high-water mark including verification, parsed input, warmup and earlier rounds. macOS bytes; Linux KiB converted to bytes.",
+        "rounds": [
+          {
+            "accepted": 100000,
+            "batch_elapsed_ns": 12277579,
+            "completed": 100000,
+            "cpu_system_us": 0,
+            "cpu_user_us": 12285,
+            "elapsed_ns": 4717744,
+            "events": 300000,
+            "groups": [
+              {
+                "command": "limit",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 50000
+              },
+              {
+                "command": "market",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 42,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 16667
+              },
+              {
+                "command": "cancel",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 33333
+              }
+            ],
+            "max_rss_bytes": 35008512,
+            "mode": "latency",
+            "p50_ns": 42,
+            "p99_ns": 84,
+            "p99_sample_threshold_met": true,
+            "rejected": 0,
+            "round": 1,
+            "trades": 33334
+          },
+          {
+            "accepted": 100000,
+            "accepted_per_second": 12841347.082991699,
+            "batch_elapsed_ns": 7787345,
+            "completed": 100000,
+            "completed_per_second": 12841347.082991699,
+            "cpu_system_us": 0,
+            "cpu_user_us": 7789,
+            "elapsed_ns": 7787345,
+            "events": 300000,
+            "max_rss_bytes": 35008512,
+            "mode": "throughput",
+            "rejected": 0,
+            "rejected_per_second": 0.0,
+            "round": 1,
+            "trades": 33334,
+            "trades_per_second": 4280534.636644453
+          }
+        ],
+        "scenario": "mixed",
+        "seed": 20261016,
+        "timing_scope": "latency elapsed_ns=sum(process samples); batch_elapsed_ns includes per-command clocks, checks, consumption and recording. throughput includes process plus per-command status checks and consumption of every event field. No constant overhead subtraction.",
+        "working_depth_parameter": 64,
+        "workload_notes": "Synchronous core command pattern; no network arrival-rate, queuing or open-loop model. Setup background orders remain passive; this is not a full-capacity pressure test. The trace may stop partway through its final cycle; actual ending depth is reported."
+      }
+    },
+    {
+      "core_adoption_numeric_rule_met": false,
+      "improved_pairs": 4,
+      "pairs": [
+        {
+          "pair": 1,
+          "throughput_relative_change": 0.031974170934419455,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12564117,
+                "completed": 100000,
+                "cpu_system_us": 42,
+                "cpu_user_us": 12531,
+                "elapsed_ns": 4979107,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89894912,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12758819.201433744,
+                "batch_elapsed_ns": 7646554,
+                "completed": 100000,
+                "completed_per_second": 13077786.412022986,
+                "cpu_system_us": 2,
+                "cpu_user_us": 7646,
+                "elapsed_ns": 7646554,
+                "events": 297561,
+                "max_rss_bytes": 89894912,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 318967.2105892406,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12386368,
+                "completed": 100000,
+                "cpu_system_us": 18,
+                "cpu_user_us": 12377,
+                "elapsed_ns": 4859229,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 13166771.867501741,
+                "batch_elapsed_ns": 7409637,
+                "completed": 100000,
+                "completed_per_second": 13495937.790204838,
+                "cpu_system_us": 22,
+                "cpu_user_us": 7390,
+                "elapsed_ns": 7409637,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 329165.922703096,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "throughput_relative_change": 0.02709753902599421,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12389951,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12398,
+                "elapsed_ns": 4932865,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12842867.884629156,
+                "batch_elapsed_ns": 7596512,
+                "completed": 100000,
+                "completed_per_second": 13163936.290760813,
+                "cpu_system_us": 1,
+                "cpu_user_us": 7597,
+                "elapsed_ns": 7596512,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 321068.4061316562,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12574242,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12588,
+                "elapsed_ns": 4965484,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 13190877.998338584,
+                "batch_elapsed_ns": 7396096,
+                "completed": 100000,
+                "completed_per_second": 13520646.568135407,
+                "cpu_system_us": 31,
+                "cpu_user_us": 7368,
+                "elapsed_ns": 7396096,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 329768.56979682256,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "throughput_relative_change": 0.009952972287656792,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12554408,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12565,
+                "elapsed_ns": 4962865,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12629919.449488219,
+                "batch_elapsed_ns": 7724594,
+                "completed": 100000,
+                "completed_per_second": 12945664.199309373,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7728,
+                "elapsed_ns": 7724594,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 315744.7498211556,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12298451,
+                "completed": 100000,
+                "cpu_system_us": 11,
+                "cpu_user_us": 12295,
+                "elapsed_ns": 4798141,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12755624.68776431,
+                "batch_elapsed_ns": 7648469,
+                "completed": 100000,
+                "completed_per_second": 13074512.03633041,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7649,
+                "elapsed_ns": 7648469,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 318887.34856609866,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            }
+          }
+        },
+        {
+          "pair": 4,
+          "throughput_relative_change": 0.027380908269056814,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 14947273,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 14954,
+                "elapsed_ns": 7478050,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 125,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12611755.933740612,
+                "batch_elapsed_ns": 7735719,
+                "completed": 100000,
+                "completed_per_second": 12927046.600322478,
+                "cpu_system_us": 21,
+                "cpu_user_us": 7716,
+                "elapsed_ns": 7735719,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 315290.6665818652,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12396366,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12405,
+                "elapsed_ns": 4807962,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12957077.266074095,
+                "batch_elapsed_ns": 7529553,
+                "completed": 100000,
+                "completed_per_second": 13281000.87747573,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7532,
+                "elapsed_ns": 7529553,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 323923.611401633,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            }
+          }
+        },
+        {
+          "pair": 5,
+          "throughput_relative_change": -0.020923986406777062,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12540490,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12553,
+                "elapsed_ns": 4975072,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12847239.642940996,
+                "batch_elapsed_ns": 7593927,
+                "completed": 100000,
+                "completed_per_second": 13168417.341910187,
+                "cpu_system_us": 2,
+                "cpu_user_us": 7594,
+                "elapsed_ns": 7593927,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 321177.6989691895,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97561,
+                "batch_elapsed_ns": 12244492,
+                "completed": 100000,
+                "cpu_system_us": 7,
+                "cpu_user_us": 12248,
+                "elapsed_ns": 4753540,
+                "events": 297561,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48780
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48781
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 83,
+                    "p99_sample_threshold_met": false,
+                    "reason": "unknown_order",
+                    "samples": 2439
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2439,
+                "round": 1,
+                "trades": 0
+              },
+              "throughput": {
+                "accepted": 97561,
+                "accepted_per_second": 12578424.175287493,
+                "batch_elapsed_ns": 7756218,
+                "completed": 100000,
+                "completed_per_second": 12892881.55644929,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7759,
+                "elapsed_ns": 7756218,
+                "events": 297561,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2439,
+                "rejected_per_second": 314457.3811617982,
+                "round": 1,
+                "trades": 0,
+                "trades_per_second": 0.0
+              }
+            }
+          }
+        }
+      ],
+      "scenario": "cancel_heavy",
+      "throughput_relative_change": {
+        "max": 0.031974170934419455,
+        "median": 0.02709753902599421,
+        "min": -0.020923986406777062,
+        "values": [
+          0.031974170934419455,
+          0.02709753902599421,
+          0.009952972287656792,
+          0.027380908269056814,
+          -0.020923986406777062
+        ]
+      },
+      "workload": {
+        "capacity": 1000,
+        "clock_probe": {
+          "back_to_back_p50_ns": 0,
+          "back_to_back_p99_ns": 42,
+          "clock": "std::chrono::steady_clock",
+          "clock_and_timestamp_record_batch_ns": 1496410,
+          "clock_and_timestamp_record_mean_ns": 14.9641,
+          "is_steady": true,
+          "method": "100000 back-to-back clock pairs, then a separate batch storing one clock timestamp per sample; vectors preallocated; nearest-rank quantiles; empirical resolution differs from nominal period; no constant is subtracted from benchmark samples.",
+          "minimum_positive_interval_ns": 41,
+          "nominal_period_den": 1000000000,
+          "nominal_period_num": 1,
+          "pair_and_duration_record_batch_ns": 3139280,
+          "pair_and_duration_record_mean_ns": 31.3928,
+          "recorded_checksum": 11345608045560003897,
+          "samples": 100000,
+          "schema_version": 1,
+          "zero_intervals": 65566
+        },
+        "command_counts": {
+          "C": 51220,
+          "L": 48780
+        },
+        "commands": 100000,
+        "directory": "/home/m2/m4-measurement/core-run-1/baseline/cancel_heavy/pair_1",
+        "end_live_orders": 499,
+        "environment": {
+          "architecture": "aarch64",
+          "binary_name": "bench_core",
+          "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+          "build_flags": {
+            "CMAKE_CXX_FLAGS": "",
+            "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+            "CMAKE_EXE_LINKER_FLAGS": ""
+          },
+          "build_type": "Release",
+          "cmake": {
+            "available": true,
+            "exit_code": 0,
+            "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+          },
+          "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+          "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+          "code_dirty": false,
+          "compiler": {
+            "available": true,
+            "exit_code": 0,
+            "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+          },
+          "cpu": "aarch64",
+          "cpu_controls": {
+            "affinity": "not controlled by this runner",
+            "background_load": [
+              0.193359375,
+              0.1884765625,
+              0.083984375
+            ],
+            "exclusive_core": false,
+            "frequency": "not controlled",
+            "inherited_affinity_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "observed_governors": "unavailable",
+            "turbo": "not controlled"
+          },
+          "environment_policy": "Selected measurements only; no full environment-variable dump.",
+          "logical_cpus": 4,
+          "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+          "physical_cpu_cores": null,
+          "python": "3.12.3",
+          "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+          "sanitizers": "OFF",
+          "system_memory_bytes": 4090662912,
+          "target_compile_flags": {
+            "core_bench.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "matching_engine.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "order_book.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ]
+          },
+          "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+          "virtualization": {
+            "available": true,
+            "exit_code": 0,
+            "output": "qemu"
+          }
+        },
+        "initial_live_orders": 500,
+        "inputs": {
+          "config": {
+            "fnv1a64": "fnv1a64:60ea05670d075bca",
+            "path": "config.txt",
+            "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+          },
+          "input": {
+            "fnv1a64": "fnv1a64:7706ac56705469f5",
+            "path": "input.trace",
+            "sha256": "c16c04ea2b6a812160acb5d77b642d2214dfaaf02cd95429cf20b2aa8e303105"
+          },
+          "setup": {
+            "fnv1a64": "fnv1a64:cf1410dba7b9f97d",
+            "path": "setup.trace",
+            "sha256": "056f7043a2a838af8873761f5595faade372a621b7f88c0a3916fa6f6dc834eb"
+          }
+        },
+        "live_orders_after_commands": {
+          "max": 500,
+          "mean": 499.51219,
+          "min": 499,
+          "p50": 500,
+          "p99": 500
+        },
+        "max_events_per_command": 3,
+        "max_swept_levels": 0,
+        "max_trades_per_command": 0,
+        "minimum_five_rounds_met": false,
+        "output_sink": {
+          "event_bytes": 144,
+          "sink_bytes": 144576,
+          "sink_capacity": 1004
+        },
+        "pattern": "Cancel/replace within a working pool; every twentieth cycle adds an explicit UnknownOrder cancellation.",
+        "rejection_fraction": 0.02439,
+        "repeats": 1,
+        "resource_scope": "CPU deltas include the timed loop and harness; RSS is process high-water mark including verification, parsed input, warmup and earlier rounds. macOS bytes; Linux KiB converted to bytes.",
+        "rounds": [
+          {
+            "accepted": 97561,
+            "batch_elapsed_ns": 12564117,
+            "completed": 100000,
+            "cpu_system_us": 42,
+            "cpu_user_us": 12531,
+            "elapsed_ns": 4979107,
+            "events": 297561,
+            "groups": [
+              {
+                "command": "limit",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 48780
+              },
+              {
+                "command": "cancel",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 48781
+              },
+              {
+                "command": "cancel",
+                "outcome": "rejected",
+                "p50_ns": 42,
+                "p99_ns": 83,
+                "p99_sample_threshold_met": false,
+                "reason": "unknown_order",
+                "samples": 2439
+              }
+            ],
+            "max_rss_bytes": 89894912,
+            "mode": "latency",
+            "p50_ns": 42,
+            "p99_ns": 84,
+            "p99_sample_threshold_met": true,
+            "rejected": 2439,
+            "round": 1,
+            "trades": 0
+          },
+          {
+            "accepted": 97561,
+            "accepted_per_second": 12758819.201433744,
+            "batch_elapsed_ns": 7646554,
+            "completed": 100000,
+            "completed_per_second": 13077786.412022986,
+            "cpu_system_us": 2,
+            "cpu_user_us": 7646,
+            "elapsed_ns": 7646554,
+            "events": 297561,
+            "max_rss_bytes": 89894912,
+            "mode": "throughput",
+            "rejected": 2439,
+            "rejected_per_second": 318967.2105892406,
+            "round": 1,
+            "trades": 0,
+            "trades_per_second": 0.0
+          }
+        ],
+        "scenario": "cancel_heavy",
+        "seed": 20261017,
+        "timing_scope": "latency elapsed_ns=sum(process samples); batch_elapsed_ns includes per-command clocks, checks, consumption and recording. throughput includes process plus per-command status checks and consumption of every event field. No constant overhead subtraction.",
+        "working_depth_parameter": 64,
+        "workload_notes": "Synchronous core command pattern; no network arrival-rate, queuing or open-loop model. Setup background orders remain passive; this is not a full-capacity pressure test. The trace may stop partway through its final cycle; actual ending depth is reported."
+      }
+    },
+    {
+      "core_adoption_numeric_rule_met": true,
+      "improved_pairs": 5,
+      "pairs": [
+        {
+          "pair": 1,
+          "throughput_relative_change": 0.07703413873635001,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 16484974,
+                "completed": 100000,
+                "cpu_system_us": 19,
+                "cpu_user_us": 16478,
+                "elapsed_ns": 6793855,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1167,
+                    "p99_ns": 1667,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1125,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8143217.701270619,
+                "batch_elapsed_ns": 12280158,
+                "completed": 100000,
+                "completed_per_second": 8143217.701270619,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12283,
+                "elapsed_ns": 12280158,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8015532.047714696
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 15598019,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 15609,
+                "elapsed_ns": 5988206,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1041,
+                    "p99_ns": 1458,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1000,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8770523.463430602,
+                "batch_elapsed_ns": 11401828,
+                "completed": 100000,
+                "completed_per_second": 8770523.463430602,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11405,
+                "elapsed_ns": 11401828,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8633001.65552401
+              }
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "throughput_relative_change": 0.05770525935287152,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 16482182,
+                "completed": 100000,
+                "cpu_system_us": 7,
+                "cpu_user_us": 16486,
+                "elapsed_ns": 6824105,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1167,
+                    "p99_ns": 1667,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1125,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8307148.508970682,
+                "batch_elapsed_ns": 12037825,
+                "completed": 100000,
+                "completed_per_second": 8307148.508970682,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12040,
+                "elapsed_ns": 12037825,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8176892.420350022
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 18552424,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 18560,
+                "elapsed_ns": 8898054,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1333,
+                    "p99_ns": 1875,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 1333,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8786514.668163655,
+                "batch_elapsed_ns": 11381077,
+                "completed": 100000,
+                "completed_per_second": 8786514.668163655,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11385,
+                "elapsed_ns": 11381077,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8648742.118166849
+              }
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "throughput_relative_change": 0.052939718317389195,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 19092337,
+                "completed": 100000,
+                "cpu_system_us": 2,
+                "cpu_user_us": 19102,
+                "elapsed_ns": 9523980,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1375,
+                    "p99_ns": 2000,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 1375,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8351288.603831571,
+                "batch_elapsed_ns": 11974200,
+                "completed": 100000,
+                "completed_per_second": 8351288.603831571,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11978,
+                "elapsed_ns": 11974200,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8220340.398523492
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 15572768,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 15582,
+                "elapsed_ns": 6024845,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1041,
+                    "p99_ns": 1416,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1000,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8793403.470105637,
+                "batch_elapsed_ns": 11372161,
+                "completed": 100000,
+                "completed_per_second": 8793403.470105637,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11377,
+                "elapsed_ns": 11372161,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8655522.903694382
+              }
+            }
+          }
+        },
+        {
+          "pair": 4,
+          "throughput_relative_change": 0.07325819832266922,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 16592763,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 16597,
+                "elapsed_ns": 6875090,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1167,
+                    "p99_ns": 1834,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1125,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8090239.829496577,
+                "batch_elapsed_ns": 12360573,
+                "completed": 100000,
+                "completed_per_second": 8090239.829496577,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12363,
+                "elapsed_ns": 12360573,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 7963384.868970071
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 15819184,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 15837,
+                "elapsed_ns": 6084026,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1042,
+                    "p99_ns": 1417,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1041,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8682916.223403795,
+                "batch_elapsed_ns": 11516868,
+                "completed": 100000,
+                "completed_per_second": 8682916.223403795,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11522,
+                "elapsed_ns": 11516868,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8546768.097020822
+              }
+            }
+          }
+        },
+        {
+          "pair": 5,
+          "throughput_relative_change": 0.06221982236578283,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 16379848,
+                "completed": 100000,
+                "cpu_system_us": 34,
+                "cpu_user_us": 16358,
+                "elapsed_ns": 6796288,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1167,
+                    "p99_ns": 1667,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1166,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8295348.242452124,
+                "batch_elapsed_ns": 12054949,
+                "completed": 100000,
+                "completed_per_second": 8295348.242452124,
+                "cpu_system_us": 4,
+                "cpu_user_us": 12053,
+                "elapsed_ns": 12054949,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8165277.182010476
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 15343684,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 15355,
+                "elapsed_ns": 5924982,
+                "events": 396894,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 98462
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 1041,
+                    "p99_ns": 1375,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1538
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 1000,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 98432
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 8811483.336559804,
+                "batch_elapsed_ns": 11348827,
+                "completed": 100000,
+                "completed_per_second": 8811483.336559804,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11350,
+                "elapsed_ns": 11348827,
+                "events": 396894,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 98432,
+                "trades_per_second": 8673319.277842546
+              }
+            }
+          }
+        }
+      ],
+      "scenario": "sweep",
+      "throughput_relative_change": {
+        "max": 0.07703413873635001,
+        "median": 0.06221982236578283,
+        "min": 0.052939718317389195,
+        "values": [
+          0.07703413873635001,
+          0.05770525935287152,
+          0.052939718317389195,
+          0.07325819832266922,
+          0.06221982236578283
+        ]
+      },
+      "workload": {
+        "capacity": 1000,
+        "clock_probe": {
+          "back_to_back_p50_ns": 0,
+          "back_to_back_p99_ns": 42,
+          "clock": "std::chrono::steady_clock",
+          "clock_and_timestamp_record_batch_ns": 1485869,
+          "clock_and_timestamp_record_mean_ns": 14.8587,
+          "is_steady": true,
+          "method": "100000 back-to-back clock pairs, then a separate batch storing one clock timestamp per sample; vectors preallocated; nearest-rank quantiles; empirical resolution differs from nominal period; no constant is subtracted from benchmark samples.",
+          "minimum_positive_interval_ns": 41,
+          "nominal_period_den": 1000000000,
+          "nominal_period_num": 1,
+          "pair_and_duration_record_batch_ns": 2946071,
+          "pair_and_duration_record_mean_ns": 29.4607,
+          "recorded_checksum": 9917421490216401488,
+          "samples": 100000,
+          "schema_version": 1,
+          "zero_intervals": 66336
+        },
+        "command_counts": {
+          "L": 98462,
+          "M": 1538
+        },
+        "commands": 100000,
+        "directory": "/home/m2/m4-measurement/core-run-1/baseline/sweep/pair_1",
+        "end_live_orders": 530,
+        "environment": {
+          "architecture": "aarch64",
+          "binary_name": "bench_core",
+          "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+          "build_flags": {
+            "CMAKE_CXX_FLAGS": "",
+            "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+            "CMAKE_EXE_LINKER_FLAGS": ""
+          },
+          "build_type": "Release",
+          "cmake": {
+            "available": true,
+            "exit_code": 0,
+            "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+          },
+          "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+          "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+          "code_dirty": false,
+          "compiler": {
+            "available": true,
+            "exit_code": 0,
+            "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+          },
+          "cpu": "aarch64",
+          "cpu_controls": {
+            "affinity": "not controlled by this runner",
+            "background_load": [
+              0.193359375,
+              0.1884765625,
+              0.083984375
+            ],
+            "exclusive_core": false,
+            "frequency": "not controlled",
+            "inherited_affinity_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "observed_governors": "unavailable",
+            "turbo": "not controlled"
+          },
+          "environment_policy": "Selected measurements only; no full environment-variable dump.",
+          "logical_cpus": 4,
+          "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+          "physical_cpu_cores": null,
+          "python": "3.12.3",
+          "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+          "sanitizers": "OFF",
+          "system_memory_bytes": 4090662912,
+          "target_compile_flags": {
+            "core_bench.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "matching_engine.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "order_book.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ]
+          },
+          "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+          "virtualization": {
+            "available": true,
+            "exit_code": 0,
+            "output": "qemu"
+          }
+        },
+        "initial_live_orders": 500,
+        "inputs": {
+          "config": {
+            "fnv1a64": "fnv1a64:60ea05670d075bca",
+            "path": "config.txt",
+            "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+          },
+          "input": {
+            "fnv1a64": "fnv1a64:20a84e1a04ada619",
+            "path": "input.trace",
+            "sha256": "cff8ec7453badb4e24ef5e119eadbd91264575d26b8009f44bdc400eed1ec091"
+          },
+          "setup": {
+            "fnv1a64": "fnv1a64:b923e3824affb689",
+            "path": "setup.trace",
+            "sha256": "f960663118253df96c0ede035d27778cd83547d42a3b2b02e2c8d4d1c8ed2979"
+          }
+        },
+        "live_orders_after_commands": {
+          "max": 564,
+          "mean": 531.99505,
+          "min": 500,
+          "p50": 532,
+          "p99": 564
+        },
+        "max_events_per_command": 66,
+        "max_swept_levels": 8,
+        "max_trades_per_command": 64,
+        "minimum_five_rounds_met": false,
+        "output_sink": {
+          "event_bytes": 144,
+          "sink_bytes": 144576,
+          "sink_capacity": 1004
+        },
+        "pattern": "Buy markets sweep a working ask ladder. Each cycle has working_depth adds and one sweep; whole-stream throughput is not sweep-only throughput.",
+        "rejection_fraction": 0.0,
+        "repeats": 1,
+        "resource_scope": "CPU deltas include the timed loop and harness; RSS is process high-water mark including verification, parsed input, warmup and earlier rounds. macOS bytes; Linux KiB converted to bytes.",
+        "rounds": [
+          {
+            "accepted": 100000,
+            "batch_elapsed_ns": 16484974,
+            "completed": 100000,
+            "cpu_system_us": 19,
+            "cpu_user_us": 16478,
+            "elapsed_ns": 6793855,
+            "events": 396894,
+            "groups": [
+              {
+                "command": "limit",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 98462
+              },
+              {
+                "command": "market",
+                "outcome": "accepted",
+                "p50_ns": 1167,
+                "p99_ns": 1667,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 1538
+              }
+            ],
+            "max_rss_bytes": 89976832,
+            "mode": "latency",
+            "p50_ns": 42,
+            "p99_ns": 1125,
+            "p99_sample_threshold_met": true,
+            "rejected": 0,
+            "round": 1,
+            "trades": 98432
+          },
+          {
+            "accepted": 100000,
+            "accepted_per_second": 8143217.701270619,
+            "batch_elapsed_ns": 12280158,
+            "completed": 100000,
+            "completed_per_second": 8143217.701270619,
+            "cpu_system_us": 0,
+            "cpu_user_us": 12283,
+            "elapsed_ns": 12280158,
+            "events": 396894,
+            "max_rss_bytes": 89976832,
+            "mode": "throughput",
+            "rejected": 0,
+            "rejected_per_second": 0.0,
+            "round": 1,
+            "trades": 98432,
+            "trades_per_second": 8015532.047714696
+          }
+        ],
+        "scenario": "sweep",
+        "seed": 20261018,
+        "timing_scope": "latency elapsed_ns=sum(process samples); batch_elapsed_ns includes per-command clocks, checks, consumption and recording. throughput includes process plus per-command status checks and consumption of every event field. No constant overhead subtraction.",
+        "working_depth_parameter": 64,
+        "workload_notes": "Synchronous core command pattern; no network arrival-rate, queuing or open-loop model. Setup background orders remain passive; this is not a full-capacity pressure test. The trace may stop partway through its final cycle; actual ending depth is reported."
+      }
+    },
+    {
+      "core_adoption_numeric_rule_met": true,
+      "improved_pairs": 4,
+      "pairs": [
+        {
+          "pair": 1,
+          "throughput_relative_change": 0.06269628651217629,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13478234,
+                "completed": 100000,
+                "cpu_system_us": 35,
+                "cpu_user_us": 13451,
+                "elapsed_ns": 5366985,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 875,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 583,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10441273.26733335,
+                "batch_elapsed_ns": 9577376,
+                "completed": 100000,
+                "completed_per_second": 10441273.26733335,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9579,
+                "elapsed_ns": 9577376,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3444784.8763586185
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13285485,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 13292,
+                "elapsed_ns": 4961783,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 542,
+                    "p99_ns": 750,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 500,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 11095902.327654008,
+                "batch_elapsed_ns": 9012336,
+                "completed": 100000,
+                "completed_per_second": 11095902.327654008,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9000,
+                "elapsed_ns": 9012336,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3660760.09593961
+              }
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "throughput_relative_change": 0.03802603418670092,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13302276,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 13310,
+                "elapsed_ns": 5236674,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 875,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 583,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10827537.893675745,
+                "batch_elapsed_ns": 9235710,
+                "completed": 100000,
+                "completed_per_second": 10827537.893675745,
+                "cpu_system_us": 9,
+                "cpu_user_us": 9228,
+                "elapsed_ns": 9235710,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3572221.3018815015
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12766320,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12773,
+                "elapsed_ns": 4673265,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 542,
+                    "p99_ns": 709,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 500,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 11239266.219778458,
+                "batch_elapsed_ns": 8897378,
+                "completed": 100000,
+                "completed_per_second": 11239266.219778458,
+                "cpu_system_us": 0,
+                "cpu_user_us": 8899,
+                "elapsed_ns": 8897378,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3708058.7112293085
+              }
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "throughput_relative_change": 0.02466145033585554,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13469691,
+                "completed": 100000,
+                "cpu_system_us": 9,
+                "cpu_user_us": 13466,
+                "elapsed_ns": 5410962,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 834,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 583,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10527285.407866513,
+                "batch_elapsed_ns": 9499125,
+                "completed": 100000,
+                "completed_per_second": 10527285.407866513,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9501,
+                "elapsed_ns": 9499125,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3473162.00176332
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13820565,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 13823,
+                "elapsed_ns": 5125865,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 583,
+                    "p99_ns": 750,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 541,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10786903.53412399,
+                "batch_elapsed_ns": 9270501,
+                "completed": 100000,
+                "completed_per_second": 10786903.53412399,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9272,
+                "elapsed_ns": 9270501,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3558815.213978187
+              }
+            }
+          }
+        },
+        {
+          "pair": 4,
+          "throughput_relative_change": -0.11406368022888036,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13546857,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 13554,
+                "elapsed_ns": 5432247,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 875,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 542,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10879122.289820252,
+                "batch_elapsed_ns": 9191918,
+                "completed": 100000,
+                "completed_per_second": 10879122.289820252,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9194,
+                "elapsed_ns": 9191918,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3589240.025857498
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 15388641,
+                "completed": 100000,
+                "cpu_system_us": 12,
+                "cpu_user_us": 15382,
+                "elapsed_ns": 5740876,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 792,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 583,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 9638209.56378331,
+                "batch_elapsed_ns": 10375371,
+                "completed": 100000,
+                "completed_per_second": 9638209.56378331,
+                "cpu_system_us": 0,
+                "cpu_user_us": 10377,
+                "elapsed_ns": 10375371,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3179838.0992833897
+              }
+            }
+          }
+        },
+        {
+          "pair": 5,
+          "throughput_relative_change": 0.04601274209681927,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 13446773,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 13452,
+                "elapsed_ns": 5343725,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 625,
+                    "p99_ns": 917,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 583,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 10694234.406710077,
+                "batch_elapsed_ns": 9350833,
+                "completed": 100000,
+                "completed_per_second": 10694234.406710077,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9353,
+                "elapsed_ns": 9350833,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3528241.8154617883
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 100000,
+                "batch_elapsed_ns": 12974901,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12984,
+                "elapsed_ns": 4869094,
+                "events": 331961,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 65984
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 542,
+                    "p99_ns": 709,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 1031
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 32985
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 500,
+                "p99_sample_threshold_met": true,
+                "rejected": 0,
+                "round": 1,
+                "trades": 32992
+              },
+              "throughput": {
+                "accepted": 100000,
+                "accepted_per_second": 11186305.456388958,
+                "batch_elapsed_ns": 8939502,
+                "completed": 100000,
+                "completed_per_second": 11186305.456388958,
+                "cpu_system_us": 0,
+                "cpu_user_us": 8940,
+                "elapsed_ns": 8939502,
+                "events": 331961,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 0,
+                "rejected_per_second": 0.0,
+                "round": 1,
+                "trades": 32992,
+                "trades_per_second": 3690585.896171845
+              }
+            }
+          }
+        }
+      ],
+      "scenario": "clustered",
+      "throughput_relative_change": {
+        "max": 0.06269628651217629,
+        "median": 0.03802603418670092,
+        "min": -0.11406368022888036,
+        "values": [
+          0.06269628651217629,
+          0.03802603418670092,
+          0.02466145033585554,
+          -0.11406368022888036,
+          0.04601274209681927
+        ]
+      },
+      "workload": {
+        "capacity": 1000,
+        "clock_probe": {
+          "back_to_back_p50_ns": 0,
+          "back_to_back_p99_ns": 42,
+          "clock": "std::chrono::steady_clock",
+          "clock_and_timestamp_record_batch_ns": 1463952,
+          "clock_and_timestamp_record_mean_ns": 14.6395,
+          "is_steady": true,
+          "method": "100000 back-to-back clock pairs, then a separate batch storing one clock timestamp per sample; vectors preallocated; nearest-rank quantiles; empirical resolution differs from nominal period; no constant is subtracted from benchmark samples.",
+          "minimum_positive_interval_ns": 41,
+          "nominal_period_den": 1000000000,
+          "nominal_period_num": 1,
+          "pair_and_duration_record_batch_ns": 3073112,
+          "pair_and_duration_record_mean_ns": 30.7311,
+          "recorded_checksum": 2418413894983013436,
+          "samples": 100000,
+          "schema_version": 1,
+          "zero_intervals": 65325
+        },
+        "command_counts": {
+          "C": 32985,
+          "L": 65984,
+          "M": 1031
+        },
+        "commands": 100000,
+        "directory": "/home/m2/m4-measurement/core-run-1/baseline/clustered/pair_1",
+        "end_live_orders": 507,
+        "environment": {
+          "architecture": "aarch64",
+          "binary_name": "bench_core",
+          "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+          "build_flags": {
+            "CMAKE_CXX_FLAGS": "",
+            "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+            "CMAKE_EXE_LINKER_FLAGS": ""
+          },
+          "build_type": "Release",
+          "cmake": {
+            "available": true,
+            "exit_code": 0,
+            "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+          },
+          "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+          "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+          "code_dirty": false,
+          "compiler": {
+            "available": true,
+            "exit_code": 0,
+            "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+          },
+          "cpu": "aarch64",
+          "cpu_controls": {
+            "affinity": "not controlled by this runner",
+            "background_load": [
+              0.193359375,
+              0.1884765625,
+              0.083984375
+            ],
+            "exclusive_core": false,
+            "frequency": "not controlled",
+            "inherited_affinity_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "observed_governors": "unavailable",
+            "turbo": "not controlled"
+          },
+          "environment_policy": "Selected measurements only; no full environment-variable dump.",
+          "logical_cpus": 4,
+          "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+          "physical_cpu_cores": null,
+          "python": "3.12.3",
+          "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+          "sanitizers": "OFF",
+          "system_memory_bytes": 4090662912,
+          "target_compile_flags": {
+            "core_bench.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "matching_engine.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "order_book.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ]
+          },
+          "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+          "virtualization": {
+            "available": true,
+            "exit_code": 0,
+            "output": "qemu"
+          }
+        },
+        "initial_live_orders": 500,
+        "inputs": {
+          "config": {
+            "fnv1a64": "fnv1a64:60ea05670d075bca",
+            "path": "config.txt",
+            "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+          },
+          "input": {
+            "fnv1a64": "fnv1a64:76542595663ff953",
+            "path": "input.trace",
+            "sha256": "d38095ead552b98abf6d7ad3085e8e6a6858398518d87724ac9c56a7f75848f4"
+          },
+          "setup": {
+            "fnv1a64": "fnv1a64:b923e3824affb689",
+            "path": "setup.trace",
+            "sha256": "f960663118253df96c0ede035d27778cd83547d42a3b2b02e2c8d4d1c8ed2979"
+          }
+        },
+        "live_orders_after_commands": {
+          "max": 564,
+          "mean": 526.88827,
+          "min": 500,
+          "p50": 524,
+          "p99": 564
+        },
+        "max_events_per_command": 34,
+        "max_swept_levels": 4,
+        "max_trades_per_command": 32,
+        "minimum_five_rounds_met": false,
+        "output_sink": {
+          "event_bytes": 144,
+          "sink_bytes": 144576,
+          "sink_capacity": 1004
+        },
+        "pattern": "Insert an ask ladder, buy-market half its orders, then cancel the remainder. These are synchronous phases, not network bursts.",
+        "rejection_fraction": 0.0,
+        "repeats": 1,
+        "resource_scope": "CPU deltas include the timed loop and harness; RSS is process high-water mark including verification, parsed input, warmup and earlier rounds. macOS bytes; Linux KiB converted to bytes.",
+        "rounds": [
+          {
+            "accepted": 100000,
+            "batch_elapsed_ns": 13478234,
+            "completed": 100000,
+            "cpu_system_us": 35,
+            "cpu_user_us": 13451,
+            "elapsed_ns": 5366985,
+            "events": 331961,
+            "groups": [
+              {
+                "command": "limit",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 65984
+              },
+              {
+                "command": "market",
+                "outcome": "accepted",
+                "p50_ns": 625,
+                "p99_ns": 875,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 1031
+              },
+              {
+                "command": "cancel",
+                "outcome": "accepted",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 32985
+              }
+            ],
+            "max_rss_bytes": 89976832,
+            "mode": "latency",
+            "p50_ns": 42,
+            "p99_ns": 583,
+            "p99_sample_threshold_met": true,
+            "rejected": 0,
+            "round": 1,
+            "trades": 32992
+          },
+          {
+            "accepted": 100000,
+            "accepted_per_second": 10441273.26733335,
+            "batch_elapsed_ns": 9577376,
+            "completed": 100000,
+            "completed_per_second": 10441273.26733335,
+            "cpu_system_us": 0,
+            "cpu_user_us": 9579,
+            "elapsed_ns": 9577376,
+            "events": 331961,
+            "max_rss_bytes": 89976832,
+            "mode": "throughput",
+            "rejected": 0,
+            "rejected_per_second": 0.0,
+            "round": 1,
+            "trades": 32992,
+            "trades_per_second": 3444784.8763586185
+          }
+        ],
+        "scenario": "clustered",
+        "seed": 20261019,
+        "timing_scope": "latency elapsed_ns=sum(process samples); batch_elapsed_ns includes per-command clocks, checks, consumption and recording. throughput includes process plus per-command status checks and consumption of every event field. No constant overhead subtraction.",
+        "working_depth_parameter": 64,
+        "workload_notes": "Synchronous core command pattern; no network arrival-rate, queuing or open-loop model. Setup background orders remain passive; this is not a full-capacity pressure test. The trace may stop partway through its final cycle; actual ending depth is reported."
+      }
+    },
+    {
+      "core_adoption_numeric_rule_met": true,
+      "improved_pairs": 3,
+      "pairs": [
+        {
+          "pair": 1,
+          "throughput_relative_change": 0.029234410137348732,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 14461435,
+                "completed": 100000,
+                "cpu_system_us": 16,
+                "cpu_user_us": 14453,
+                "elapsed_ns": 7092922,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 12838559.821844531,
+                "batch_elapsed_ns": 7566425,
+                "completed": 100000,
+                "completed_per_second": 13216281.13673234,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7568,
+                "elapsed_ns": 7566425,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 377721.31488781027,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 377589.15207644296
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 11825489,
+                "completed": 100000,
+                "cpu_system_us": 10,
+                "cpu_user_us": 11821,
+                "elapsed_ns": 4460381,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 41,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 13213887.54524922,
+                "batch_elapsed_ns": 7351508,
+                "completed": 100000,
+                "completed_per_second": 13602651.31997408,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7353,
+                "elapsed_ns": 7351508,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 388763.77472485916,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 388627.74821165943
+              }
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "throughput_relative_change": 0.019783818833065903,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 14485726,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 14491,
+                "elapsed_ns": 7187125,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 12809216.749796078,
+                "batch_elapsed_ns": 7583758,
+                "completed": 100000,
+                "completed_per_second": 13186074.766626256,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7585,
+                "elapsed_ns": 7583758,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 376858.0168301784,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 376726.1560825121
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 11951238,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11956,
+                "elapsed_ns": 4558745,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 13062631.973367518,
+                "batch_elapsed_ns": 7436633,
+                "completed": 100000,
+                "completed_per_second": 13446945.680928452,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7438,
+                "elapsed_ns": 7436633,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 384313.7075609352,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 384179.2381041259
+              }
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "throughput_relative_change": -0.12265186577519693,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 12709776,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 12715,
+                "elapsed_ns": 5151424,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 12420586.090252865,
+                "batch_elapsed_ns": 7821048,
+                "completed": 100000,
+                "completed_per_second": 12786010.263586158,
+                "cpu_system_us": 0,
+                "cpu_user_us": 7823,
+                "elapsed_ns": 7821048,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 365424.1733332924,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 365296.31323065655
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 13647229,
+                "completed": 100000,
+                "cpu_system_us": 13,
+                "cpu_user_us": 13641,
+                "elapsed_ns": 5197423,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 42,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 10897178.032261893,
+                "batch_elapsed_ns": 8914418,
+                "completed": 100000,
+                "completed_per_second": 11217782.248936499,
+                "cpu_system_us": 0,
+                "cpu_user_us": 8919,
+                "elapsed_ns": 8914418,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 320604.2166746051,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 320492.03885211574
+              }
+            }
+          }
+        },
+        {
+          "pair": 4,
+          "throughput_relative_change": 0.24711857953850158,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 19192328,
+                "completed": 100000,
+                "cpu_system_us": 8,
+                "cpu_user_us": 19192,
+                "elapsed_ns": 7527268,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 125,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 8223988.594678476,
+                "batch_elapsed_ns": 11812030,
+                "completed": 100000,
+                "completed_per_second": 8465945.311686477,
+                "cpu_system_us": 0,
+                "cpu_user_us": 11813,
+                "elapsed_ns": 11812030,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 241956.71700799948,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 241872.05755488263
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 14844683,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 14845,
+                "elapsed_ns": 5618484,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 42,
+                    "p99_ns": 84,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 10256288.97433626,
+                "batch_elapsed_ns": 9471457,
+                "completed": 100000,
+                "completed_per_second": 10558037.691561075,
+                "cpu_system_us": 0,
+                "cpu_user_us": 9472,
+                "elapsed_ns": 9471457,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 301748.71722481557,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 301643.13684789994
+              }
+            }
+          }
+        },
+        {
+          "pair": 5,
+          "throughput_relative_change": -0.23847686701562343,
+          "variants": {
+            "A": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 22978852,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 22989,
+                "elapsed_ns": 9246549,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 167,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 42,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 84,
+                    "p99_ns": 333,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 83,
+                    "p99_ns": 333,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 83,
+                "p99_ns": 250,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 7220652.931603524,
+                "batch_elapsed_ns": 13453354,
+                "completed": 100000,
+                "completed_per_second": 7433090.66274477,
+                "cpu_system_us": 6,
+                "cpu_user_us": 13452,
+                "elapsed_ns": 13453354,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 212437.73114124552,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 212363.40023461805
+              }
+            },
+            "B": {
+              "latency": {
+                "accepted": 97142,
+                "batch_elapsed_ns": 28670409,
+                "completed": 100000,
+                "cpu_system_us": 0,
+                "cpu_user_us": 28691,
+                "elapsed_ns": 11353349,
+                "events": 297142,
+                "groups": [
+                  {
+                    "command": "limit",
+                    "outcome": "accepted",
+                    "p50_ns": 125,
+                    "p99_ns": 166,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 48571
+                  },
+                  {
+                    "command": "limit",
+                    "outcome": "rejected",
+                    "p50_ns": 83,
+                    "p99_ns": 125,
+                    "p99_sample_threshold_met": false,
+                    "reason": "capacity_exceeded",
+                    "samples": 2858
+                  },
+                  {
+                    "command": "market",
+                    "outcome": "accepted",
+                    "p50_ns": 125,
+                    "p99_ns": 417,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 2857
+                  },
+                  {
+                    "command": "cancel",
+                    "outcome": "accepted",
+                    "p50_ns": 84,
+                    "p99_ns": 375,
+                    "p99_sample_threshold_met": false,
+                    "reason": "none",
+                    "samples": 45714
+                  }
+                ],
+                "max_rss_bytes": 89976832,
+                "mode": "latency",
+                "p50_ns": 84,
+                "p99_ns": 250,
+                "p99_sample_threshold_met": true,
+                "rejected": 2858,
+                "round": 1,
+                "trades": 2857
+              },
+              "throughput": {
+                "accepted": 97142,
+                "accepted_per_second": 5498694.242667539,
+                "batch_elapsed_ns": 17666376,
+                "completed": 100000,
+                "completed_per_second": 5660470.4892503135,
+                "cpu_system_us": 0,
+                "cpu_user_us": 17670,
+                "elapsed_ns": 17666376,
+                "events": 297142,
+                "max_rss_bytes": 89976832,
+                "mode": "throughput",
+                "rejected": 2858,
+                "rejected_per_second": 161776.24658277398,
+                "round": 1,
+                "trades": 2857,
+                "trades_per_second": 161719.64187788146
+              }
+            }
+          }
+        }
+      ],
+      "scenario": "near_full_reuse",
+      "throughput_relative_change": {
+        "max": 0.24711857953850158,
+        "median": 0.019783818833065903,
+        "min": -0.23847686701562343,
+        "values": [
+          0.029234410137348732,
+          0.019783818833065903,
+          -0.12265186577519693,
+          0.24711857953850158,
+          -0.23847686701562343
+        ]
+      },
+      "workload": {
+        "capacity": 1000,
+        "clock_probe": {
+          "back_to_back_p50_ns": 0,
+          "back_to_back_p99_ns": 42,
+          "clock": "std::chrono::steady_clock",
+          "clock_and_timestamp_record_batch_ns": 1536410,
+          "clock_and_timestamp_record_mean_ns": 15.3641,
+          "is_steady": true,
+          "method": "100000 back-to-back clock pairs, then a separate batch storing one clock timestamp per sample; vectors preallocated; nearest-rank quantiles; empirical resolution differs from nominal period; no constant is subtracted from benchmark samples.",
+          "minimum_positive_interval_ns": 41,
+          "nominal_period_den": 1000000000,
+          "nominal_period_num": 1,
+          "pair_and_duration_record_batch_ns": 3071195,
+          "pair_and_duration_record_mean_ns": 30.712,
+          "recorded_checksum": 11996956709730987421,
+          "samples": 100000,
+          "schema_version": 1,
+          "zero_intervals": 64944
+        },
+        "command_counts": {
+          "C": 45714,
+          "L": 51429,
+          "M": 2857
+        },
+        "commands": 100000,
+        "directory": "/home/m2/m4-measurement/core-run-1/baseline/near_full_reuse/pair_1",
+        "end_live_orders": 1000,
+        "environment": {
+          "architecture": "aarch64",
+          "binary_name": "bench_core",
+          "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+          "build_flags": {
+            "CMAKE_CXX_FLAGS": "",
+            "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+            "CMAKE_EXE_LINKER_FLAGS": ""
+          },
+          "build_type": "Release",
+          "cmake": {
+            "available": true,
+            "exit_code": 0,
+            "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+          },
+          "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+          "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+          "code_dirty": false,
+          "compiler": {
+            "available": true,
+            "exit_code": 0,
+            "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+          },
+          "cpu": "aarch64",
+          "cpu_controls": {
+            "affinity": "not controlled by this runner",
+            "background_load": [
+              0.193359375,
+              0.1884765625,
+              0.083984375
+            ],
+            "exclusive_core": false,
+            "frequency": "not controlled",
+            "inherited_affinity_cpus": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "observed_governors": "unavailable",
+            "turbo": "not controlled"
+          },
+          "environment_policy": "Selected measurements only; no full environment-variable dump.",
+          "logical_cpus": 4,
+          "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+          "physical_cpu_cores": null,
+          "python": "3.12.3",
+          "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+          "sanitizers": "OFF",
+          "system_memory_bytes": 4090662912,
+          "target_compile_flags": {
+            "core_bench.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "matching_engine.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ],
+            "order_book.cpp": [
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20"
+            ]
+          },
+          "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+          "virtualization": {
+            "available": true,
+            "exit_code": 0,
+            "output": "qemu"
+          }
+        },
+        "initial_live_orders": 1000,
+        "inputs": {
+          "config": {
+            "fnv1a64": "fnv1a64:60ea05670d075bca",
+            "path": "config.txt",
+            "sha256": "de5c70a3299f040eef14b4358073a99763fd39c292d5ab8462fe505d52ffc215"
+          },
+          "input": {
+            "fnv1a64": "fnv1a64:fe1fe6f1f9dfc329",
+            "path": "input.trace",
+            "sha256": "7cd9a159e5aaa3ed9499c0011a6c9b5de3b5077ea0b215ad75a91df907bcaddb"
+          },
+          "setup": {
+            "fnv1a64": "fnv1a64:f93e9fbc9750c287",
+            "path": "setup.trace",
+            "sha256": "3bf0d93ee5b5c270b2422ae3d2551bdb740147e84eb96cab99608c8fe9b24ab3"
+          }
+        },
+        "live_orders_after_commands": {
+          "max": 1000,
+          "mean": 999.51429,
+          "min": 999,
+          "p50": 1000,
+          "p99": 1000
+        },
+        "max_events_per_command": 3,
+        "max_swept_levels": 1,
+        "max_trades_per_command": 1,
+        "minimum_five_rounds_met": false,
+        "output_sink": {
+          "event_bytes": 144,
+          "sink_bytes": 144576,
+          "sink_capacity": 1004
+        },
+        "pattern": "35-command cycle: one CapacityExceeded limit; 16 seeded cancel/reinsert pairs; one sell-market/reinsert pair. Every order has quantity 10 and fixed bid price 8000 + ((OrderId-1) % 16) * 64. Market/rejected IDs increase from C+1. Market quantity 10 consumes the FIFO head at the best bid; client 3 submits markets.",
+        "rejection_fraction": 0.02858,
+        "repeats": 1,
+        "resource_scope": "CPU deltas include the timed loop and harness; RSS is process high-water mark including verification, parsed input, warmup and earlier rounds. macOS bytes; Linux KiB converted to bytes.",
+        "rounds": [
+          {
+            "accepted": 97142,
+            "batch_elapsed_ns": 14461435,
+            "completed": 100000,
+            "cpu_system_us": 16,
+            "cpu_user_us": 14453,
+            "elapsed_ns": 7092922,
+            "events": 297142,
+            "groups": [
+              {
+                "command": "limit",
+                "outcome": "accepted",
+                "p50_ns": 83,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 48571
+              },
+              {
+                "command": "limit",
+                "outcome": "rejected",
+                "p50_ns": 42,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "capacity_exceeded",
+                "samples": 2858
+              },
+              {
+                "command": "market",
+                "outcome": "accepted",
+                "p50_ns": 83,
+                "p99_ns": 125,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 2857
+              },
+              {
+                "command": "cancel",
+                "outcome": "accepted",
+                "p50_ns": 83,
+                "p99_ns": 84,
+                "p99_sample_threshold_met": false,
+                "reason": "none",
+                "samples": 45714
+              }
+            ],
+            "max_rss_bytes": 89976832,
+            "mode": "latency",
+            "p50_ns": 83,
+            "p99_ns": 84,
+            "p99_sample_threshold_met": true,
+            "rejected": 2858,
+            "round": 1,
+            "trades": 2857
+          },
+          {
+            "accepted": 97142,
+            "accepted_per_second": 12838559.821844531,
+            "batch_elapsed_ns": 7566425,
+            "completed": 100000,
+            "completed_per_second": 13216281.13673234,
+            "cpu_system_us": 0,
+            "cpu_user_us": 7568,
+            "elapsed_ns": 7566425,
+            "events": 297142,
+            "max_rss_bytes": 89976832,
+            "mode": "throughput",
+            "rejected": 2858,
+            "rejected_per_second": 377721.31488781027,
+            "round": 1,
+            "trades": 2857,
+            "trades_per_second": 377589.15207644296
+          }
+        ],
+        "scenario": "near_full_reuse",
+        "seed": 20261020,
+        "timing_scope": "latency elapsed_ns=sum(process samples); batch_elapsed_ns includes per-command clocks, checks, consumption and recording. throughput includes process plus per-command status checks and consumption of every event field. No constant overhead subtraction.",
+        "working_depth_parameter": 16,
+        "workload_notes": "Synchronous core commands; setup fills C orders. Active depth is C-1..C. Trace stops after exactly commands, including a possible partial final cycle. All successful reinsertions reuse a terminated OrderId and alternate its owner 1/2."
+      }
+    }
+  ],
+  "schema_version": 1,
+  "source_diff_paths": [
+    "include/llmatch/order_book.hpp",
+    "src/order_book.cpp"
+  ],
+  "timing_intervals": 100,
+  "timing_note": "Each pair has independent single-run Reference/warmup and latency/throughput intervals. Short batch durations and 100000 samples do not remove noise or prove tail stability.",
+  "validation": "passed",
+  "variants": {
+    "A": {
+      "directory": "baseline",
+      "environment": {
+        "architecture": "aarch64",
+        "binary_name": "bench_core",
+        "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+        "build_flags": {
+          "CMAKE_CXX_FLAGS": "",
+          "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+          "CMAKE_EXE_LINKER_FLAGS": ""
+        },
+        "build_type": "Release",
+        "cmake": {
+          "available": true,
+          "exit_code": 0,
+          "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+        },
+        "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+        "code_commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+        "code_dirty": false,
+        "compiler": {
+          "available": true,
+          "exit_code": 0,
+          "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        },
+        "cpu": "aarch64",
+        "cpu_controls": {
+          "affinity": "not controlled by this runner",
+          "background_load": [
+            0.193359375,
+            0.1884765625,
+            0.083984375
+          ],
+          "exclusive_core": false,
+          "frequency": "not controlled",
+          "inherited_affinity_cpus": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "observed_governors": "unavailable",
+          "turbo": "not controlled"
+        },
+        "environment_policy": "Selected measurements only; no full environment-variable dump.",
+        "logical_cpus": 4,
+        "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+        "physical_cpu_cores": null,
+        "python": "3.12.3",
+        "recorded_at_utc": "2026-10-17T16:51:21.450786+00:00",
+        "sanitizers": "OFF",
+        "system_memory_bytes": 4090662912,
+        "target_compile_flags": {
+          "core_bench.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "matching_engine.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "order_book.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ]
+        },
+        "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+        "virtualization": {
+          "available": true,
+          "exit_code": 0,
+          "output": "qemu"
+        }
+      },
+      "source": {
+        "binary_sha256": "f165ba00ea9a1e266bd1b27efa1a5116512a1a60ba6aa92b40d87baba1400780",
+        "build_input_sha256": {
+          "CMakeLists.txt": "cbe6c80254bafda4b0978f368f3b2be50a9392f29324f4a063d655166393861f",
+          "CMakePresets.json": "dd8c944694ba155b57d762e148fa0d58e7bb607b5e606e479d2e2eb355e51377",
+          "apps/client_main.cpp": "e792c39b349c388010d8e60615a1c1d59c8301615c93ba09160ff5c7257b1609",
+          "apps/loadgen_main.cpp": "e6748383082e3ec68dd93929faff59a76b907ba711ab97a46c5044338343dd03",
+          "apps/replay_main.cpp": "feb90e9076c17530fad4941e533cb365f660e09a420955fe8ff2745dd7c7a947",
+          "apps/server_main.cpp": "5d70b2150fda41ddedf11a2561ff1c53876c464cc8b661cedf745feb22bf62b5",
+          "bench/clock_probe.cpp": "6596a365b76ad7e0bd8f4994f42c92bb9e9e83b10545d4ae774d889bdb71399a",
+          "bench/core_bench.cpp": "eb1ac0d9906d9298dcc34e43f80a1eaf32324055576ded336825a9c63df9e0a2",
+          "bench/storage_probe.cpp": "ef3e63d5dafdf81350e32345ae777e05e5d2f0e767a646aa94a557f9538f2c99",
+          "cmake/Dependencies.cmake": "4b17e1f97d0235440b920413e6ad1eda3f30f15983b72d46fd87dafb87e8e62e",
+          "include/llmatch/command.hpp": "22e7015dadd1fe2ad561d29e7aed13ccef1db0b13b44154512ac92b476e2a7f3",
+          "include/llmatch/event.hpp": "b93a4b75f2912cdbbff5f8a609fe23ebd0a9586a1e3fef86490ef0e85f814fe6",
+          "include/llmatch/matching_engine.hpp": "630d21546e567e1d8350ec8185abe926589851dfb5db56eed62c228a17feff70",
+          "include/llmatch/order_book.hpp": "ef7ffff0f1af8244a282c32d09266e7972c9f35006075be5564621c29934c143",
+          "include/llmatch/pipeline.hpp": "4bd4fdbf267c9e70a35eb41275c78d06fcdcccdb9d054f719894f5b9a9e57739",
+          "include/llmatch/protocol.hpp": "f02e69772dad90ef3624772861f9f64ab2a23100bd10f1162d5b9d08b7cab5f5",
+          "include/llmatch/server.hpp": "7ffe6153da2c6834523436c08182bf828317433789a31d7b5c433e8935158872",
+          "include/llmatch/snapshot.hpp": "e1806f0b3126f8701f3d91ae533bdfab6fc76805ae5714ba57e4f6ffbacd00e0",
+          "include/llmatch/types.hpp": "06272f06e9212d7b72abbf707b987202a0f559741fad948d9c1f533ff5ea3667",
+          "reference/reference_engine.cpp": "b18df31e1d86aa6919a34700fb1a62b684e16531226003b428b7e8f2d864e628",
+          "reference/reference_engine.hpp": "4c18cbd1ab3d9ca46a6efbcd8debd8f745ba5756fae3d77253095d882fecba09",
+          "src/matching_engine.cpp": "a097958aacec606032da8d86fa5f15cb13a2cf59510a4e694e7a16f374b03b9b",
+          "src/order_book.cpp": "ea5a05e2be7a2bbef81a1a1835eaab9632969b35507fdb8ac63f419e9c779525",
+          "src/pipeline.cpp": "7fadac8af000f42a67e6d2174e733ea3a8d39678819055acb6de282cf5365ea3",
+          "src/protocol.cpp": "a80b83d42e6c5bc897d987a0db8e74b9f0e0f20e94fd0f5534f4d65f7140bd9a",
+          "src/send_queue.hpp": "e4b8e7d2b56baaa7e62fbdccae7cb787573f02864e2b4952d35b61322722fbe6",
+          "src/server.cpp": "cc31bfebf0c03737c32d6b3c9c724e1e39ebeadc24b2e43f176c5babba7162cc",
+          "tools/differential.cpp": "708ca9cbb847db3472876c582eed4adbfb9765cc9246679a941a349dfc420bbc",
+          "tools/differential.hpp": "26521e013ccc1708a142208cee2420fa3f22db952b3332246c738b42584dad9c",
+          "tools/random_commands.cpp": "1b15d6beb81f6f8e3dafd10b953e9bc43503f87fb46ac309734eac8523bb7404",
+          "tools/random_commands.hpp": "723f453f4463c2db1d60401726ee5936ff64446bb6cb13ca4f995dc56c21212e",
+          "tools/service_verify.cpp": "5474c4212ca9cade8f195e4548e6c6ec318a4f80250ed8c31d1116f9eee099fc",
+          "tools/shrink_failure.cpp": "435b278b6d482109f0ccbfa3751262e7754341350e780d31802c2376cf9a196b",
+          "tools/trace_io.cpp": "2f0396ea94e0a052f2f959000c179b928fec612859d2e8212097364877e025e0",
+          "tools/trace_io.hpp": "7081561c0cddc001d96b864c34f4641110e806a5068ca49db58712ddba09b63c",
+          "tools/workload_generator.cpp": "5fc52d63843f3cab4fe6fd57b9c583d66c072a40189f7deb4fbb5309d172aeff"
+        },
+        "clock_sha256": "1d42927749703e2d4471d3c3d64793f62d6f64c12f9c12b853010998d5be89ec",
+        "cmake_cache_sha256": "81aadbfb9a6a6a9e5c07c73ded7689121f8c0acc748f26036f49403cfdfe7cda",
+        "cmake_home_directory": "/home/m2/m4-control",
+        "commit": "97fdc6ee165201b0ab9b3997879f5296fb508d9f",
+        "compile_commands_sha256": "e683e609a81f0bee716c1944c9833fd3f7f47424bc078b1d30fe63c9f205d5bf",
+        "directory": "/home/m2/m4-control",
+        "dirty": false,
+        "git_status": ""
+      },
+      "source_record_sha256": "a6a50b0a4a1812c7dc467ad5f3a28a1df2b31e047cdc0d8f1096c154f1f89a23"
+    },
+    "B": {
+      "directory": "candidate",
+      "environment": {
+        "architecture": "aarch64",
+        "binary_name": "bench_core",
+        "binary_sha256": "99f5ce0744c929d7ffa5eb35ad138df92ec9f77f30264e85ac2bb2146ea8e8fb",
+        "build_flags": {
+          "CMAKE_CXX_FLAGS": "",
+          "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG",
+          "CMAKE_EXE_LINKER_FLAGS": ""
+        },
+        "build_type": "Release",
+        "cmake": {
+          "available": true,
+          "exit_code": 0,
+          "output": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+        },
+        "cmake_cache_sha256": "ccdcf2495d0fceede46c41e4b0fc25bbbfe22aa5c44b9ee88fd510f81a3fd8da",
+        "code_commit": "4cf669ff2e932c6f27adeca0a9e143ffd03430b1",
+        "code_dirty": false,
+        "compiler": {
+          "available": true,
+          "exit_code": 0,
+          "output": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+        },
+        "cpu": "aarch64",
+        "cpu_controls": {
+          "affinity": "not controlled by this runner",
+          "background_load": [
+            0.193359375,
+            0.1884765625,
+            0.083984375
+          ],
+          "exclusive_core": false,
+          "frequency": "not controlled",
+          "inherited_affinity_cpus": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "observed_governors": "unavailable",
+          "turbo": "not controlled"
+        },
+        "environment_policy": "Selected measurements only; no full environment-variable dump.",
+        "logical_cpus": 4,
+        "os": "Linux-6.8.0-147-generic-aarch64-with-glibc2.39",
+        "physical_cpu_cores": null,
+        "python": "3.12.3",
+        "recorded_at_utc": "2026-10-17T16:51:21.458533+00:00",
+        "sanitizers": "OFF",
+        "system_memory_bytes": 4090662912,
+        "target_compile_flags": {
+          "core_bench.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "matching_engine.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "order_book.cpp": [
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ]
+        },
+        "thread_configuration": "single-threaded matching core; independent latency/throughput rounds",
+        "virtualization": {
+          "available": true,
+          "exit_code": 0,
+          "output": "qemu"
+        }
+      },
+      "source": {
+        "binary_sha256": "99f5ce0744c929d7ffa5eb35ad138df92ec9f77f30264e85ac2bb2146ea8e8fb",
+        "build_input_sha256": {
+          "CMakeLists.txt": "cbe6c80254bafda4b0978f368f3b2be50a9392f29324f4a063d655166393861f",
+          "CMakePresets.json": "dd8c944694ba155b57d762e148fa0d58e7bb607b5e606e479d2e2eb355e51377",
+          "apps/client_main.cpp": "e792c39b349c388010d8e60615a1c1d59c8301615c93ba09160ff5c7257b1609",
+          "apps/loadgen_main.cpp": "e6748383082e3ec68dd93929faff59a76b907ba711ab97a46c5044338343dd03",
+          "apps/replay_main.cpp": "feb90e9076c17530fad4941e533cb365f660e09a420955fe8ff2745dd7c7a947",
+          "apps/server_main.cpp": "5d70b2150fda41ddedf11a2561ff1c53876c464cc8b661cedf745feb22bf62b5",
+          "bench/clock_probe.cpp": "6596a365b76ad7e0bd8f4994f42c92bb9e9e83b10545d4ae774d889bdb71399a",
+          "bench/core_bench.cpp": "eb1ac0d9906d9298dcc34e43f80a1eaf32324055576ded336825a9c63df9e0a2",
+          "bench/storage_probe.cpp": "ef3e63d5dafdf81350e32345ae777e05e5d2f0e767a646aa94a557f9538f2c99",
+          "cmake/Dependencies.cmake": "4b17e1f97d0235440b920413e6ad1eda3f30f15983b72d46fd87dafb87e8e62e",
+          "include/llmatch/command.hpp": "22e7015dadd1fe2ad561d29e7aed13ccef1db0b13b44154512ac92b476e2a7f3",
+          "include/llmatch/event.hpp": "b93a4b75f2912cdbbff5f8a609fe23ebd0a9586a1e3fef86490ef0e85f814fe6",
+          "include/llmatch/matching_engine.hpp": "630d21546e567e1d8350ec8185abe926589851dfb5db56eed62c228a17feff70",
+          "include/llmatch/order_book.hpp": "8dc2e3fe2bbafb5e508b48ac89c83da4963f290b34a4e36bc323ae3c00896d94",
+          "include/llmatch/pipeline.hpp": "4bd4fdbf267c9e70a35eb41275c78d06fcdcccdb9d054f719894f5b9a9e57739",
+          "include/llmatch/protocol.hpp": "f02e69772dad90ef3624772861f9f64ab2a23100bd10f1162d5b9d08b7cab5f5",
+          "include/llmatch/server.hpp": "7ffe6153da2c6834523436c08182bf828317433789a31d7b5c433e8935158872",
+          "include/llmatch/snapshot.hpp": "e1806f0b3126f8701f3d91ae533bdfab6fc76805ae5714ba57e4f6ffbacd00e0",
+          "include/llmatch/types.hpp": "06272f06e9212d7b72abbf707b987202a0f559741fad948d9c1f533ff5ea3667",
+          "reference/reference_engine.cpp": "b18df31e1d86aa6919a34700fb1a62b684e16531226003b428b7e8f2d864e628",
+          "reference/reference_engine.hpp": "4c18cbd1ab3d9ca46a6efbcd8debd8f745ba5756fae3d77253095d882fecba09",
+          "src/matching_engine.cpp": "a097958aacec606032da8d86fa5f15cb13a2cf59510a4e694e7a16f374b03b9b",
+          "src/order_book.cpp": "1d058050d6b184806e4e8b3a6e229195a0606e4e663acf326ccf3e480bc6f57f",
+          "src/pipeline.cpp": "7fadac8af000f42a67e6d2174e733ea3a8d39678819055acb6de282cf5365ea3",
+          "src/protocol.cpp": "a80b83d42e6c5bc897d987a0db8e74b9f0e0f20e94fd0f5534f4d65f7140bd9a",
+          "src/send_queue.hpp": "e4b8e7d2b56baaa7e62fbdccae7cb787573f02864e2b4952d35b61322722fbe6",
+          "src/server.cpp": "cc31bfebf0c03737c32d6b3c9c724e1e39ebeadc24b2e43f176c5babba7162cc",
+          "tools/differential.cpp": "708ca9cbb847db3472876c582eed4adbfb9765cc9246679a941a349dfc420bbc",
+          "tools/differential.hpp": "26521e013ccc1708a142208cee2420fa3f22db952b3332246c738b42584dad9c",
+          "tools/random_commands.cpp": "1b15d6beb81f6f8e3dafd10b953e9bc43503f87fb46ac309734eac8523bb7404",
+          "tools/random_commands.hpp": "723f453f4463c2db1d60401726ee5936ff64446bb6cb13ca4f995dc56c21212e",
+          "tools/service_verify.cpp": "5474c4212ca9cade8f195e4548e6c6ec318a4f80250ed8c31d1116f9eee099fc",
+          "tools/shrink_failure.cpp": "435b278b6d482109f0ccbfa3751262e7754341350e780d31802c2376cf9a196b",
+          "tools/trace_io.cpp": "2f0396ea94e0a052f2f959000c179b928fec612859d2e8212097364877e025e0",
+          "tools/trace_io.hpp": "7081561c0cddc001d96b864c34f4641110e806a5068ca49db58712ddba09b63c",
+          "tools/workload_generator.cpp": "5fc52d63843f3cab4fe6fd57b9c583d66c072a40189f7deb4fbb5309d172aeff"
+        },
+        "clock_sha256": "1d42927749703e2d4471d3c3d64793f62d6f64c12f9c12b853010998d5be89ec",
+        "cmake_cache_sha256": "ccdcf2495d0fceede46c41e4b0fc25bbbfe22aa5c44b9ee88fd510f81a3fd8da",
+        "cmake_home_directory": "/home/m2/m4-candidate",
+        "commit": "4cf669ff2e932c6f27adeca0a9e143ffd03430b1",
+        "compile_commands_sha256": "cc1de3e1dc243e3f6519d48eb6ad0b959b8a98f305da87d7621fc583e89d0189",
+        "directory": "/home/m2/m4-candidate",
+        "dirty": false,
+        "git_status": ""
+      },
+      "source_record_sha256": "26f0b9aa3045c4f45ac99ce5d65fa6292939526f5e2205b5fc6162ef08f9b8f5"
+    }
+  }
+}

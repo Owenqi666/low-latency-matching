@@ -11,6 +11,9 @@ from run_bench import capture
 from run_service_bench import binary_record, finish_experiment, now, prepare_experiment, run_one
 
 VARIANTS = {"A": "baseline", "B": "candidate"}
+MEASUREMENT_TOOLS = ("create_bench_workloads.py", "create_service_workloads.py", "run_bench.py",
+                     "run_service_bench.py", "run_service_pair.py", "summarize_service_bench.py",
+                     "summarize_service_pair.py")
 
 
 def source_record(server, source):
@@ -49,6 +52,17 @@ def execution_plan(spec):
     return plan
 
 
+def snapshot_measurement_tools(root):
+    scripts = Path(__file__).resolve().parent
+    target = root / "measurement-tools"
+    target.mkdir()
+    for name in MEASUREMENT_TOOLS:
+        shutil.copyfile(scripts / name, target / name)
+    return {"commit": capture(["git", "rev-parse", "HEAD"], scripts.parent),
+            "git_status": capture(["git", "status", "--porcelain"], scripts.parent),
+            "sha256": {name: sha256(target / name) for name in MEASUREMENT_TOOLS}}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for variant in VARIANTS.values():
@@ -67,7 +81,7 @@ def main():
     servers = {key: getattr(args, f"{name}_server").resolve() for key, name in VARIANTS.items()}
     sources = {key: source_record(servers[key], getattr(args, f"{name}_source")) for key, name in VARIANTS.items()}
     binaries = {key: {"server": binary_record(server), **shared} for key, server in servers.items()}
-    if spec["mode"] == "formal" and (not sys.platform.startswith("linux") or any(
+    if spec["mode"] in {"formal", "m4-formal"} and (not sys.platform.startswith("linux") or any(
             record[name]["build_type"] != "Release" or record[name]["sanitized"]
             for record in binaries.values() for name in ("server", "loadgen"))):
         raise ValueError("formal measurements require Linux and unsanitized Release server/loadgen builds")
@@ -79,7 +93,8 @@ def main():
     manifests = {}
     pair = {"schema_version": 1, "status": "running", "mode": spec["mode"], "started_at_utc": now(),
             "order": "warmup AB; odd measurement rounds AB; even measurement rounds BA",
-            "variants": {}, "execution_plan": execution_plan(spec), "executed": []}
+            "variants": {}, "execution_plan": execution_plan(spec), "executed": [],
+            "measurement_tools": snapshot_measurement_tools(root)}
     for key, directory in VARIANTS.items():
         variant_root = root / directory
         manifest = prepare_experiment(variant_root, args.manifest, spec, binaries[key],
@@ -127,6 +142,9 @@ def main():
     for name, record in shared.items():
         if sha256(Path(record["path"])) != record["sha256"]:
             raise ValueError(f"shared {name} binary changed during the experiment")
+    for name, digest in pair["measurement_tools"]["sha256"].items():
+        if sha256(Path(__file__).resolve().parent / name) != digest:
+            raise ValueError(f"measurement tool changed during the experiment: {name}")
     pair["status"] = "completed" if all(manifest["status"] == "completed" for manifest in manifests.values()) else "failed"
     pair["ended_at_utc"] = now()
     write_json(root / "pair-manifest.json", pair)

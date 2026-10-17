@@ -18,6 +18,14 @@ def summarize(directory):
     pair = read_json(root / "pair-manifest.json")
     require(pair["schema_version"] == 1 and pair["status"] in ("completed", "failed"), "pair manifest is not terminal")
     require(set(pair["variants"]) == {"A", "B"}, "pair must contain exactly A and B")
+    tooling = pair.get("measurement_tools")
+    require(pair["mode"] != "m4-formal" or tooling is not None, "m4-formal requires the shared measurement tool snapshot")
+    if tooling is not None:
+        names = {"create_bench_workloads.py", "create_service_workloads.py", "run_bench.py", "run_service_bench.py",
+                 "run_service_pair.py", "summarize_service_bench.py", "summarize_service_pair.py"}
+        require(set(tooling["sha256"]) == names, "measurement tool snapshot is incomplete")
+        for name, digest in tooling["sha256"].items():
+            require(sha256(root / "measurement-tools" / name) == digest, f"measurement tool SHA256 mismatch: {name}")
     variants, reports, locations = {}, {}, {}
     for key in ("A", "B"):
         binding = pair["variants"][key]
@@ -121,9 +129,12 @@ def summarize(directory):
                                "min": min(values) if values else None, "max": max(values) if values else None}
         by_row.append({"row": row["id"], "pairs": len(items), "complete_pairs": sum(item["both_succeeded"] for item in items), "B_minus_A": summary})
     succeeded = all(report["all_runs_succeeded"] for report in reports.values())
+    sample_targets_met = all(report["all_measured_sample_targets_met"] for report in reports.values())
     require((pair["status"] == "completed") == succeeded, "pair status contradicts observed outcomes")
     report = {"schema_version": 1, "evidence_valid": True, "all_runs_succeeded": succeeded, "mode": pair["mode"],
               "variants": pair["variants"], "shared_tools": {name: a["binaries"][name] for name in ("loadgen", "verifier")},
+              "measurement_tools": tooling, "all_measured_sample_targets_met": sample_targets_met,
+              "m4_formal_contract_met": pair["mode"] == "m4-formal" and succeeded and sample_targets_met,
               "warmup_attempts": 2 * len(spec["rows"]),
               "measured_attempts": 2 * len(comparisons), "pairs": comparisons, "per_row": by_row,
               "notes": "B minus A describes per-round differences, not a pooled percentile. Failed pairs retain both outcomes; "

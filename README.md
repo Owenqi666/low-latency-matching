@@ -30,6 +30,16 @@ regression limit. The [report](docs/m3_report.md), [all-pair results](docs/bench
 [reproduction method](docs/service_benchmark_method.md#paired-m3-comparison)
 preserve the rejected candidate, complete outcomes and source-specific evidence.
 
+M4 evaluated fixed-capacity order slots and retained list storage. Across five
+core scenes, mixed throughput improved by a paired median 5.241%, while
+cancel-heavy improved 2.710%, below its required 5% threshold. All 40 formal
+service runs delivered and drained, but internal tail regressions remain in
+the [report](docs/m4_report.md). See the [evidence index](docs/m4_evidence_index.md),
+[acceptance record](docs/m4_acceptance.md) and
+[A/B reproduction](docs/benchmark_method.md#paired-m4-order-storage-comparison).
+Final CI, archive and publication identities are bound by the
+`m4-order-storage` release receipts.
+
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
 `cmake/Dependencies.cmake`). GoogleTest is a test-only dependency, configured using

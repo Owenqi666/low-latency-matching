@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "generator_version": "m2-service-workloads-v1",
+  "mode": "m4-formal",
+  "rates_locked": true,
+  "rate_selection": "Fixed M4 order-storage service subset: mixed_1, mixed_4, sweep_4 at 10000/s; burst_4 at average 2000/s. M3 resource limits unchanged. This four-row contract is not the seven-row M2/M3 formal matrix. Row seeds use the listed order and the existing base-seed plus row-index rule; do not tune from formal results.",
+  "capacity": 1000,
+  "background_depth": 500,
+  "working_depth": 64,
+  "commands": 100000,
+  "rounds": 5,
+  "minimum_plan_seconds": 10,
+  "warmup_commands": 1000,
+  "seed": 20261016,
+  "limits": {
+    "max_connections": 64,
+    "max_inflight": 16384,
+    "max_send_bytes": 65536,
+    "drain_ms": 5000,
+    "command_capacity": 1024,
+    "event_capacity": 1024,
+    "send_limit": 65536,
+    "shutdown_ms": 5000,
+    "startup_seconds": 15,
+    "setup_budget_seconds": 60,
+    "timeout_slack_seconds": 10
+  },
+  "rows": [
+    {
+      "id": "mixed_1",
+      "scenario": "mixed",
+      "connections": 1,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "mixed_4",
+      "scenario": "mixed",
+      "connections": 4,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "sweep_4",
+      "scenario": "sweep",
+      "connections": 4,
+      "target_rate_per_sec": 10000,
+      "rate_role": "ordinary"
+    },
+    {
+      "id": "burst_4",
+      "scenario": "burst",
+      "connections": 4,
+      "target_rate_per_sec": 2000,
+      "rate_role": "ordinary",
+      "burst_period_ns": 100000000,
+      "burst_window_ns": 10000000
+    }
+  ]
+}

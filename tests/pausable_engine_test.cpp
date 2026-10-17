@@ -187,6 +187,48 @@ TEST(PausableEngineTest, RejectedCancelAndRestingStagesResumeWithoutRepeatingEff
     for (const auto& command : commands) compare_paused(engine, reference, command);
 }
 
+TEST(PausableEngineTest, FullyFilledMakerStorageCanBeReusedAcrossPausedStagesAndCommands) {
+    for (const std::size_t capacity : {1U, 2U}) {
+        const EngineConfig small{capacity, 1000, 1000};
+        MatchingEngine engine(small);
+        ReferenceEngine reference(small);
+        RequestId request = 0;
+        for (ClientId round = 1; round <= 16; ++round) {
+            SCOPED_TRACE(::testing::Message() << "capacity=" << capacity << " round=" << round);
+            compare_paused(engine, reference, {round, ++request, LimitOrder{10, Side::Sell, 100, 2}});
+            Command taker{round + 100, ++request, MarketOrder{20, Side::Buy, 3}};
+            if (capacity == 2) taker.payload = LimitOrder{20, Side::Buy, 100, 3};
+            const auto expected = synchronous(reference, taker);
+            ASSERT_EQ(std::count_if(expected.begin(), expected.end(), [](const Event& event) {
+                return event.kind == EventKind::Trade;
+            }), 1);
+            ASSERT_EQ(std::count_if(expected.begin(), expected.end(), [](const Event& event) {
+                return event.kind == EventKind::Rested;
+            }), capacity == 2 ? 1 : 0);
+            ASSERT_EQ(engine.begin(taker), CallError::None);
+            for (const auto& event : expected) {
+                Event actual{};
+                ASSERT_TRUE(engine.next(actual));
+                EXPECT_EQ(actual, event);
+                engine.check_invariants();
+                if (event.kind == EventKind::Trade) {
+                    // The maker is gone, but a limit remainder may only reuse
+                    // its storage on the later Rested step.
+                    EXPECT_EQ(engine.snapshot(), BookSnapshot{});
+                    expect_busy_unchanged(engine);
+                }
+            }
+            EXPECT_FALSE(engine.active());
+            EXPECT_EQ(engine.snapshot(), reference.snapshot());
+            if (capacity == 2) compare_paused(engine, reference, {round + 100, ++request, CancelOrder{20}});
+            compare_paused(engine, reference, {round + 200, ++request, LimitOrder{10, Side::Sell, 110, 1}});
+            compare_paused(engine, reference, {round, ++request, CancelOrder{10}}); // Previous owner cannot cancel the reused ID.
+            compare_paused(engine, reference, {round + 100, ++request, MarketOrder{20, Side::Buy, 1}});
+            EXPECT_EQ(engine.snapshot(), BookSnapshot{});
+        }
+    }
+}
+
 TEST(PausableEngineTest, SynchronousMisuseAndSmallOutputCannotDisturbPausedCommand) {
     MatchingEngine engine(config);
     const Command command{1, 1, LimitOrder{10, Side::Buy, 100, 5}};

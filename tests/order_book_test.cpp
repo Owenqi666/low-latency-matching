@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <type_traits>
+#include <vector>
 
 namespace llmatch {
 namespace {
@@ -123,11 +124,11 @@ TEST(OrderBookTest, LargeAggregatesDoNotWrap) {
     EXPECT_NO_THROW(book.check_invariants());
 }
 
-TEST(OrderBookTest, IndexSurvivesRehashAndRepeatedNodeReuse) {
-    // Storage has no admission policy: a small reserve forces rehash while
-    // inserting many nodes, exposing incorrectly retained hash iterators.
-    OrderBook book(1);
+TEST(OrderBookTest, IndexSurvivesDeletionAndOrderIdReuseAtCapacity) {
     constexpr OrderId count = 256;
+    // Capacity covers every simultaneous order in either storage layout.
+    // Reusing the same IDs must replace their side, owner and arrival sequence.
+    OrderBook book(count);
     for (OrderId id = 1; id <= count; ++id) {
         book.insert_resting({id, 1, Side::Buy, static_cast<Price>(id % 16 + 1), 2, id});
     }
@@ -147,6 +148,37 @@ TEST(OrderBookTest, IndexSurvivesRehashAndRepeatedNodeReuse) {
     for (OrderId id = 1; id <= count; ++id) book.apply_fill(id, 1);
     EXPECT_EQ(book.snapshot(), BookSnapshot{});
     EXPECT_NO_THROW(book.check_invariants());
+}
+
+TEST(OrderBookTest, SmallCapacityReuseChangesOwnerAndAppendsBehindSurvivor) {
+    for (const std::size_t capacity : {1U, 2U}) {
+        OrderBook book(capacity);
+        Sequence sequence = 0;
+        for (ClientId round = 1; round <= 32; ++round) {
+            SCOPED_TRACE(::testing::Message() << "capacity=" << capacity << " round=" << round);
+            const auto side = round % 2 ? Side::Buy : Side::Sell;
+            book.insert_resting({10, round, side, 100, 2, ++sequence});
+            const Order survivor{20, round, side, 100, 4, ++sequence};
+            if (capacity == 2) book.insert_resting(survivor);
+            EXPECT_EQ(book.erase_resting(10), 2U);
+            EXPECT_EQ(book.find(10), nullptr);
+            const Order replacement{10, round + 100, side, 100, 3, ++sequence};
+            book.insert_resting(replacement);
+            ASSERT_NE(book.find(10), nullptr);
+            EXPECT_EQ(*book.find(10), replacement);
+            const auto snapshot = book.snapshot();
+            const auto& levels = side == Side::Buy ? snapshot.bids : snapshot.asks;
+            ASSERT_EQ(levels.size(), 1U);
+            const auto orders = capacity == 2 ? std::vector<Order>{survivor, replacement}
+                                             : std::vector<Order>{replacement};
+            EXPECT_EQ(levels[0], (LevelSnapshot{100, capacity == 2 ? 7U : 3U, orders}));
+            EXPECT_NO_THROW(book.check_invariants());
+            if (capacity == 2) book.apply_fill(20, 4);
+            book.apply_fill(10, 3);
+            EXPECT_EQ(book.snapshot(), BookSnapshot{});
+            EXPECT_NO_THROW(book.check_invariants());
+        }
+    }
 }
 
 TEST(OrderBookTest, InvariantChecksRemainActiveWithoutDebugAssertions) {

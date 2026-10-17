@@ -149,3 +149,57 @@ Neither experiment perfectly isolates process-call timing overhead, and neither
 constant is subtracted from matching samples. Very short measured calls may be
 dominated by clock granularity; the batch throughput mode supplies a separate,
 lower-clock-frequency view.
+## Paired M4 order-storage comparison
+
+M4 compares list control `97fdc6ee165201b0ab9b3997879f5296fb508d9f` with
+fixed-slot candidate `4cf669ff2e932c6f27adeca0a9e143ffd03430b1`. Both retain
+the same shared tools and input generators. The final list decision does not
+remove the candidate from its fixed Git revision or release source archive.
+
+For independent Linux builds, use new source/dependency/build directories:
+
+```sh
+git clone https://github.com/Owenqi666/low-latency-matching.git /tmp/llmatch-m4-control
+git -C /tmp/llmatch-m4-control checkout --detach 97fdc6ee165201b0ab9b3997879f5296fb508d9f
+git clone https://github.com/Owenqi666/low-latency-matching.git /tmp/llmatch-m4-candidate
+git -C /tmp/llmatch-m4-candidate checkout --detach 4cf669ff2e932c6f27adeca0a9e143ffd03430b1
+for m4_source in /tmp/llmatch-m4-control /tmp/llmatch-m4-candidate; do
+  (
+    cd "$m4_source"
+    cmake --preset release -DCMAKE_CXX_COMPILER=g++
+    cmake --build --preset release --parallel 2
+    ctest --preset release --output-on-failure --no-tests=error
+  )
+done
+```
+
+With both builds complete and no concurrent build/test/profiler activity, run
+the frozen five-scene core matrix from the candidate checkout:
+
+```sh
+cd /tmp/llmatch-m4-candidate
+python3 scripts/run_core_pair.py \
+  --baseline-binary /tmp/llmatch-m4-control/build/release/bench_core \
+  --baseline-source /tmp/llmatch-m4-control \
+  --candidate-binary /tmp/llmatch-m4-candidate/build/release/bench_core \
+  --candidate-source /tmp/llmatch-m4-candidate \
+  --manifest data/workloads/m4-core-formal.json --output-dir /tmp/m4-core-pair
+python3 /tmp/m4-core-pair/tool-evidence/summarize_core_pair.py /tmp/m4-core-pair
+```
+
+Capture the actual host/VM configuration separately and pass its JSON with
+`--host-environment FILE` when available. The runner captures guest/build/tool
+identities; a host record must describe actual conditions, not a template.
+Always choose a new output directory and preserve failed batches.
+
+The enclosing matrix checks five adjacent AB/BA pairs for each of mixed,
+cancel_heavy, sweep, clustered and near_full_reuse: 25 pairs, 100 separate
+latency/throughput intervals at C=1,000 with 100,000 input commands. Every
+invocation has Reference verification and warmup. A constituent repeats=1
+report alone is not a five-pair formal result. For a short functional replay,
+add `--commands 2000 --rounds 2 --scenario near_full_reuse`; the resulting
+smoke label cannot support or revise the formal adoption decision.
+
+See the [M4 report](m4_report.md), [frozen plan](m4_experiment_plan.md) and
+[evidence index](m4_evidence_index.md) for all pairs, allocation/startup costs,
+short timing windows, clock quantization and shared-VM limitations.

@@ -137,6 +137,7 @@ jobs:
             build/${{ matrix.preset }}/loadgen-test-evidence/
             build/${{ matrix.preset }}/service-benchmark-evidence/
             build/${{ matrix.preset }}/service-pair-evidence/
+            build/${{ matrix.preset }}/core-pair-evidence/
             build/benchmark-smoke/
             build/service-smoke/
 
