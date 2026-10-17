@@ -1,4 +1,5 @@
 #include "llmatch/server.hpp"
+#include "send_queue.hpp"
 
 #include <algorithm>
 #include <csignal>
@@ -34,7 +35,6 @@ const char* close_reason_name(CloseReason reason) {
 }
 
 struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
-    struct Outgoing { protocol::Frame frame; bool business{}; };
     MatchingServer& server;
     Tcp::socket socket;
     ClientId id;
@@ -42,15 +42,12 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     std::size_t used{};
     std::uint64_t receive_ready_ns{};
     bool reading{};
-    bool writing{};
-    bool closed{};
     std::optional<Command> pending;
     std::uint64_t pending_ready_ns{};
-    std::deque<Outgoing> outgoing;
-    std::size_t outgoing_bytes{};
+    detail::SendQueue outgoing;
 
     Connection(MatchingServer& owner, Tcp::socket stream, ClientId client)
-        : server(owner), socket(std::move(stream)), id(client) {}
+        : server(owner), socket(std::move(stream)), id(client), outgoing(owner.stats_, owner.config_.send_limit) {}
 
     void start() {
         socket.set_option(Tcp::no_delay(true));
@@ -63,54 +60,36 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     }
 
     void close(CloseReason reason) {
-        if (closed) return;
-        closed = true;
+        if (outgoing.closed()) return;
+        outgoing.close();
         ++server.stats_.closes[static_cast<std::size_t>(reason)];
-        server.stats_.discarded_frames += outgoing.size();
-        for (const auto& item : outgoing) server.stats_.discarded_business_frames += item.business;
         error_code ignored;
         socket.close(ignored);
         pending.reset();
         server.connections_.erase(id);
-        // Keep the in-flight buffer alive until its cancellation callback runs.
-        if (!writing) { outgoing.clear(); outgoing_bytes = 0; }
     }
 
     void enqueue(const protocol::Frame& frame, bool business) {
-        if (closed) return;
-        if (frame.size > server.config_.send_limit - outgoing_bytes) {
-            if (business) ++server.stats_.discarded_business_frames;
-            ++server.stats_.discarded_frames;
+        if (outgoing.closed()) return;
+        if (!outgoing.enqueue(frame, business)) {
             close(CloseReason::SlowClient);
             return;
         }
-        outgoing.push_back({frame, business});
-        outgoing_bytes += frame.size;
-        server.stats_.send_high_water = std::max(server.stats_.send_high_water, outgoing_bytes);
-        if (!writing) write();
+        if (!outgoing.writing()) write();
     }
 
     void write() {
-        if (closed || outgoing.empty()) return;
-        writing = true;
-        const auto& frame = outgoing.front().frame;
-        asio::async_write(socket, asio::buffer(frame.storage.data(), frame.size),
-            [self = shared_from_this()](error_code error, std::size_t) {
-                self->writing = false;
-                if (self->closed) {
-                    self->outgoing.clear();
-                    self->outgoing_bytes = 0;
+        if (outgoing.closed() || outgoing.empty()) return;
+        asio::async_write(socket, outgoing.begin_write(),
+            [self = shared_from_this()](error_code error, std::size_t transferred) {
+                self->outgoing.complete(error, transferred);
+                if (self->outgoing.closed()) {
                     self->server.maybe_finish();
                     return;
                 }
                 if (error) {
                     self->close(CloseReason::WriteError);
                 } else {
-                    auto& owner = self->server;
-                    ++owner.stats_.written_frames;
-                    owner.stats_.written_business_frames += self->outgoing.front().business;
-                    self->outgoing_bytes -= self->outgoing.front().frame.size;
-                    self->outgoing.pop_front();
                     self->write();
                 }
                 self->server.maybe_finish();
@@ -118,13 +97,13 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     }
 
     void read() {
-        if (closed || reading || pending || server.draining_) return;
+        if (outgoing.closed() || reading || pending || server.draining_) return;
         reading = true;
         socket.async_read_some(asio::buffer(receive.data() + used, receive.size() - used),
             [self = shared_from_this()](error_code error, std::size_t count) {
                 const auto received_at = steady_now_ns();
                 self->reading = false;
-                if (self->closed || self->server.draining_) return;
+                if (self->outgoing.closed() || self->server.draining_) return;
                 if (error) {
                     const auto reason = error == asio::error::eof
                         ? (self->used ? CloseReason::TruncatedFrame : CloseReason::PeerEof)
@@ -139,13 +118,13 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     }
 
     bool runnable() const {
-        if (closed || reading || server.draining_) return false;
+        if (outgoing.closed() || reading || server.draining_) return false;
         if (pending) return server.pipeline_->has_command_space();
         return used && protocol::inspect({receive.data(), used}).status != protocol::FrameStatus::NeedMore;
     }
 
     void process_input() {
-        if (closed || reading || server.draining_) return;
+        if (outgoing.closed() || reading || server.draining_) return;
         for (unsigned budget = 0; budget < 16; ++budget) {
             if (pending) {
                 switch (server.pipeline_->try_submit(*pending, pending_ready_ns)) {
@@ -178,6 +157,8 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
 MatchingServer::MatchingServer(ServerConfig config)
     : config_(checked_config(std::move(config))), work_(asio::make_work_guard(io_)),
       acceptor_(io_), signals_(io_, SIGINT, SIGTERM), shutdown_timer_(io_) {
+    stats_.write_batch_max_frames = detail::batch_max_frames;
+    stats_.write_batch_max_bytes = detail::batch_max_bytes;
     const Tcp::endpoint endpoint(asio::ip::make_address(config_.address), config_.port);
     acceptor_.open(endpoint.protocol());
     acceptor_.set_option(Tcp::acceptor::reuse_address(true));

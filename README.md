@@ -22,6 +22,14 @@ limitation. Recorded Linux
 [service profiling](docs/m2_profiling.md) have their own timing and source boundaries.
 The [evidence index](docs/m2_evidence_index.md) maps those records to release assets.
 
+M3 evaluated bounded output batching and retained one-frame production writes.
+Across 35 Linux VM pairs, the candidate reduced CPU/request at 45k/s by a median
+14.68%, but increased single-client RTT p99 by 71.30%, failing the frozen
+regression limit. The [report](docs/m3_report.md), [all-pair results](docs/benchmarks/m3_service_pairs.md),
+[acceptance record](docs/m3_acceptance.md) and
+[reproduction method](docs/service_benchmark_method.md#paired-m3-comparison)
+preserve the rejected candidate, complete outcomes and source-specific evidence.
+
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
 `cmake/Dependencies.cmake`). GoogleTest is a test-only dependency, configured using

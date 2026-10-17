@@ -108,7 +108,30 @@ void write_evidence(const MatchingServer& server, const std::filesystem::path& d
            << ",\"written_business_frames\":" << stats.written_business_frames
            << ",\"written_frames\":" << stats.written_frames
            << ",\"discarded_business_frames\":" << stats.discarded_business_frames
-           << ",\"discarded_frames\":" << stats.discarded_frames << ",\"close_reasons\":{";
+           << ",\"discarded_frames\":" << stats.discarded_frames
+           << ",\"write_stats_scope\":\"server_lifetime_including_setup\""
+           << ",\"write_batch_max_frames\":" << stats.write_batch_max_frames
+           << ",\"write_batch_max_bytes\":" << stats.write_batch_max_bytes
+           << ",\"write_operations\":" << stats.write_operations
+           << ",\"write_callbacks\":" << stats.write_callbacks
+           << ",\"write_error_callbacks\":" << stats.write_error_callbacks
+           << ",\"write_frames_submitted\":" << stats.write_frames_submitted
+           << ",\"write_bytes_submitted\":" << stats.write_bytes_submitted
+           << ",\"write_bytes_transferred\":" << stats.write_bytes_transferred
+           << ",\"unconfirmed_write_callbacks\":" << stats.unconfirmed_write_callbacks
+           << ",\"unconfirmed_write_bytes\":" << stats.unconfirmed_write_bytes
+           << ",\"unconfirmed_write_complete_frames\":" << stats.unconfirmed_write_complete_frames
+           << ",\"write_batch_frames\":[";
+    for (std::size_t i = 0; i < stats.write_batch_frames.size(); ++i) {
+        if (i) report << ',';
+        report << stats.write_batch_frames[i];
+    }
+    report << "],\"write_batch_bytes_bucket_width\":256,\"write_batch_bytes\":[";
+    for (std::size_t i = 0; i < stats.write_batch_bytes.size(); ++i) {
+        if (i) report << ',';
+        report << stats.write_batch_bytes[i];
+    }
+    report << "],\"close_reasons\":{";
     for (std::size_t i = 0; i < stats.closes.size(); ++i) {
         if (i) report << ',';
         report << json_string(close_reason_name(static_cast<CloseReason>(i))) << ':' << stats.closes[i];

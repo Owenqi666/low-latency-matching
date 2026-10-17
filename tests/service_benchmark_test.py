@@ -36,6 +36,7 @@ result = execute([sys.executable, str(checker), str(valid)], directory / "checke
 assert result.returncode == 0, (directory, result.stdout, result.stderr)
 report = json.loads((valid / "report.json").read_text())
 assert report["evidence_valid"] and report["all_runs_succeeded"] and len(report["runs"]) == 2
+assert all(run["client_resources"]["scope"] == "process_lifetime_before_evidence" for run in report["runs"])
 
 
 def remove_round(path):
@@ -77,15 +78,35 @@ def smoke_as_formal(path):
     edit_json(path / "manifest.json", lambda value: value.update(mode="formal"))
 
 
+def negative_client_cpu(path):
+    edit_json(path / "runs/mixed_4/round_1/client/client.json",
+              lambda value: value["resource_usage"].update(user_cpu_us=-1))
+
+
+def client_resource_before_completion(path):
+    edit_json(path / "runs/mixed_4/round_1/client/client.json",
+              lambda value: value["resource_usage"].update(captured_ns=value["measurement_end_ns"] - 1))
+
+
 for name, mutation in (("missing-round", remove_round), ("missing-declaration", remove_declared_round),
                        ("wrong-count", change_count), ("truncated-samples", truncate_samples),
                        ("stale-reference", stale_reference), ("wrong-input", wrong_schedule),
                        ("shortened-window", shortened_window), ("wrong-configuration", wrong_configuration),
-                       ("smoke-as-formal", smoke_as_formal)):
+                       ("smoke-as-formal", smoke_as_formal), ("negative-client-cpu", negative_client_cpu),
+                       ("client-resource-before-completion", client_resource_before_completion)):
     changed = directory / name
     shutil.copytree(valid, changed)
     mutation(changed)
     result = execute([sys.executable, str(checker), str(changed)], directory / f"{name}.log")
     assert result.returncode != 0, f"corruption was accepted: {name} ({directory})"
     assert not (changed / "report.json").exists() and not (changed / "report.md").exists(), "stale success report remains"
-print(f"Real open-loop run and nine evidence-corruption checks passed: {directory}")
+# Historical M2 evidence had no client resource snapshot; do not invent one.
+legacy = directory / "legacy-client-resources"
+shutil.copytree(valid, legacy)
+for path in legacy.glob("runs/*/*/client/client.json"):
+    edit_json(path, lambda value: value.pop("resource_usage"))
+result = execute([sys.executable, str(checker), str(legacy)], directory / "legacy-client-resources.log")
+assert result.returncode == 0, (directory, result.stdout, result.stderr)
+legacy_report = json.loads((legacy / "report.json").read_text())
+assert all(run["client_resources"] is None for run in legacy_report["runs"])
+print(f"Real open-loop run, eleven corruption checks and explicit legacy resource absence passed: {directory}")

@@ -3,7 +3,6 @@
 #include "llmatch/pipeline.hpp"
 #include <boost/asio.hpp>
 #include <array>
-#include <deque>
 #include <map>
 #include <memory>
 #include <optional>
@@ -37,6 +36,23 @@ struct ServerStats {
     std::uint64_t discarded_business_frames{};
     std::uint64_t discarded_frames{};
     std::size_t send_high_water{};
+    // Application async_write operations, not socket system calls. These
+    // counters cover the entire server lifetime, including setup traffic.
+    std::size_t write_batch_max_frames{};
+    std::size_t write_batch_max_bytes{};
+    std::uint64_t write_operations{};
+    std::uint64_t write_callbacks{};
+    std::uint64_t write_error_callbacks{};
+    std::uint64_t write_frames_submitted{};
+    std::uint64_t write_bytes_submitted{};
+    std::uint64_t write_bytes_transferred{};
+    std::array<std::uint64_t, 17> write_batch_frames{}; // Index is frame count; 0 is unused.
+    std::array<std::uint64_t, 16> write_batch_bytes{};  // Upper bounds 256, 512, ..., 4096.
+    // Error callbacks and callbacks observed after close remain unconfirmed,
+    // even when their local transfer count contains complete frame prefixes.
+    std::uint64_t unconfirmed_write_callbacks{};
+    std::uint64_t unconfirmed_write_bytes{};
+    std::uint64_t unconfirmed_write_complete_frames{};
     std::array<std::uint64_t, static_cast<std::size_t>(CloseReason::Count)> closes{};
 };
 

@@ -61,3 +61,23 @@ transferred to a new SHA.
 Original planning documents remain local. Ordinary implementation decisions do
 not expand the scope into persistence, custom queues, allocation optimizations
 or additional network backends.
+
+## M3 selective performance experiment
+
+M3 execution started on 2026-10-17 from published `m2-service`,
+`db9b74f4181a2dc4a50966c20080949c839bf73f`, on `feat/m3-experiments`.
+The [experiment plan](m3_experiment_plan.md) separates the baseline, diagnosis,
+candidate selection and final acceptance. Historical M2 measurements remain
+historical evidence, not the new comparison control.
+
+| Task | State | Evidence / next step |
+|---|---|---|
+| M3-T00 | Baseline verified | Local main, fetched origin/main and m2-service agree; published release and five asset hashes checked; existing local task-book ignore preserved |
+| M3-T01 | Complete | Four diagnosed runs and four warmups verified; 203 copied raw files passed SHA-256 verification; [diagnosis](m3_diagnostics.md), frozen 16-frame/4096-byte plan and adoption rule |
+| M3-T02 | Both variants locally verified | Control `7b8fcd3`, candidate `b1ba98c`, one-constant difference; both passed 103 Debug tests, including deterministic and actual TCP batch coverage |
+| M3-T03 | Candidate CI and Linux Release passed | Each independent Release build passed 104 tests; candidate CI passed 103/104/103/103, downloaded checks/smoke/new-path evidence verified; formal long validation passed on both frozen paths |
+| M3-T04 | Complete | All 70 measured attempts and 14 warmups retained. Guest independent checks passed; 1,618 copied files passed SHA-256 checks. Host full revalidation reproduced all derived files byte-for-byte. Separate A/B profiling and host revalidation passed; original profiler signal exits are retained |
+| M3-T05 | Candidate rejected | CPU/request improves 14.68% at 45k/s, but single-client RTT p99 rises 71.30% in paired median, exceeding the frozen 10% limit. Production restored to one frame, identical to measured control |
+| M3-T06 | Not applicable | No new core/allocation evidence justifies a second experiment; no extra optimization to force a positive result |
+| M3-T07 | Technical reproduction and reporting complete | Fresh public Linux clone and dependency installation; 104/104 Release tests, two CLI clients, core/network smoke and three short 45k/s pairs passed; copied files and independent summaries checked. [Report](m3_report.md) states source identities and limits |
+| M3-T08 | Separate final publication authority | [PR #3](https://github.com/Owenqi666/low-latency-matching/pull/3); latest PR, exact-main CI, permanent archives and public release are accepted only through the [release record](https://github.com/Owenqi666/low-latency-matching/releases/download/m3-experiments/acceptance.json) |

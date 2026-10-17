@@ -136,6 +136,7 @@ jobs:
             build/${{ matrix.preset }}/service-artifacts/
             build/${{ matrix.preset }}/loadgen-test-evidence/
             build/${{ matrix.preset }}/service-benchmark-evidence/
+            build/${{ matrix.preset }}/service-pair-evidence/
             build/benchmark-smoke/
             build/service-smoke/
 
@@ -226,3 +227,4 @@ jobs:
             build/tsan/service-artifacts/
             build/tsan/loadgen-test-evidence/
             build/tsan/service-benchmark-evidence/
+            build/tsan/service-pair-evidence/
