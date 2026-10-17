@@ -56,6 +56,32 @@ CPU/RSS and clock/environment limitations. There is no speedup requirement or
 per-message p99 claim. Measure only after correctness passes, without concurrent
 builds, compression or profiling. The real prefix gets one resource observation.
 
+## Frozen synthetic generation
+
+Generator v1 uses a fixed SplitMix64 sequence. The three formal inputs contain
+exactly 1,000,000 payload messages each (the zero-length file terminator is not
+a message): `mixed` seed `0x495443480501`, `cancel_replace` seed
+`0x495443480502`, and `multilevel` seed `0x495443480503`. A separate
+`long_verify` stream uses seed `0x495443480504` and 150,000 messages; its recorded
+actual target-update count must be at least 100,000.
+
+Each stream starts with S/O and TEST/OTHER directories and ends with S/C plus
+the BinaryFILE terminator. Between these, each 100-slot cycle assigns 80 slots
+to target updates, 10 to OTHER updates and 10 to known ignored P/Q/B/H messages.
+The requested add:execute:cancel:delete:replace weights are respectively
+30:20:20:10:20, 15:10:25:15:35 and 35:15:20:10:20; adds split between A/F and
+executions between E/C. Legalisation forces an add for an empty population and
+turns adds into deletes at capacity. The manifest records actual type counts.
+
+Target/other capacities are 1,000/128 orders, shares range from 1 to 1,000, and
+prices use center 1,000,000 with tick 100. Price choices per side are 32, 16
+and 256 for the three scenarios. Every 2,000 target updates, multilevel drains
+all orders at a selected current best bid or ask using consecutive target
+deletes, alternating sides and recording completed best-level disappearances.
+Equal timestamps deliberately occur; processing remains in file order. The
+manifest binds parameters, actual counts, peak/final activity, generator hash
+and input SHA-256. These are synthetic lifecycle inputs, not market data.
+
 ## Delivery gates
 
 Extend existing four Linux CI configurations with an ITCH group and small
@@ -72,10 +98,10 @@ one local final check close delivery without recursive self-certification.
 | Task | State | Evidence or next step |
 | --- | --- | --- |
 | T00 | Baseline verified | Current local/remote main equal accepted M4; original documents and storage retained; local start receipt under build/m5-baseline |
-| T01 | In progress | Capture rule and module scope fixed here; validate source framing and freeze synthetic generator settings |
-| T02 | In progress | Independent C++ module and CLI under development |
-| T03 | In progress | Independent Python decoding/reference and fixtures under development |
-| T04 | Pending | Real prefix capture followed by independent semantic verification |
+| T01 | Scope frozen | Message contract in itch_scope.md; bounded real capture has 1,000 AAPL updates; synthetic parameters fixed above |
+| T02 | Implemented; local checks passed | Independent C++ module/CLI, golden bytes and 14 C++ lifecycle tests; Linux CI pending |
+| T03 | Local checks passed; remote pending | Independent raw-byte Python model; 120,000 target updates and 12 full checkpoints passed; local Release discovery/JUnit 124/124; four Linux configurations pending |
+| T04 | Local semantic checks passed | Continuous real prefix: 1,042,864 messages, 1,000 target updates, 39 final orders/33 levels; four full checkpoints plus final state match; injected overdraw rejected by both implementations |
 | T05 | Pending | Correctness-gated finite Linux matrix |
 | T06 | Pending | Fresh public-source reproduction and report |
 | T07 | Pending | Latest PR, normal merge and exact-main checks |

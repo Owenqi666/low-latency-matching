@@ -70,12 +70,12 @@ jobs:
           set -euo pipefail
           cmake --build --preset "$CI_PRESET" --parallel 2 2>&1 | tee "$CI_LOG_DIR/build.log"
 
-      - name: Discover and require the core and M2 test groups
+      - name: Discover and require the core, service and ITCH test groups
         id: discovery
         run: |
           set -euo pipefail
           ctest --preset "$CI_PRESET" --show-only=json-v1 > "$CI_LOG_DIR/test-discovery.json"
-          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen)
+          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen --require itch)
           if [[ "$CI_PRESET" == release ]]; then groups+=(--require benchmark); fi
           python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" "${groups[@]}" \
             2>&1 | tee "$CI_LOG_DIR/test-groups-discovery.log"
@@ -91,7 +91,7 @@ jobs:
         if: always() && steps.discovery.outcome == 'success' && steps.tests.outcome != 'skipped'
         run: |
           set -euo pipefail
-          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen)
+          groups=(--require core --require pausable --require protocol --require concurrency --require service --require client --require loadgen --require itch)
           if [[ "$CI_PRESET" == release ]]; then groups+=(--require benchmark); fi
           python3 scripts/check_test_groups.py --discovery "$CI_LOG_DIR/test-discovery.json" \
             --junit "$CI_LOG_DIR/ctest.xml" "${groups[@]}" 2>&1 | tee "$CI_LOG_DIR/test-groups-execution.log"
@@ -121,6 +121,21 @@ jobs:
           python3 scripts/summarize_service_bench.py build/service-smoke \
             2>&1 | tee "$CI_LOG_DIR/network-report-check.log"
 
+      - name: Run bounded ITCH reconstruction smoke
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/run_itch_bench.py --binary build/release/bench_itch \
+            --replay build/release/itch_replay --source . --messages 2000 --rounds 1 \
+            --output-dir build/itch-smoke 2>&1 | tee "$CI_LOG_DIR/itch-smoke.log"
+
+      - name: Independently check ITCH smoke evidence
+        if: matrix.preset == 'release'
+        run: |
+          set -euo pipefail
+          python3 scripts/summarize_itch_bench.py build/itch-smoke \
+            2>&1 | tee "$CI_LOG_DIR/itch-report-check.log"
+
       - name: Save logs and failure reproduction files
         uses: actions/upload-artifact@v4
         if: always()
@@ -138,8 +153,11 @@ jobs:
             build/${{ matrix.preset }}/service-benchmark-evidence/
             build/${{ matrix.preset }}/service-pair-evidence/
             build/${{ matrix.preset }}/core-pair-evidence/
+            build/${{ matrix.preset }}/itch-cli/
+            build/${{ matrix.preset }}/itch-benchmark-evidence/
             build/benchmark-smoke/
             build/service-smoke/
+            build/itch-smoke/
 
   tsan:
     name: tsan / Ubuntu 24.04 / Clang 18
@@ -191,7 +209,7 @@ jobs:
           set -euo pipefail
           cmake --build --preset "$CI_PRESET" --parallel 2 2>&1 | tee "$CI_LOG_DIR/build.log"
 
-      - name: Require real protocol, concurrency, and service tests
+      - name: Require core, service, concurrency and ITCH tests
         id: discovery
         run: |
           set -euo pipefail
@@ -228,4 +246,5 @@ jobs:
             build/tsan/service-artifacts/
             build/tsan/loadgen-test-evidence/
             build/tsan/service-benchmark-evidence/
+            build/tsan/itch-cli/
             build/tsan/service-pair-evidence/

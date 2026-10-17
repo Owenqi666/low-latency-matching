@@ -40,6 +40,11 @@ the [report](docs/m4_report.md). See the [evidence index](docs/m4_evidence_index
 Final CI, archive and publication identities are bound by the
 `m4-order-storage` release receipts.
 
+M5 is in progress: an independent offline ITCH 5.0 decoder and single-security
+visible-order-book reconstructor. See the [supported scope and CLI](docs/itch_scope.md)
+and [implementation/acceptance plan](docs/m5_plan.md). Historical feed events are
+applied directly and do not pass through the matching engine.
+
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first
 GoogleTest 1.17.0 and Boost 1.89.0 downloads (versions and SHA-256 are pinned in
 `cmake/Dependencies.cmake`). GoogleTest is a test-only dependency, configured using

@@ -14,7 +14,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 
-DEFAULT_GROUPS = ("core", "pausable", "protocol", "concurrency", "service", "client", "loadgen")
+DEFAULT_GROUPS = ("core", "pausable", "protocol", "concurrency", "service", "client", "loadgen", "itch")
 GROUPS = (*DEFAULT_GROUPS, "benchmark")
 CORE_PREFIXES = (
     "Contract.", "EngineTest.", "OrderBookTest.", "Reference.",
@@ -24,7 +24,7 @@ CORE_PREFIXES = (
 
 def in_group(test, group):
     name = test["name"]
-    if group in ("protocol", "concurrency", "service", "benchmark"):
+    if group in ("protocol", "concurrency", "service", "benchmark", "itch"):
         properties = {item["name"]: item["value"] for item in test.get("properties", [])}
         return group in properties.get("LABELS", []) or (group == "benchmark" and name == "benchmark_pipeline")
     if group == "core":
@@ -101,7 +101,7 @@ def main():
     parser.add_argument("--discovery", type=Path, required=True)
     parser.add_argument("--junit", type=Path)
     parser.add_argument("--require", action="append", choices=GROUPS,
-                        help="required nonempty group; repeat as needed (default: all M2 groups)")
+                        help="required nonempty group; repeat as needed (default: core, service and ITCH groups)")
     args = parser.parse_args()
     try:
         result = check(args.discovery, args.junit, args.require or DEFAULT_GROUPS)

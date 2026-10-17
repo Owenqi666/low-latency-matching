@@ -1,0 +1,28 @@
+{
+  "provenance": "Hand-written hexadecimal frames and hand-calculated expectations; not emitted by create_itch_workloads.py or either decoder.",
+  "symbol": "TEST",
+  "timestamp_ns": 1108152157446,
+  "messages": 18,
+  "updates": 9,
+  "system_events": "OEC",
+  "target_messages": 13,
+  "filtered_messages": 2,
+  "ignored_by_type": {"P": 1, "Q": 1, "B": 1},
+  "after_c": {
+    "update_index": 4,
+    "order": {"reference": 10, "side": "B", "price": 10000, "shares": 70, "attribution": "ABCD"},
+    "bid": {"side": "B", "price": 10000, "shares": 120, "orders": 2}
+  },
+  "after_u": {
+    "update_index": 7,
+    "old_reference": 10,
+    "order": {"reference": 12, "side": "B", "price": 10200, "shares": 90, "attribution": "ABCD"},
+    "levels": [
+      {"side": "B", "price": 10200, "shares": 90, "orders": 1},
+      {"side": "B", "price": 10000, "shares": 30, "orders": 1}
+    ],
+    "bbo": {"bid": {"side": "B", "price": 10200, "shares": 90, "orders": 1}, "ask": {"side": "S", "price": 10100, "shares": 60, "orders": 1}}
+  },
+  "final_orders": [{"reference": 20, "side": "S", "price": 10100, "shares": 60, "attribution": ""}],
+  "final_levels": [{"side": "S", "price": 10100, "shares": 60, "orders": 1}]
+}
