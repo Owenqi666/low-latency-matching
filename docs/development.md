@@ -4,6 +4,16 @@ Return to the [project overview](../README.md). Run all commands below from the
 repository root. Give each demo or experiment a new output directory to preserve
 its evidence; formal measurements and profiling should run separately.
 
+## Development workflow
+
+llmatch is developed by [Owenqi666](https://github.com/Owenqi666) with assistance
+from OpenAI Codex. The assisted workflow includes implementation, testing,
+documentation and experiment automation.
+
+Project authorship and individual execution records are tracked separately:
+executor fields retain the Codex agent or tool that actually ran a recorded
+check. The reports document those executions and their measured outcomes.
+
 ## Build configurations
 
 Requires a C++20 compiler, CMake >= 3.24, Ninja, Python >= 3.10, and network access for the first

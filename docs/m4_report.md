@@ -295,5 +295,6 @@ and [service method](service_benchmark_method.md#m4-service-regression-subset).
 The final PR/exact-main CI inspections, permanent archives and uploaded-asset
 checks are recorded in the `m4-order-storage` release's `acceptance.json` and
 `publication-verification.json`; intermediate checks cannot replace them.
-Development, measurements and automated evidence review were performed by
-Codex. No unperformed human review or personal mastery is implied.
+Developed by [Owenqi666](https://github.com/Owenqi666) with assistance from OpenAI
+Codex. The measurements and automated evidence review described here were
+executed by Codex agents; see the [development workflow](development.md#development-workflow).

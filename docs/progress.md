@@ -1,5 +1,9 @@
 # Milestone progress and acceptance
 
+Developed by [Owenqi666](https://github.com/Owenqi666) with assistance from
+OpenAI Codex. The [development workflow](development.md#development-workflow)
+explains project authorship and the executor details retained in experiment records.
+
 For the 2026-10-18 Gateway experiment's test-registration repair and separate
 current-source CI/remote-delivery status, see the
 [Gateway closeout record](gateway_closeout_2026-10-18.md). The M1–M5 history below
