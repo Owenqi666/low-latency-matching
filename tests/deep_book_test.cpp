@@ -105,19 +105,22 @@ TEST(DeepBookTest, SparseWideRoutine) {
     run_case(1000, 0x47303202ULL, DeepBookDistribution::SparseWide, 500);
 }
 
-TEST(DeepBookTest, DISABLED_ExtendedLongFifo) {
+#if defined(LLMATCH_EXTENDED_TESTS) && LLMATCH_EXTENDED_TESTS
+TEST(DeepBookTest, ExtendedLongFifo) {
     for (const auto seed : {0x47303211ULL, 0x47303212ULL}) {
         run_case(10000, seed, DeepBookDistribution::LongFifo, 1000);
         if (::testing::Test::HasFatalFailure()) return;
     }
 }
 
-TEST(DeepBookTest, DISABLED_ExtendedSparseWide) {
+TEST(DeepBookTest, ExtendedSparseWide) {
     for (const auto seed : {0x47303221ULL, 0x47303222ULL}) {
         run_case(10000, seed, DeepBookDistribution::SparseWide, 1000);
         if (::testing::Test::HasFatalFailure()) return;
     }
 }
+
+#endif
 
 TEST(DeepBookTest, SeedAndVersionAreDeterministicAndSavedSubsetReplaysIndependently) {
     const EngineConfig config{64, 1000000000, 1000000};
