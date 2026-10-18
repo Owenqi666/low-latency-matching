@@ -6,13 +6,33 @@ its evidence; formal measurements and profiling should run separately.
 
 ## Development workflow
 
-llmatch is developed by [Owenqi666](https://github.com/Owenqi666) with assistance
-from OpenAI Codex. The assisted workflow includes implementation, testing,
-documentation and experiment automation.
+Use the following project attribution in overviews, reports and plans:
 
-Project authorship and individual execution records are tracked separately:
-executor fields retain the Codex agent or tool that actually ran a recorded
-check. The reports document those executions and their measured outcomes.
+> Developed by [Owenqi666](https://github.com/Owenqi666) with assistance from OpenAI Codex.
+
+中文口径：本项目由 Owenqi666 使用 OpenAI Codex 辅助开发。
+
+The assisted workflow includes implementation, testing, documentation and
+experiment automation. References to Codex agents as executors, reviewers or
+coordinators describe their roles within this workflow; the project developer
+is Owenqi666.
+
+Individual execution records identify who or what actually ran each check.
+Retain recorded Codex agent identities, environment details and original
+evidence; only describe human review when it was actually performed. An
+execution record is separate from project authorship.
+
+For new runs, the helpers below record `executor: "unspecified"` unless the
+caller supplies the actual executor. They do not infer it from project authorship
+or the milestone label:
+
+- `scripts/demo_service_clients.py CHECKOUT EVIDENCE [EXECUTOR]`: the optional
+  third positional argument records the executor; `--stage` sets the milestone.
+- `scripts/reproduce_m5.py ... --executor EXECUTOR`: the optional flag records
+  the executor in `run.json` and passes it to the two-client demonstration.
+
+These options describe the caller's reported executor; they do not authenticate
+an identity or alter earlier evidence.
 
 ## Build configurations
 
