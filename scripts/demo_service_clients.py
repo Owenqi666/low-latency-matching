@@ -12,7 +12,8 @@ import time
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("checkout", type=Path)
 parser.add_argument("evidence", type=Path)
-parser.add_argument("executor", nargs="?", help="Recorded executor; defaults to Codex plus the stage label")
+parser.add_argument("executor", nargs="?", default="unspecified",
+                    help="Self-reported executor of this run (default: unspecified)")
 parser.add_argument("--stage", default="M5 T06", help="Evidence stage label (default: M5 T06); does not affect paths")
 args = parser.parse_args()
 stage = args.stage.strip()
@@ -20,7 +21,7 @@ if not stage:
     parser.error("--stage must not be empty")
 checkout = args.checkout.resolve()
 evidence = args.evidence.resolve()
-executor = args.executor if args.executor is not None else f"Codex {stage}"
+executor = args.executor
 evidence.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(checkout / "tests"))
 from service_harness import ServerRun

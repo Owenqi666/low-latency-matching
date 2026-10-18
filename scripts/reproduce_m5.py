@@ -17,6 +17,8 @@ def main():
     parser.add_argument('--sha', required=True, help='Exact public commit to reproduce')
     parser.add_argument('--checkout', type=Path, required=True)
     parser.add_argument('--evidence', type=Path, required=True)
+    parser.add_argument('--executor', default='unspecified',
+                        help='Self-reported executor of this run (default: unspecified)')
     parser.add_argument('--real-input', type=Path, required=True, help='Previously captured day-start prefix, reused without downloading')
     parser.add_argument('--capture', type=Path, required=True, help='Its original capture.json provenance receipt')
     args = parser.parse_args()
@@ -37,7 +39,7 @@ def main():
     record = dict(status='running', target_sha=args.sha, started_at_utc=now(), steps=[],
                   repository='https://github.com/Owenqi666/low-latency-matching.git',
                   checkout=str(checkout), evidence=str(evidence),
-                  executor='Codex automated M5 T06',
+                  executor=args.executor,
                   real_input=dict(path=str(real_input), sha256=real_sha, bytes=real_input.stat().st_size,
                                   symbol=capture['symbol'], source=capture['url'], acquisition_repeated=False),
                   dependency_mode='New public checkout, dependency downloads and Release build; existing Linux VM and system toolchain.',

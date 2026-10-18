@@ -316,8 +316,10 @@ aarch64. The clean Linux baseline passed 124/124, zero failures/skips, in 19.91
 seconds; 32 copied evidence files and dependency archive pins were independently
 hash-checked. None of these observations is a performance result.
 
-G01 and G02 implementations were independently reviewed. The main agent owns
-shared CMake registration and G03 integration. Independent review found and prompted correction
+G01 and G02 implementations were independently reviewed. During this
+[Codex-assisted development run](development.md#development-workflow), the
+coordinating Codex agent handled shared CMake registration and G03 integration.
+Independent review found and prompted correction
 of G01's process-group cleanup proof (leader exit alone is insufficient), a G02
 level-rebuild counter, and G03 evidence validation/timer coverage. Previous attempts
 remain retained. The VM disk was safely grown from 24 to 64 GiB after a shutdown

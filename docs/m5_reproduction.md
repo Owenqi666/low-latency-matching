@@ -52,6 +52,11 @@ The helper records `acquisition_repeated=false`: the saved prefix is reused,
 not downloaded again. Transfer that single authoritative input to an existing
 VM if needed; do not duplicate the VM or reacquire the source for T06.
 
+To identify who or what executes a new run, add `--executor` with the actual
+executor. If omitted, `run.json` and the two-client demonstration record
+`unspecified`. This execution field is separate from the
+[project developer attribution](development.md#development-workflow).
+
 ## Long correctness check and finite measurement
 
 After T06 succeeds, use that same new checkout. The long run creates one input,
