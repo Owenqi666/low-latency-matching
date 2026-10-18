@@ -6,11 +6,12 @@ the archive has been created and independently verified. Historical M1–M5 asse
 and conclusions remain unchanged.
 
 Current recovery entry: [the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint),
-`formal/freeze-01/freeze.json` and `formal/run-01-driver.log`. G05 is complete;
-G06 launched at 16:21:25.121295Z and is running in
-`/home/m2/gateway-formal-01/pairs`. Match Linux PID 10805 to its launch/start
-identity before monitoring; do not restart or clear the active run. Production
-remains batch1 and no formal conclusion is available.
+`formal/freeze-01/freeze.json` and `formal/run-01-driver.json`. G05 is complete;
+G06 retained all 84 attempts and its driver ended at 16:47:47.105786Z. Runner
+exit 1 retains delivery failures; summarizer exit 0 and all 84 guard checks
+completed without a stop. Independent evaluation completed at 16:54:55.338036Z,
+exit 0: valid evidence, reject batch16, retain batch1. G07 is not triggered;
+G08/G09 technical delivery and final clean validation are the next work.
 
 | Evidence | Location | Meaning |
 |---|---|---|
@@ -48,7 +49,10 @@ remains batch1 and no formal conclusion is available.
 | G05 terminal proposal and collection | `calibration/continuation-01/continuation-driver.json`, `calibration/run-02/journal/00009.json`, `proposed-gateway-service-formal.json`, `calibration/run-02-collection-verified.json` | Driver exit 0; terminal `proposed` / decision `complete`, no pending attempt; proposed ordinary/near/burst/overload rates 10,000/22,781/2,000/75,938; 705 hashes / 746,338,997 bytes verified; subsequent formal freeze recorded separately below |
 | Source-bound correctness prerequisites | `formal/preparation-01/correctness-receipt.json`, `correctness-audit.md`, `artifact-index.json` | Five prerequisite categories audited against A/B sources and concrete test artifacts; platform/scope limitations retained; not a formal adoption or G09 receipt |
 | G05 completed formal freeze | `formal/freeze-01/freeze.json`, `freeze-validation.json`, `gateway-service-formal.json`, `formal-plan.json` | Frozen at 16:19:55.525998Z; freeze SHA-256 `37646da98a7f6eda9fd287e22937c31869b5fe841d96bc931cd93bf82897f332`; validation receipt binds schema, source/binary and correctness gates before performance launch |
-| G06 active guarded run | `formal/run-01-driver.log`; VM `/home/m2/gateway-formal-01-launch.json`, `/home/m2/gateway-formal-01/guard-report.json`, `/home/m2/gateway-formal-01/pairs` | Launched 16:21:25.121295Z, Linux guard PID 10805; local SSH PID 46491 / root exec session 49493 at launch; mixed_4 in progress, no completed formal comparison or adoption claim |
+| G06 completed guarded run | `formal/run-01-driver.json`, `.log`, `formal/run-01/guard-report.json`, `formal/run-01/pairs/` | All 70 measurements and 14 warmups retained; driver ended 16:47:47.105786Z, runner exit 1, summarizer exit 0; 84 guard checks without a stop |
+| G06 independent decision | `formal/run-01/independent-evaluation/gateway-evaluation.json`, `.md`, `validation/pair-report.json` | Valid reject / A; source unchanged; near CPU reduction 6.4025%, RTT p99 +13.7174%, scheduled-to-completion p99 +10.0948%; all 35 pairs and 14 warmups present |
+| G06 collection | `formal/run-01/collection-sha256.json`, `formal/run-01-collection-verified.json` | 1,632 files / 3,736,738,350 bytes verified; original pair source tree SHA `818b47ebb46c8524b1c7c04f740cc64aa5abb126604b14bc35aa96010ba63905` |
+| Final source/coverage bridge | `final/source-bridge-01/bridge.json`, `.md` | 54 unchanged C++/header inputs bridge existing A Debug/ASan-UBSan/TSan and extended correctness; current 122-file code/fixture identity matches f6765b5; fresh Linux combined integration still required |
 
 See [execution plan](gateway_optimization_plan.md) for the dependency map and
 completion contract. New correctness, reproduction, profiling, calibration,

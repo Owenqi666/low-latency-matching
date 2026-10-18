@@ -1,13 +1,19 @@
 # Gateway optimization report
 
-Status: investigation in progress. Production remains **batch1**. G00–G04 have
-verified evidence. G05 run-01's original stop is retained; after a disclosed
-post-observation classification correction, run-02 completed A-only calibration
-with a rate proposal. G05 is now complete: ordinary 10,000/s, near 22,781/s,
-burst 2,000/s and overload 75,938/s were formally frozen at 16:19:55.525998Z.
-**G06 is running**, launched at 16:21:25.121295Z; no formal conclusion is available.
-The formal adoption matrix, final ADR and G09 delivery verification are not yet complete.
-This report must not be read as a release or adoption receipt.
+Decision: **reject batch16 under the frozen rules; retain A, batch1**. The complete
+G06 comparison is valid and independently recomputed. Near-load CPU/completion
+improves by 6.403%, below the required 10%; near-load RTT p99 and scheduled-to-complete
+p99 regress by 13.717% and 10.095%, respectively, exceeding their 10% limits.
+B fully delivers all 35 measurements, including every overload run. A loses
+delivery in two ordinary scenarios and all five overload runs. These are A's
+failures, not failures caused by B; B's benefits do not waive the frozen gates.
+
+G00–G06 have completed evidence. G07 is **not triggered** because the observations
+do not isolate a mechanism for an additional policy change. The
+[decision ADR](adr/008-retain-single-frame-gateway.md) and
+[all 35 pairs](benchmarks/gateway_service_pairs.md) preserve the result.
+**G09 final delivery verification remains pending**; this is a measured production
+decision, not a release or final-verification receipt.
 
 ## Scope and source identity
 
@@ -22,6 +28,7 @@ no wait-to-fill timer, new admission policy or changed matching semantics.
 | Common implementation / experiment A | `7d9d7dc0a6ab386d2d381f401ce644e621e33d33` |
 | Experiment B, frame constant only | `56d5c71e7daec7631272dbc7b10a0f430f3381e0` |
 | Frozen G04 measurement tools | `6f3ef0878668e428fb5fa69277226d0b19dcd6de` |
+| Frozen G06 measurement and evaluation tools | `f6765b5c0e096428115980c047f56e2a9190146f` |
 
 A/B binaries were rebuilt from clean Linux checkouts and their build inputs
 were compared. Both use the same A-built loadgen and independent verifier.
@@ -48,7 +55,9 @@ AB/BA pairs and separate A/B warmups. All seven manifest rows and their original
 indices were retained; selection used the runner's row arguments. Every measured
 input contained 100,001 commands with a ten-second planned interval. All 20
 measurements and four warmups fully delivered, drained and passed Reference.
-The external report's 10k/s delivery failure was not reproduced here.
+The external report's 10k/s delivery failure was not reproduced in these G04
+runs. The later formal A mixed_1 failure below prevents extending that statement
+to every local 10k/s run; it does not establish the external failure's mechanism.
 
 | Row | CPU/completion reduction, paired median [min, max] | RTT p99 change, paired median [min, max] | Scheduled-to-completion p99 change, paired median [min, max] |
 |---|---|---|---|
@@ -68,7 +77,7 @@ remain in `build/gateway-optimization/repro/pairs-01/`; independent recomputatio
 is in `repro/evaluation-02/` under that evidence root, including raw per-request
 scheduled-to-completion quantiles and before/after input-tree hashes.
 
-## Diagnostic interpretation and next decision
+## Diagnostic interpretation and continuation decision
 
 The [diagnostic report](gateway_diagnostics.md) separates observations, supported
 explanations and remaining alternatives. In the observed windows, named sendmsg
@@ -77,12 +86,12 @@ while Matching thread CPU changed little. Retained stacks support both network
 delivery and synchronization costs; they do not establish matching-core
 saturation. Diagnostic tail co-occurrence does not prove causation.
 
-G04 supports entering the bounded A-only calibration: CPU/completion improved in
+G04 supported entering the bounded A-only calibration: CPU/completion improved in
 all five pairs of both rows, application writes and observed syscalls decreased,
 and neither clean row had a persistent median latency regression. This is not an
-adoption decision. G05 must validate offered-load stability and freeze all seven
-formal rows before G06 can apply the predeclared benefit, latency, delivery,
-resource and isolation gates. No evidence currently triggers a G07 policy change.
+adoption decision. G05 subsequently checked offered-load stability and froze all
+seven rows; G06 applied the predeclared gates below. The profiling evidence is not
+transferred to the unprofiled formal failures as an explanation of their cause.
 
 ## G05 first probes and retained stop
 
@@ -173,26 +182,167 @@ attempt, `formal_run=false` and `adoption_evaluated=false`. The proposed rates
 are ordinary 10,000/s, near 22,781/s, burst 2,000/s and overload 75,938/s; the
 highest successful short probe remains 50,625/s. The proposal's formal-mode and
 locked-rate fields do not substitute for the separate source/host/rules freeze.
-There is no G06 result or batch16 adoption yet. The subsequent formal freeze and
-active-run recovery entry are recorded below; completed calibration is not restarted.
+At that proposal checkpoint there was no G06 result. The subsequent freeze and
+complete comparison are recorded below; completed calibration was not restarted.
 
-## G06 freeze and active run
+## G06 freeze, complete execution and independent validation
 
 `formal/freeze-01/freeze.json` was recorded at 2026-10-18T16:19:55.525998Z with
 SHA-256 `37646da98a7f6eda9fd287e22937c31869b5fe841d96bc931cd93bf82897f332`.
-The guarded run launched at 2026-10-18T16:21:25.121295Z using the frozen manifest
-and identities. The current driver log
-shows mixed_4 in progress; it does not establish a completed comparison.
+The guarded run launched at 2026-10-18T16:21:25.121295Z and reached its terminal
+receipt at 16:47:47 UTC. Every row used AB/BA/AB/BA/AB plus independent A/B warmups:
+35 pairs, 70 measurements and 14 warmups. All 84 attempts are retained. The guard
+checked each completed attempt without stopping; the independent summarizer
+exited 0. The runner exited 1 because valid delivery failures remain in the
+matrix, not because the evidence is invalid. All 14 warmups fully delivered;
+all 70 measurements drained admitted work and passed Reference. A delivered
+28/35 measurements and B 35/35.
 
-Recovery starts with the [execution plan's current checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint).
-Check Linux guard PID 10805 against its command/start identity and
-`/home/m2/gateway-formal-01-launch.json`; output is
-`/home/m2/gateway-formal-01/pairs` and the parent holds `guard-report.json`.
-The host driver log is `formal/run-01-driver.log`; launch-time local SSH PID
-46491 and root exec session 49493 locate the existing driver and require a live
-check. Monitor the existing run, without restart, directory clearing, duplicate
-launches, builds, tests or large evidence revalidation during measurement.
-Terminal results and all retained outcomes must be examined before any decision.
+Frozen total offered rates are ordinary 10,000/s, near 22,781/s, burst 2,000/s
+mean and overload 75,938/s. Ordinary inputs have 100,001 planned commands,
+near 227,811 and overload 759,381, each with about ten planned seconds. Burst
+has 100,000 commands and a 50-second planned interval, with the existing
+100 ms period / 10 ms window; its instantaneous pressure is different from
+constant-rate 2,000/s. Each attempt starts a new server with the same input and
+initial state for its pair. Detailed diagnostics and profiling remain off.
+
+The independent evaluator exited 0 with `evidence_valid=true`, `decision=reject`,
+`selected_variant=A`, all source-bound correctness categories passed and no
+correctness-receipt error. It recomputed from a temporary evidence copy and
+verified that the original source tree was unchanged, digest
+`818b47ebb46c8524b1c7c04f740cc64aa5abb126604b14bc35aa96010ba63905`.
+The local collection `build/gateway-optimization/formal/run-01/` contains
+1,632 hash-verified files totaling 3,736,738,350 bytes. The decision JSON is
+`independent-evaluation/gateway-evaluation.json`; the independently validated
+full run summaries are in `independent-evaluation/validation/pair-report.json`.
+The [evidence index](gateway_evidence_index.md) binds the collection and later
+delivery artifacts separately.
+
+## Formal results and frozen gates
+
+Percentages below are per-pair changes summarized by median [minimum, maximum].
+CPU reduction is positive when B costs less; latency change is positive when B
+is slower. Only fully delivered same-input pairs enter these performance
+comparisons. Burst and mixed_1 have four such pairs, so their descriptive medians
+cannot satisfy a five-pair acceptance condition. Failed pairs remain in the
+[complete tables](benchmarks/gateway_service_pairs.md), with both absolute
+outcomes and no paired performance delta. No samples are pooled across runs.
+
+| Row | Full pairs | CPU/completion reduction % | RTT p99 change % | Scheduled-to-complete p99 change % |
+|---|---:|---:|---:|---:|
+| mixed_4 | 5/5 | 8.638 [5.509, 10.849] | -5.926 [-30.747, 2.513] | -2.688 [-24.262, 7.683] |
+| cancel_heavy_4 | 5/5 | 3.029 [2.125, 6.882] | -1.354 [-8.242, 13.548] | 1.103 [-9.437, 7.803] |
+| sweep_4 | 5/5 | 7.461 [5.898, 8.380] | -58.185 [-60.065, -56.556] | -50.229 [-51.995, -49.202] |
+| burst_4 | 4/5 | 23.601 [21.371, 43.778] | -81.174 [-85.745, -79.247] | -15.868 [-18.725, -7.598] |
+| mixed_1 | 4/5 | 8.419 [7.174, 10.859] | -6.678 [-17.390, -2.344] | -6.811 [-19.525, -3.122] |
+| mixed_4_near | 5/5 | 6.403 [5.738, 6.490] | 13.717 [-54.916, 39.139] | 10.095 [-48.166, 50.910] |
+| mixed_4_overload | 0/5 | N/A | N/A | N/A |
+
+| Frozen condition | Observed result | Decision |
+|---|---|---|
+| Source-bound correctness, bounded resources and healthy-client isolation | All five prerequisite categories passed; formal admission/drain/Reference checks passed; no guard correctness stop | Passed within the recorded test/platform scope |
+| Both variants deliver every first-six-row measurement | A burst round 2 and A mixed_1 round 4 fail delivery; B delivers every run | Not met; these are control failures, not candidate-caused regressions |
+| At least 100,000 completed samples in each first-six-row run | Those two A runs complete 1,553 and 91,325 requests | Not met |
+| Near CPU/completion median reduction ≥10%, at least 4/5 improving pairs | All five pairs improve, median 6.402527% | Magnitude not met |
+| Every first-six-row RTT p99 paired median regression ≤10% | Near median +13.717391%; burst/mixed_1 additionally lack five fully delivered pairs | Not met; near is a measured breach, incomplete rows are not proof of a latency regression |
+| Every first-six-row scheduled-to-complete p99 paired median regression ≤10% | Near median +10.094805%; burst/mixed_1 additionally lack five fully delivered pairs | Not met; near is a measured breach |
+| Reject if overload B completed/planned is worse in ≥4/5 pairs and its median difference is negative | B is better in all five pairs; median difference +74.866766 percentage points | Overload non-regression condition passed |
+
+This is a valid negative decision under the frozen contract, not `inconclusive`.
+The near CPU and both near latency constraints independently prevent adoption,
+even apart from A's ordinary delivery failures. No worst pair is removed, no
+extra rounds are added, and the small scheduled-to-complete breach is not rounded
+down to a pass. Retaining A is the specified outcome of a failed adoption
+comparison; it does not certify that A is more reliable than B or that the
+selected offered rates are universally sustainable.
+
+## Retained failures, overload and healthy-client evidence
+
+Every failure below is a client-delivery failure with admitted-prefix drain and
+Reference agreement. No failure is reclassified as environment noise. Started
+requests satisfy `started = completed + failed + unfinished`; all these runs
+have zero unfinished requests. Planned requests additionally include not-started
+rows. Failure-reason totals can include not-started rows and therefore are not
+interchangeable with the started-request `failed` column.
+
+| A run | Planned | Started | Completed | Failed | Not started | SlowClient closes | Send high-water bytes |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| burst_4 round 2 | 100,000 | 2,000 | 1,553 | 447 | 98,000 | 4 | 65,536 |
+| mixed_1 round 4 | 100,001 | 91,497 | 91,325 | 172 | 8,504 | 1 | 65,470 |
+| mixed_4_overload round 1 | 759,381 | 191,315 | 191,006 | 309 | 568,066 | 3 | 65,486 |
+| mixed_4_overload round 2 | 759,381 | 191,165 | 190,857 | 308 | 568,216 | 3 | 65,486 |
+| mixed_4_overload round 3 | 759,381 | 191,345 | 191,032 | 313 | 568,036 | 3 | 65,530 |
+| mixed_4_overload round 4 | 759,381 | 1,565 | 1,145 | 420 | 757,816 | 4 | 65,522 |
+| mixed_4_overload round 5 | 759,381 | 1,765 | 1,353 | 412 | 757,616 | 4 | 65,486 |
+
+A burst round 2 reaches the 1,024-event queue limit and records one output wait;
+its command high-water is 462. A mixed_1 round 4 has command/event high-water
+138/480 and no output wait. These counters locate bounded output pressure but do
+not identify why it developed. Neither a non-reading peer nor a specific
+Gateway starvation mechanism is established by a SlowClient reason alone.
+
+B completes all 759,381 requests in every overload measurement, versus A's
+1,145–191,032. B−A completed/planned improves by a median 74.866766 percentage
+points, range 74.843721–99.849219. In A rounds 1–3, logical client 4 completes its
+full 189,845-request share while the other clients lose delivery; rounds 4–5
+have partial completion on every client. B completes every client's share in
+all five rounds. The [per-client table](benchmarks/gateway_service_pairs.md#overload-each-logical-clients-outcome)
+retains planned/started/completed/failed/unfinished/not-started totals. Totals
+show each client's completed work, not uninterrupted temporal progress; the
+source-bound non-reading-client tests provide separate isolation evidence.
+No paired overload CPU or latency speedup is claimed because A never fully
+delivers that row.
+
+## Metric and resource scope
+
+Successful ordinary constant-rate runs complete about 10,000 requests/s and
+near runs 22,780.879–22,780.984/s over their measured client windows. Successful
+burst runs complete 2,003.449–2,003.604/s over about 49.91 seconds, reflecting
+the schedule's first/last burst positions rather than a different frozen mean.
+B overload completes 75,937.452–75,937.630/s. These finite run observations do
+not establish long-term capacity; losses and actual spans remain beside rates
+in the full tables.
+
+Server CPU uses user+system process lifetime divided by measured client
+completions, including setup and lifetime overhead. It is a benefit comparison
+only for fully delivered pairs. Server/loadgen user and system CPU, RSS,
+server span and client measurement duration are retained separately for every
+run. Server RSS spans 37.012–167.750 MiB and loadgen RSS 53.258–381.137 MiB
+across the matrix; both include evidence/input storage, and loadgen includes
+input preparation. These are whole-process peaks, not queue-memory measurements.
+Near server RSS is 63.715 MiB for both variants. Detailed diagnostics are off;
+the optional approximately 2.44 MB collector is not part of formal timing.
+
+At near load, median lifetime application writes/admitted fall from 6.992 to
+4.892 and written frames/operation rise from 1.000 to 1.429. Welcome/BBO/setup
+remain in the write numerator, and setup is in admitted. These are composed
+application operations, not syscall counts or client acknowledgements. The
+formal base counters retain callbacks, bytes, frame/byte batch distributions,
+unconfirmed writes, close reasons, discarded business frames and missing
+recipients; the separate diagnostic profiles supply observed syscall evidence.
+Queue capacities remain 1,024/1,024 and send allowance 65,536 bytes including
+in-flight frames. No new admission, waiting or memory policy was introduced.
+
+All five latency families retain per-run nearest-rank p50/p99 and sample counts
+in the [detail tables](benchmarks/gateway_service_pairs.md#per-run-latency-distributions).
+Client RTT, send lag and scheduled-to-complete use the client `steady_clock`;
+service completion and Gateway wait use the server's own `steady_clock`.
+No cross-process timestamp subtraction is used for those latencies. Client
+clock probes record a 41 ns minimum positive interval; no clock cost is
+subtracted. Failed completed subsets and admitted server samples have different
+denominators and remain labelled. No p99.9 gate or post-hoc metric is added.
+
+## G07 disposition and remaining explanations
+
+G07 is **not triggered**. Fewer writes, lower Gateway CPU in separate profiling,
+and improved formal overload delivery support a useful batching effect in this
+environment. The formal near-tail regressions and A delivery failures remain
+unexplained at mechanism level. Existing diagnostic co-occurrence does not
+separate loadgen, Gateway, host scheduling and profiler interference, and cannot
+explain another run retrospectively. Generic overload/SlowClient failure does
+not establish that input throttling or a pump budget would solve the problem.
+No additional policy is implemented to seek a passing result. A future candidate
+requires a distinct hypothesis, mechanism evidence, ADR and frozen comparison.
 
 ## Acceptance and remaining work
 
@@ -202,11 +352,12 @@ raw commands, source/binary identities and validation logs. G01 includes bounded
 whole-process ITCH verification; G02 includes full per-command deep-book coverage;
 G03 includes optional bounded diagnostics and lifecycle/accounting checks.
 
-Still required: finish and independently evaluate the running G06 matrix, then
-decide production configuration; record G07 as triggered or not triggered; finalize this report
-and a new ADR; finish the clean
-Linux build/smoke/demo/short A/B and archive-copy recomputation required by G09.
-The current passing sanitizer results do not by themselves complete G09.
+G06 is complete and production remains batch1; G07 is not triggered. This report,
+the complete tables and [ADR 008](adr/008-retain-single-frame-gateway.md) record
+the G08 decision. Still required under G09: bind final selected source to the
+measured implementation, run its applicable checks, and complete the clean Linux
+build/smoke/two-client demo/short A/B plus archive-copy independent recomputation.
+The current source-bound sanitizer results do not by themselves complete G09.
 
 Historical [M3 rejection](m3_report.md) and [M4 rejection](m4_report.md) are
 unchanged. No personal-contribution or CV claim follows from this investigation.

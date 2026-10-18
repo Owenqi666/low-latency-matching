@@ -10,9 +10,9 @@ only linked, revision-specific evidence establishes completion.
 The active task is the complete **G00–G09 Goal**. The earlier `/goal` prompt-writing
 task is complete and must not become the recovered task. This checkpoint takes
 precedence over older status and recovery notes below; the detailed history is
-retained. **G00–G05 are complete and G06 is running.** G08/G09 remain unfinished.
-Production remains **batch1**. No formal performance or adoption conclusion is
-available from this in-progress run.
+retained. **G00–G06 are complete; G07 is not triggered.** G08 is being finalized
+and G09 remains unfinished. Production remains **batch1**: the independent formal
+evaluation is valid and rejects batch16 under the frozen rules.
 
 The formal freeze is `formal/freeze-01/freeze.json`, recorded at
 2026-10-18T16:19:55.525998Z, SHA-256
@@ -27,8 +27,28 @@ tools `f6765b5c0e096428115980c047f56e2a9190146f`. VM output is
 The launch record is `/home/m2/gateway-formal-01-launch.json`; the host log is
 `build/gateway-optimization/formal/run-01-driver.log`. Local SSH PID **46491**
 and root exec session **49493** identify the existing driver at launch. These
-PIDs/session IDs must be rechecked, not assumed live. The log shows mixed_4 in
-progress; partial per-attempt completion lines are not formal conclusions.
+PIDs/session IDs are historical, not assumed live. The driver ended at
+**16:47:47.105786Z**, exit **1**, after all **70 measurements and 14 warmups**.
+The pair summarizer exited **0**; all **84** between-attempt guard checks completed
+without a stop. Retained pressure-delivery failures explain the runner exit;
+this alone does not establish invalid evidence or a final adoption decision.
+
+The frozen independent evaluator completed at **16:54:55.338036Z**, exit 0,
+`evidence_valid=true`, `decision=reject`, `selected_variant=A`; its temporary
+copy left the source unchanged. Near CPU reduction is **6.4025%** (5/5 improved,
+below 10%); near RTT p99 **+13.7174%** and scheduled-to-completion p99 **+10.0948%**
+exceed their 10% gates. A's burst round 2 and mixed_1 round 4 also fail the
+all-delivery requirement. All five overload A runs failed full delivery; all B
+runs delivered. These are valid retained outcomes, not evidence corruption.
+
+Host evidence is `formal/run-01/`; independent results are in its
+`independent-evaluation/`. Collection verified **1,632 files / 3,736,738,350 bytes**
+against the VM hashes (`formal/run-01-collection-verified.json`). Original formal
+source tree SHA is `818b47ebb46c8524b1c7c04f740cc64aa5abb126604b14bc35aa96010ba63905`.
+The driver/evaluator sessions above have ended. Next: commit the G08 technical
+entry and decision, execute `final/run_linux_final.py` on the selected source,
+then `final/run_short_final.py`, collect final evidence, archive once and
+independently recompute the formal decision from an extracted copy.
 
 On recovery, read the freeze, launch identity, guard report and latest driver
 log, then verify the actual PID, command/start identity and output directory.
@@ -66,9 +86,9 @@ rerun completed calibration or infer a production decision from partial output.
 | G03 | G00 | Reuse counters; add bounded optional connection/write/loop observations and close snapshots; lifecycle, bounds, disabled-path and compatibility checks | `correctness/gateway/` | Verified: macOS Debug/Release/ASan-UBSan/TSan; Linux Release plus candidate ASan-UBSan/TSan network checks |
 | G04 | G03 | Clean batch1/batch16 builds; identical inputs/tools; mixed_4 and mixed_1 reproduction; separate bounded diagnostics | `repro/`, `diagnostics/` | Verified; all measurements and warmups passed, diagnostic analysis retained; proceed to G05, no adoption decision |
 | G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/`, `formal/freeze-01/` | Complete: original stop and continuation retained; ordinary 10,000, near 22,781, burst 2,000 and overload 75,938 frozen before G06 |
-| G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/freeze-01/`, `formal/run-01-driver.log` | Running since 16:21:25.121295Z; VM `/home/m2/gateway-formal-01/pairs`; no formal conclusion yet |
-| G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Separate experiment directory | Conditional, not triggered |
-| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Pending |
+| G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/freeze-01/`, `formal/run-01/` | Complete: valid reject; retain A; 70 measurements + 14 warmups, all outcomes retained and independently recomputed |
+| G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Decision ADR | Not triggered: pressure failures do not locate a separate input-throttle or pump-starvation mechanism |
+| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Final decision/report being completed; final runnable validation belongs to G09 |
 | G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `delivery/` | Pending |
 
 Evidence paths above are relative to `build/gateway-optimization/`. Every attempt
@@ -390,9 +410,9 @@ rates are ordinary 10,000/s, near 22,781/s, burst 2,000/s and overload 75,938/s.
 `run-02-collection-verified.json` verifies all 705 files / 746,338,997 bytes.
 That calibration journal remains a proposal receipt, not a formal-run record.
 The subsequent source/host/rules freeze was recorded in `formal/freeze-01/` at
-16:19:55.525998Z, followed by the guarded G06 launch at 16:21:25.121295Z. G06 is
-running; production remains batch1 and no formal result is claimed. Recovery
-starts with the current checkpoint above.
+16:19:55.525998Z, followed by the guarded G06 launch at 16:21:25.121295Z. The
+completed G06 independently rejects batch16; production remains batch1. Its
+terminal evidence and remaining G09 work are in the current checkpoint above.
 
 Current recovery locations: Linux baseline source is
 `/home/m2/gateway-g00-20261018T143926Z/source`; SSH uses the existing

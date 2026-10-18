@@ -1,9 +1,12 @@
 # Gateway diagnostics: observations and attribution limits
 
 G03 observation collection and G04 reproduction/diagnostic analysis are complete.
-The results support continuing to bounded G05 calibration; they do not constitute
-a production adoption decision. G05/G06 must provide the separately frozen formal
-comparison. Historical M3 rejection and production batch1 remain unchanged.
+They supported proceeding to G05 and the separately frozen G06 comparison.
+The complete [formal report](gateway_report.md#formal-results-and-frozen-gates)
+now rejects batch16 under the frozen rules and retains batch1; G09 delivery
+verification is still pending. The measurements below remain the independent
+G04 diagnostic dataset, not profiles of the later formal failures or regressions.
+Historical M3 rejection remains unchanged.
 
 ## Questions to resolve
 
@@ -284,12 +287,41 @@ this single diagnostic pair per row provides no unbiased performance effect size
 
 | Direct observation | Supported explanation | Still not excluded / scope |
 |---|---|---|
-| Clean application writes/admitted fall; observed sendmsg rates fall in the same direction; Gateway CPU is predominantly system CPU and exceeds Matching CPU | Network delivery and per-write work are material costs; existing queued-frame batching is worth carrying into finite G05 calibration | Sparse task-clock samples do not quantify an exact component share or prove matching-core saturation; formal adoption is unevaluated |
+| Clean application writes/admitted fall; observed sendmsg rates fall in the same direction; Gateway CPU is predominantly system CPU and exceeds Matching CPU | Network delivery and per-write work are material costs; these observations justified carrying existing queued-frame batching into finite G05/G06 | Sparse task-clock samples do not quantify an exact component share or prove matching-core saturation; the later formal rejection is separate from these observations |
 | Clean mixed_1 median RTT changes by +0.638%, while its median CPU falls 8.132%; all runs deliver and drain | The old persistent single-client regression is not reproduced in this fixed environment | Other rates, scenarios and hosts may regress; the full formal constraints still apply |
 | Diagnostic B mixed_4 has a transient shared send-lag/timer/service/RTT excursion with bounded queues and later full drain | A scheduling or output-progress interruption is consistent with these observations | Loadgen scheduling, Gateway scheduling, host scheduling and profiler interference cannot be separated; neither a non-reading peer nor pump starvation is established |
 | Clean mixed_4 round 5 has +39.378% RTT p99 alongside higher send-lag and service p99 | The regression affects multiple reported stages and must remain visible | Its cause is unexplained; the later diagnostic excursion cannot be used as its causal trace |
-| No local tested 10k/s run reproduces the external delivery failure | This environment completes the selected workloads under their actual configuration | The external x86 VM, workload or scheduler differences remain unresolved; no universal 10k/s reliability or capacity claim follows |
+| No G04 clean or diagnostic 10k/s run reproduces the external delivery failure | This environment completes those selected G04 workloads under their actual configuration | Later formal A mixed_1 round 4 loses delivery at 10k/s; the external x86 VM/workload/scheduler equivalence and failure mechanism remain unresolved, so no universal reliability claim follows |
 
 These results do not isolate a mechanism for a separate scheduling/input-throttle
-change. G04 preserves useful candidate benefit and unresolved tails; G05/G06,
-not this diagnostic collection, determine whether production should change.
+change. G04 preserves useful candidate benefit and unresolved tails; the separate
+G06 decision determines whether production should change.
+
+## What the completed G06 comparison adds
+
+The independent G06 evaluator validates all 35 pairs and selects A under the
+unchanged adoption rules. All five near pairs improve CPU/completion, but their
+6.402527% median reduction is below 10%. Near RTT p99 and scheduled-to-complete
+p99 regress by 13.717391% and 10.094805%, above their respective 10% ceilings.
+Those are actual full-pair numeric breaches. The [full report](gateway_report.md)
+and [all-pair tables](benchmarks/gateway_service_pairs.md) retain the ranges,
+absolute values, incomplete ordinary pairs and every failed outcome.
+
+| Formal observation | Supported explanation | Not established |
+|---|---|---|
+| B completes all 35 measurements, including all five overload runs; A loses delivery in five overload runs | B improves delivered overload work in this fixed matrix; completed/planned increases by a paired median 74.866766 percentage points | Universal sustainable capacity, cross-host improvement, or enough benefit to waive the failed near gates |
+| A burst round 2 completes 1,553/100,000, records four SlowClient closes, send high-water 65,536 bytes and one output wait; A mixed_1 round 4 completes 91,325/100,001 with one SlowClient close and send high-water 65,470 | The control experiences bounded output-pressure delivery failures in these formal runs; admitted work still drains and Reference passes | B caused those failures; an environmental fault; the peer stopped reading; input throttling would solve the mechanism |
+| Near application writes/admitted fall from median 6.992 to 4.892, while both near tail medians breach their limits | Fewer composed writes coexist with a CPU benefit and an unacceptable latency tradeoff under the frozen contract | Syscall counts during these unprofiled runs, or the temporal cause of the near regressions |
+
+Detailed diagnostics and profilers were off for G06. Its cumulative counters
+cannot establish event ordering or causality. G04's profiled B mixed_4 excursion
+and its separate clean +39.378% outlier remain exactly those earlier observations;
+neither is relabelled as an explanation of a formal failure. Unknown causes stay
+unknown and are not automatically called environment noise.
+
+**G07 is not triggered.** The evidence does not isolate a reproducible
+input-admission mechanism or establish pump starvation. Generic overload,
+SlowClient reasons and high-water marks do not independently meet that trigger.
+No throttling, work-budget or waiting-policy change is added to the batch
+experiment. [ADR 008](adr/008-retain-single-frame-gateway.md) records the decision
+and the evidence needed before any separate follow-up comparison.

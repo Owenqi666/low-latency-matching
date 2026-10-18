@@ -26,9 +26,18 @@ each demonstration. [Architecture](docs/service_architecture.md),
 
 ## Current evidence and limits
 
-Production writes remain **batch1** while the Gateway investigation continues.
-The current [Gateway report](docs/gateway_report.md) separates completed 10k/s
-reproduction from the pending capacity calibration and formal adoption decision.
+Production writes remain **batch1** after the Gateway experiment's valid rejection
+of batch16. The seven-row Linux VM matrix retained all 35 pairs and 14 warmups:
+
+- At the frozen near rate of 22,781 commands/s, batch16 reduced server lifetime
+  CPU per measured completion by a paired median **6.40%**, below the 10% gate.
+- In that same row, RTT p99 and scheduled-to-completion p99 increased by paired
+  medians **13.72%** and **10.09%**, exceeding their 10% limits.
+- A delivered all requests in 28/35 measured runs and B in 35/35. A's burst,
+  single-client and overload failures remain in the record; all runs drained.
+
+These are finite results on one local VM, not general capacity guarantees.
+The [Gateway report](docs/gateway_report.md) records all outcomes and gates.
 The [diagnostic report](docs/gateway_diagnostics.md),
 [execution plan](docs/gateway_optimization_plan.md) and
 [evidence index](docs/gateway_evidence_index.md) retain source identities and all
@@ -135,6 +144,37 @@ actual input, configuration and both outputs under the test working directory's
 `failures/`. `shrink_failure --config FILE --input FILE --output FILE` requires
 an input that still fails on the current binaries; a correctly fixed input will
 report that there is no failure to shrink.
+
+The separate deep-book suite covers long FIFO queues and sparse, wide price
+levels. Its routine cases use capacity 1,000, 850 prefill commands and 500 tail
+commands, with one fixed seed per distribution. They run in the normal CTest
+suite; to select just this suite and retain its inputs and coverage records:
+
+```sh
+cmake --preset release
+cmake --build --preset release --target deep_book_tests replay --parallel 2
+LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-routine-01" \
+  ctest --preset release -L deep_book --output-on-failure --no-tests=error
+```
+
+The two `DISABLED_Extended*` GoogleTest cases are disabled in normal CTest runs.
+Each covers two fixed seeds at capacity 10,000, with 8,500 prefill commands and
+1,000 tail commands per seed. Run the full deep-book suite, including those four
+extended traces, explicitly in Release:
+
+```sh
+LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-extended-01" \
+  ./build/release/deep_book_tests --gtest_also_run_disabled_tests \
+  --gtest_output=xml:build/deep-book-extended-01/all.xml
+```
+
+Choose new output directories for each run. Each trace includes any additional
+boundary and replenishment commands; every command compares full events,
+normalized snapshots and invariants. `LLMATCH_DEEP_BOOK_OUTPUT` retains the trace,
+configuration, metadata, coverage CSV and comparison result. These cases provide
+deep-book coverage separately from the small-capacity `LLMATCH_LONG_DIFFERENTIAL`
+entry above. Recorded runs and independent replays are in the
+[Gateway evidence index](docs/gateway_evidence_index.md).
 
 Build `release`, then run a short benchmark and independently check its report:
 
