@@ -5,6 +5,12 @@ All paths below currently refer to local evidence under
 the archive has been created and independently verified. Historical M1–M5 assets
 and conclusions remain unchanged.
 
+Current recovery entry: [the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint),
+`calibration/run-02/journal/00009.json` and
+`calibration/continuation-01/continuation-driver.json`. Calibration is terminal
+`proposed` / decision `complete`; the separate formal freeze and G06 remain
+pending. Production remains batch1.
+
 | Evidence | Location | Meaning |
 |---|---|---|
 | Source identity and local taskbook hash | `baseline/source.json` | Starting revision and clean tracked source before changes |
@@ -33,6 +39,12 @@ and conclusions remain unchanged.
 | Current tools and staged demo integration | `correctness/tools-integration-02/` | Configure, service_benchmark and gateway_experiment passed; two real CLI clients passed seven-command Gateway G08 demo with independent verification; later evaluator fixes are checked separately above |
 | Reviewed calibration and evaluator integration | `correctness/tools-integration-03/` | Official configure and three focused CTest entries passed; 32 calibration and 23 evaluator cases; tool hashes unchanged during checks |
 | Pre-probe host and lag checks | `calibration/host-preflight-01.json`, `calibration/g04-lag-assessment-01.json` | Actual host layout/AC power rechecked; frozen lag criterion passes existing G04 A evidence; no new measurement |
+| G05 first A-only probe sequence | `calibration/run-01/`, `calibration/run-01-driver.json`, `calibration/run-01-driver.log` | Six rates from 10,000 to 75,938/s; 12 measured runs plus six warmups; first five points passed; original terminal outcome is `measurement_insufficient`, driver exit 2 |
+| G05 immutable collection verification | `calibration/run-01/collection-sha256.json`, `calibration/run-01-collection-verified.json` | All 462 collected file hashes match; includes both 75,938/s delivery failures, their raw lag bins, original results and terminal `journal/00013.json` |
+| G05 classification correction and carry-forward | `calibration/continuation-01/tools-preparation.json`, `calibration/run-02/carry-forward-audit.json`, `plan.json` | Clean tools `f6765b5`; post-observation delivery-failure precedence correction; original tree SHA, six raw probe identities and lag data unchanged; original stop retained; cumulative budgets preserved |
+| G05 ordinary reuse | `calibration/run-02/g04-reuse.json` | G04 A identity and all five rounds of each ordinary row checked; ten stable lag assessments; 10,000/s reused with zero new ordinary measurements |
+| G05 near and burst confirmations | `calibration/run-02/attempts/007-near-45562/`, `008-near-22781/`, `009-burst-2000/` | 45,562/s retained as valid delivery failure (round 2: 178,708/455,621 complete, two empty lag bins); allowed halved retry 22,781/s passed all three rounds; burst 2,000/s passed; seven new measurements and three warmups retained |
+| G05 terminal proposal and collection | `calibration/continuation-01/continuation-driver.json`, `calibration/run-02/journal/00009.json`, `proposed-gateway-service-formal.json`, `calibration/run-02-collection-verified.json` | Driver exit 0; terminal `proposed` / decision `complete`, no pending attempt; proposed ordinary/near/burst/overload rates 10,000/22,781/2,000/75,938; 705 hashes / 746,338,997 bytes verified; no formal freeze, G06 run or adoption |
 | Source-bound correctness prerequisites | `formal/preparation-01/correctness-receipt.json`, `correctness-audit.md`, `artifact-index.json` | Five prerequisite categories audited against A/B sources and concrete test artifacts; platform/scope limitations retained; not a formal adoption or G09 receipt |
 
 See [execution plan](gateway_optimization_plan.md) for the dependency map and

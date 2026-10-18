@@ -5,6 +5,35 @@ is a reproducible production decision, including a defensible decision to retain
 batch1. It does not require batch16 to win. This document records planned work;
 only linked, revision-specific evidence establishes completion.
 
+## Current recovery checkpoint
+
+The active task is the complete **G00–G09 Goal**. The earlier `/goal` prompt-writing
+task is complete and must not become the recovered task. This checkpoint takes
+precedence over older status and recovery notes below; the detailed history is
+retained. G00–G04 are complete. **G05's A-only calibration has reached a rate
+proposal; formal freezing remains pending.** G06/G08/G09 remain unfinished.
+Production remains **batch1**; no formal run or adoption has occurred.
+
+The current VM continuation directory is `/home/m2/gateway-calibration-02`, using
+`tools-03` at `f6765b5c0e096428115980c047f56e2a9190146f`. The original six
+calibration points are carried forward without changing the original evidence-tree
+SHA or resetting the cumulative budget. The latest collected
+`calibration/run-02/journal/00009.json` is terminal:
+`status=proposed`, `decision.action=complete`, `pending=null`, `formal_run=false`.
+G04 A ordinary **10,000/s** is `reused`; near **45,562/s** was a
+`valid_load_failure`, then **22,781/s (retry 1)** passed all three confirmations;
+burst **2,000/s** passed. The proposed overload rate is **75,938/s**. These rates
+and `proposed-gateway-service-formal.json` still require a separate formal freeze.
+The collection receipt verifies 705 files / 746,338,997 bytes.
+
+On recovery, first read that terminal journal, `carry-forward-audit.json`,
+`calibration/continuation-01/continuation-driver.json` and any newer journal in the
+current VM directory, then inspect the actual processes. If an attempt is running,
+monitor it only: do not restart it or launch a duplicate. If it is terminal, read its result
+and journal before selecting the next action under the existing rules and
+cumulative budget. The recorded next step is to review and freeze the formal
+manifest, identities and rules before G06, not to rerun completed calibration.
+
 ## Starting point and scope
 
 - Starting revision: `4abdccc57037c69ded2247ac9a88894a03a1543b`.
@@ -32,7 +61,7 @@ only linked, revision-specific evidence establishes completion.
 | G02 | G00 | Versioned deep-book input, two distributions, full per-command comparison, measured occupancy/operation coverage, replayable failures | `correctness/deep-book/` | Normal/extended scales and corrected counter verified; Linux extended cases passed |
 | G03 | G00 | Reuse counters; add bounded optional connection/write/loop observations and close snapshots; lifecycle, bounds, disabled-path and compatibility checks | `correctness/gateway/` | Verified: macOS Debug/Release/ASan-UBSan/TSan; Linux Release plus candidate ASan-UBSan/TSan network checks |
 | G04 | G03 | Clean batch1/batch16 builds; identical inputs/tools; mixed_4 and mixed_1 reproduction; separate bounded diagnostics | `repro/`, `diagnostics/` | Verified; all measurements and warmups passed, diagnostic analysis retained; proceed to G05, no adoption decision |
-| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/` | Tool implementation and validation in progress; no probe has started |
+| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/` | run-01 stop retained; run-02 terminal `proposed` / decision `complete`; ordinary 10,000 reused, near 22,781 and burst 2,000 confirmed, overload 75,938 proposed; formal freeze pending |
 | G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/` | Conditional, not entered |
 | G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Separate experiment directory | Conditional, not triggered |
 | G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Pending |
@@ -96,8 +125,11 @@ Before probes, record the send-lag growth criterion, thresholds and rationale.
 The following rule is fixed before the first probe. Divide the planned interval
 into four equal bins and save each bin's started-sample lag p50/p99, the pending
 command count at each right boundary, and the actual first-attempt send span.
-Require at least one started sample in every bin; otherwise stop as insufficient
-measurement. A point is stable only if all of these hold in both measured runs:
+Require at least one started sample in every bin; otherwise the lag assessment is
+`measurement_insufficient`. The original run-01 implementation also made that
+the attempt's stop outcome, before checking delivery failure. The subsequent
+classification correction is recorded below. A point is stable only if all of
+these hold in both measured runs:
 
 - Median p50 of bins 3/4 minus median p50 of bins 1/2 is at most 1 ms.
 - The corresponding p99 growth is at most 5 ms.
@@ -115,6 +147,18 @@ and stop before freezing rates for load-path diagnosis. Do not relabel it as
 environmental noise or infer a server delivery-loss boundary. Invalid evidence,
 protocol/reference errors or worker faults stop calibration for correction.
 
+After observing run-01's A results, classification priority was corrected:
+independently validated delivery failure with recognized load-related reasons
+takes precedence over insufficient lag-bin coverage. Empty bins still mean
+`measurement_insufficient` for the lag assessment, and a fully delivered run
+with missing bins still stops as insufficient measurement. Evidence validity,
+correctness faults, unrecognized failures and failed warmups retain their stop
+checks. No lag threshold, bin count, minimum sample count or missing-bin rule is
+relaxed. This is a post-observation analysis correction, not a claim that the
+revised precedence was specified before run-01. Original results and journal
+entries remain unchanged. The separately identified run-02 continuation and its
+carry-forward audit apply this correction without repeating the original probes.
+
 Probe mixed_4 with commands=2,000, minimum_plan_seconds=2, rounds=2,
 warmup_commands=1,000. Start at 10k/s; on success increase by ceil(1.5R), on
 initial failure halve with floor and a minimum of 1. Stop after finding a passed
@@ -131,12 +175,21 @@ mean=max(1,floor(ordinary/5)), one confirmation and at most one halved retry.
 
 Separate maximum measured budgets: 20 probe runs, 18 ordinary/near confirmations,
 two burst confirmations; warmups are additional. No transfer of unused budgets.
+The cumulative run-01/run-02 use is six of ten probe points, 12 of 20 probe
+measurements plus six probe warmups; six of 18 ordinary/near confirmation
+measurements plus two near warmups; and one of two burst confirmations plus one
+burst warmup. G04 A reuse added zero ordinary measurements or warmups. All seven
+new measurements and three new warmups are retained, including the failed near
+confirmation. A new directory or tool revision does not reset these counts;
+unused allowances do not authorize more probing after the decision is complete.
 Default maximum planned duration per row is 600 seconds. Stop expansion and
 investigate if samples/rates cannot fit; do not silently lower sample requirements.
 No observed upper failure means a high-load probe, not a measured overload boundary.
 
-The formal manifest is created only after this gate. Freeze time and hashes must
-precede the first formal run. Freeze machine/layout, source/binaries/tools, seven
+The formal manifest is frozen only after this gate. A generated proposal, even
+with `mode=formal` and `rates_locked=true`, is not the separate freeze receipt.
+Freeze time and hashes must precede the first formal run. Freeze machine/layout,
+source/binaries/tools, seven
 rows/seeds, resource bounds, actual input lengths, warmups/order/rounds, timeouts,
 diagnostic settings, evidence validity, metrics, constraints and stop rules.
 Use mode=formal and rates_locked=true; no row/rate/commands/rounds overrides.
@@ -266,7 +319,7 @@ under GCC ASan/UBSan and separately Clang 18 TSan, with zero failures or disable
 tests. Source hashes stayed identical and clean; 893 collected file hashes were
 checked. This is candidate-specific correctness evidence, not final G09 delivery.
 
-Recovery checkpoint: the G05 helper is implemented and independently reviewed.
+Historical pre-probe checkpoint: the G05 helper is implemented and independently reviewed.
 Its 32 deterministic tests cover finite progression/budgets, lag/identity/error
 classification, G04 A-only reuse, evidence integrity and refusing to restart
 unresolved attempts. The evaluator has 23 passing counterexamples after review
@@ -281,9 +334,58 @@ The five source-bound correctness prerequisites are audited in
 have concrete healthy-client completion and bounded-send evidence; sanitizer
 platform and suite differences are stated. The receipt does not replace formal
 performance gates or final G09 delivery. No calibration or formal measurement
-has started at this checkpoint. Next: create a clean frozen tools checkout,
-verify its Linux tests and prepared plan, then execute the finite A-only run.
-Preserve the original A/B checkouts and all completed experiment directories.
+had started at that pre-probe checkpoint. Preserve the original A/B checkouts
+and all completed experiment directories; the later run is recorded below.
+
+G05 run-01 used tools revision `98377de69681644d824ffd751cae2589e6ee568e`
+with unchanged A server/source identity. Its calibration plan was recorded at
+2026-10-18T16:00:14.325060Z; this is not a G06 formal freeze. Execution ran from
+16:00:50.719385Z to 16:01:51.234337Z and exited 2. It measured mixed_4 at
+10,000, 15,000, 22,500, 33,750, 50,625 and 75,938 requests/s: six distinct
+points, two measured runs and one independent warmup per point. All six warmups
+passed. Both measurements at each of the first five points fully delivered,
+drained and had stable lag assessments.
+
+At 75,938/s, the two measurements completed 38,951 and 1,244 of 151,877 planned
+client requests. The server drained its admitted prefix and Reference passed in
+both runs; slow-client closures and client disconnects are retained. Round 1
+failed the pending-growth lag check; round 2 started requests only in the first
+of four bins. The original result and terminal `journal/00013.json` therefore
+retain `measurement_insufficient` and `status=stopped`. The later delivery-first
+classification correction above must not overwrite that original outcome or
+turn either failed run into a pass. It does not establish the bottleneck.
+
+The local `calibration/run-01` collection contains 462 hash-verified files;
+`run-01-collection-verified.json`, the driver record and all failed-run evidence
+are retained. The original `measurement_insufficient` stop remains unchanged.
+
+The continuation preparation and driver are in `calibration/continuation-01/`;
+the collected results are in `calibration/run-02/`. Clean tools revision
+`f6765b5c0e096428115980c047f56e2a9190146f` records the post-observation correction.
+`carry-forward-audit.json` binds the original six results and terminal journal,
+records unchanged raw identities/lag data and the unchanged parent-tree SHA
+`ec5cba474fec23c24887e6c246852c46a2568b9e87c65e379182d74b50e7f80c`, and charges
+the original budget. Only the derived 75,938/s outcome becomes
+`valid_load_failure`; the original run-01 result is not edited. The continuation
+driver ran from 16:11:59.727231Z to 16:15:15.434562Z and exited 0.
+
+G04 A reuse validated all five mixed_4 and all five mixed_1 measurements, including
+the unchanged lag gates, and reused ordinary 10,000/s without a new measurement.
+Near 45,562/s ran three ten-second confirmations: client completions were
+455,621 / 178,708 / 455,621 of 455,621 planned each. Round 2 disconnected and its
+last two lag bins were empty; Reference and admitted-prefix drain passed, but
+the confirmation remained `valid_load_failure`. The one allowed halved retry
+at 22,781/s delivered all 227,811 commands in each of three rounds, with all lag
+gates passing. Burst 2,000/s delivered all 20,001 commands and passed the lag
+gates. All three new 1,000-command warmups passed. Cumulative usage is recorded
+above; no additional ordinary runs were made.
+
+Terminal `run-02/journal/00009.json` records `status=proposed`, decision `complete`,
+`pending=null`, `formal_run=false`, and `adoption_evaluated=false`. The proposed
+rates are ordinary 10,000/s, near 22,781/s, burst 2,000/s and overload 75,938/s.
+`run-02-collection-verified.json` verifies all 705 files / 746,338,997 bytes.
+The formal source/host/rules freeze is still pending, G06 has not run, and
+production remains batch1. Recovery starts with the current checkpoint above.
 
 Current recovery locations: Linux baseline source is
 `/home/m2/gateway-g00-20261018T143926Z/source`; SSH uses the existing
