@@ -10,6 +10,9 @@ independent offline Nasdaq ITCH 5.0 visible-book reconstructor.
 The engineering focus is explicit ownership, bounded queues, reproducible
 measurements and independent validation of results.
 
+Developed by [Owenqi666](https://github.com/Owenqi666) with assistance from
+OpenAI Codex. See the [development workflow](docs/development.md#development-workflow).
+
 [Architecture](#architecture) · [Build and demo](#build-and-demo) ·
 [Validation](#validation) · [Measurements and decisions](#measurements-and-decisions) ·
 [Development guide](docs/development.md)
