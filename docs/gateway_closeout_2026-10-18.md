@@ -94,9 +94,9 @@ historical commands, not the current operating instructions.
 |---|---|
 | Acceptance baseline | `e94d9f9592534a4058486ebf506576c54d4e0eaf` |
 | New evidence directory | `build/gateway-closeout-r04wqppx/` |
-| Repaired/tested source | `2aa0826fe2de843800ad2426f7c4b1a6841a1620`; `baseline/fix.patch` and `tested-working-diff.patch` preserve the recorded source/worktree scope |
+| Repaired/tested source | `2aa0826fe2de843800ad2426f7c4b1a6841a1620`; `baseline/fix.patch` and `baseline/tested-working-diff.patch` preserve the recorded source/worktree scope |
 | Default receipts | `default/discovery-check.json`, `default/execution-check.json`, `default/ctest.xml`: passed |
-| Extended / switch-off receipts | `extended/deep-book-discovery.json`, `selected-discovery.json`, `ctest.xml`, `extended/deep-book/`; `switch-off/deep-book-discovery.json`: passed |
+| Extended / switch-off receipts | `extended/deep-book-discovery.json`, `extended/selected-discovery.json`, `extended/ctest.xml`, `extended/deep-book/`; `switch-off/deep-book-discovery.json`: passed |
 | Combined local receipt | `local-result.json`, status=passed, finished 2026-10-18T17:46:05.070322Z, source-before/source-after equal |
 | PR URL and head SHA | [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7); final documentation-head SHA is recorded in its delivery record after commit |
 | PR Actions URL and actual checkout SHA | Pending current-version CI; a merge-preview checkout may differ from PR head |

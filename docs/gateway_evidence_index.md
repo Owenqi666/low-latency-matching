@@ -37,9 +37,9 @@ Baseline e94d9f9 and repaired source
 
 | Closeout item | Evidence location | Current state |
 |---|---|---|
-| R00 baseline, worktree diff and retained review failure | `baseline/record.json`, `head.txt`, `status.txt`, `fix.patch`, copied review logs | Starting e94d9f9; five copied prior failure materials hash-verified; repaired two-file commit 2aa0826 |
-| R02-A default discovery and full JUnit consistency | `default/discovery-check.json`, `execution-check.json`, `ctest.xml` | Fresh cache OFF; 136 discovered and executed successfully, both strict checks valid=true; five routine deep-book cases, no disabled/skipped entries |
-| R02-B explicit Extended CTest entry | `extended/deep-book-discovery.json`, `selected-discovery.json`, `ctest.xml`, `deep-book/` | Passed: seven deep-book discoveries, two selected/executed normal Extended tests, four C10k cases each with six hashed files and successful comparisons |
+| R00 baseline, worktree diff and retained review failure | `baseline/record.json`, `baseline/head.txt`, `baseline/status.txt`, `baseline/fix.patch`, copied review logs | Starting e94d9f9; five copied prior failure materials hash-verified; repaired two-file commit 2aa0826 |
+| R02-A default discovery and full JUnit consistency | `default/discovery-check.json`, `default/execution-check.json`, `default/ctest.xml` | Fresh cache OFF; 136 discovered and executed successfully, both strict checks valid=true; five routine deep-book cases, no disabled/skipped entries |
+| R02-B explicit Extended CTest entry | `extended/deep-book-discovery.json`, `extended/selected-discovery.json`, `extended/ctest.xml`, `extended/deep-book/` | Passed: seven deep-book discoveries, two selected/executed normal Extended tests, four C10k cases each with six hashed files and successful comparisons |
 | R02-C ON→OFF discovery refresh | `switch-off/deep-book-discovery.json`, configure/build logs | Passed: exactly five routine cases, zero Extended and zero disabled entries |
 | Combined local acceptance | `local-result.json` | Passed at 17:46:05.070322Z; source 2aa0826, source-before/source-after equal; actual compiler/dependency overrides recorded |
 | Original raw archive preservation | `archive-preservation.json` | Read-only SHA matches 997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2, 5,675,490,816 bytes; archive not regenerated |
