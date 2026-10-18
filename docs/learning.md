@@ -5,7 +5,7 @@ already demonstrated mastery of them.
 
 ## Follow a partial fill
 
-Run `replay --engine compare` on `data/fixtures/basic.trace` using the README
+Run `replay --engine compare` on `data/fixtures/basic.trace` using the [development guide](development.md#deterministic-replay-and-differential-testing)
 command. The third command buys 8 with limit 101. Maker 101 rests first at 100
 with quantity 5; maker 102 follows at the same price with quantity 7. The events
 are Accepted, Trade(101,5@100), Trade(102,3@100), Complete(filled=8). Maker 102
