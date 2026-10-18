@@ -434,12 +434,15 @@ def classify(runs, lags):
             return "correctness_fault"
         if reasons - {"max_inflight", "send_limit", "deadline", "disconnected", "write_error"}:
             return "needs_load_diagnosis"
-    if any(item["status"] == "measurement_insufficient" for item in lags.values()):
-        return "measurement_insufficient"
     if any(not run["succeeded"] for run in runs if run["kind"] != "measurement"):
         return "needs_load_diagnosis"
+    # Independent validation already established a real delivery failure.
+    # Early connection closure can leave later lag bins empty; that limits lag
+    # interpretation but cannot erase the observed failed load point.
     if any(not run["succeeded"] for run in measured):
         return "valid_load_failure"
+    if any(item["status"] == "measurement_insufficient" for item in lags.values()):
+        return "measurement_insufficient"
     return "pass" if all(item["status"] == "stable" for item in lags.values()) else "unstable_offered_load"
 
 

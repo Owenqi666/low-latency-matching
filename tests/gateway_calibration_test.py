@@ -264,7 +264,7 @@ class ClassificationTests(unittest.TestCase):
         unstable = {"r1": {"status": "unstable_offered_load"}}
         self.assertEqual(calibration.classify([run()], unstable), "unstable_offered_load")
         self.assertEqual(calibration.classify([run(success=False)], unstable), "valid_load_failure")
-        self.assertEqual(calibration.classify([run(success=False)], {"r1": {"status": "measurement_insufficient"}}), "measurement_insufficient")
+        self.assertEqual(calibration.classify([run(success=False)], {"r1": {"status": "measurement_insufficient"}}), "valid_load_failure")
         for failure in ("protocol", "startup"):
             item = run(success=False)
             item["failure_reasons"] = {failure: 1}
@@ -277,6 +277,43 @@ class ClassificationTests(unittest.TestCase):
         self.assertEqual(calibration.classify([run("w", "warmup", False), run()], {"r1": {"status": "stable"}}), "needs_load_diagnosis")
         with self.assertRaises(ValueError):
             calibration.classify([run("w", "warmup")], {})
+
+    def test_valid_delivery_loss_survives_early_close_empty_lag_bins(self):
+        early_close = calibration.lag_analysis(samples(lambda group, index: 0 if group == 0 else None), 0, 4000000000, 75938)
+        self.assertEqual(early_close["status"], "measurement_insufficient")
+        self.assertEqual([item["samples"] for item in early_close["bins"]], [100, 0, 0, 0])
+        lags = {"r1": {"status": "unstable_offered_load"}, "r2": early_close}
+        before = deepcopy(lags)
+        runs = [run("w", "warmup"), run("r1", success=False), run("r2", success=False)]
+        runs[-1]["failure_reasons"] = {"disconnected": 300}
+        self.assertEqual(calibration.classify(runs, lags), "valid_load_failure")
+        self.assertEqual(lags, before)  # Missing bins and their limitations remain in evidence.
+        history = pass_until_failure()
+        self.assertEqual(history[-1]["rate"], 75938)
+        history[-1]["outcome"] = calibration.classify(runs, lags)
+        self.assertEqual(sum(item["rounds"] for item in history), 12)
+        self.assertEqual(calibration.next_step(history, g04_available=True), {"action": "reuse_g04"})
+
+    def test_missing_lag_still_blocks_fully_delivered_measurements(self):
+        lags = {"r1": {"status": "stable"}, "r2": calibration.lag_analysis([], 0, 4000000000, 10000)}
+        self.assertEqual(calibration.classify([run("r1"), run("r2")], lags), "measurement_insufficient")
+        with self.assertRaisesRegex(ValueError, "missing measured lag"):
+            calibration.classify([run("r1", success=False), run("r2", success=False)], {"r1": lags["r1"]})
+
+    def test_correctness_unknown_failure_and_failed_warmup_precede_pressure_loss(self):
+        lags = {"r1": {"status": "measurement_insufficient"}}
+        for problem, expected in (("protocol", "correctness_fault"), ("worker", "correctness_fault"),
+                                  ("startup", "needs_load_diagnosis"), ("warmup", "needs_load_diagnosis")):
+            runs = [run("w", "warmup"), run(success=False)]
+            if problem == "worker":
+                runs[-1]["server_counters"]["worker_aborted"] = True
+            elif problem == "warmup":
+                runs[0]["succeeded"] = False
+                runs[0]["failure_reasons"] = {"deadline": 1}
+            else:
+                runs[-1]["failure_reasons"] = {problem: 1}
+            with self.subTest(problem=problem):
+                self.assertEqual(calibration.classify(runs, lags), expected)
 
     def test_environment_binding_checks_live_ram_cpu_and_not_tools_commit(self):
         original = environment()
