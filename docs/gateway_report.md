@@ -3,9 +3,9 @@
 Status: investigation in progress. Production remains **batch1**. G00–G04 have
 verified evidence. G05 run-01's original stop is retained; after a disclosed
 post-observation classification correction, run-02 completed A-only calibration
-with a rate proposal. Ordinary 10,000/s was reused, near 22,781/s and burst
-2,000/s were confirmed, and overload 75,938/s was proposed. No formal rates or
-manifest are frozen and G06 has not started.
+with a rate proposal. G05 is now complete: ordinary 10,000/s, near 22,781/s,
+burst 2,000/s and overload 75,938/s were formally frozen at 16:19:55.525998Z.
+**G06 is running**, launched at 16:21:25.121295Z; no formal conclusion is available.
 The formal adoption matrix, final ADR and G09 delivery verification are not yet complete.
 This report must not be read as a release or adoption receipt.
 
@@ -173,9 +173,26 @@ attempt, `formal_run=false` and `adoption_evaluated=false`. The proposed rates
 are ordinary 10,000/s, near 22,781/s, burst 2,000/s and overload 75,938/s; the
 highest successful short probe remains 50,625/s. The proposal's formal-mode and
 locked-rate fields do not substitute for the separate source/host/rules freeze.
-There is no G06 result or batch16 adoption yet. Recovery starts with the current
-checkpoint in the [execution plan](gateway_optimization_plan.md), the terminal
-journal and an actual process check; completed calibration is not restarted.
+There is no G06 result or batch16 adoption yet. The subsequent formal freeze and
+active-run recovery entry are recorded below; completed calibration is not restarted.
+
+## G06 freeze and active run
+
+`formal/freeze-01/freeze.json` was recorded at 2026-10-18T16:19:55.525998Z with
+SHA-256 `37646da98a7f6eda9fd287e22937c31869b5fe841d96bc931cd93bf82897f332`.
+The guarded run launched at 2026-10-18T16:21:25.121295Z using the frozen manifest
+and identities. The current driver log
+shows mixed_4 in progress; it does not establish a completed comparison.
+
+Recovery starts with the [execution plan's current checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint).
+Check Linux guard PID 10805 against its command/start identity and
+`/home/m2/gateway-formal-01-launch.json`; output is
+`/home/m2/gateway-formal-01/pairs` and the parent holds `guard-report.json`.
+The host driver log is `formal/run-01-driver.log`; launch-time local SSH PID
+46491 and root exec session 49493 locate the existing driver and require a live
+check. Monitor the existing run, without restart, directory clearing, duplicate
+launches, builds, tests or large evidence revalidation during measurement.
+Terminal results and all retained outcomes must be examined before any decision.
 
 ## Acceptance and remaining work
 
@@ -185,9 +202,8 @@ raw commands, source/binary identities and validation logs. G01 includes bounded
 whole-process ITCH verification; G02 includes full per-command deep-book coverage;
 G03 includes optional bounded diagnostics and lifecycle/accounting checks.
 
-Still required: review the G05 proposal and freeze the formal manifest, identities
-and rules before the first G06 run; run the G06 matrix and decide production
-configuration; record G07 as triggered or not triggered; finalize this report
+Still required: finish and independently evaluate the running G06 matrix, then
+decide production configuration; record G07 as triggered or not triggered; finalize this report
 and a new ADR; finish the clean
 Linux build/smoke/demo/short A/B and archive-copy recomputation required by G09.
 The current passing sanitizer results do not by themselves complete G09.

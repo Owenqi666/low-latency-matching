@@ -10,29 +10,33 @@ only linked, revision-specific evidence establishes completion.
 The active task is the complete **G00–G09 Goal**. The earlier `/goal` prompt-writing
 task is complete and must not become the recovered task. This checkpoint takes
 precedence over older status and recovery notes below; the detailed history is
-retained. G00–G04 are complete. **G05's A-only calibration has reached a rate
-proposal; formal freezing remains pending.** G06/G08/G09 remain unfinished.
-Production remains **batch1**; no formal run or adoption has occurred.
+retained. **G00–G05 are complete and G06 is running.** G08/G09 remain unfinished.
+Production remains **batch1**. No formal performance or adoption conclusion is
+available from this in-progress run.
 
-The current VM continuation directory is `/home/m2/gateway-calibration-02`, using
-`tools-03` at `f6765b5c0e096428115980c047f56e2a9190146f`. The original six
-calibration points are carried forward without changing the original evidence-tree
-SHA or resetting the cumulative budget. The latest collected
-`calibration/run-02/journal/00009.json` is terminal:
-`status=proposed`, `decision.action=complete`, `pending=null`, `formal_run=false`.
-G04 A ordinary **10,000/s** is `reused`; near **45,562/s** was a
-`valid_load_failure`, then **22,781/s (retry 1)** passed all three confirmations;
-burst **2,000/s** passed. The proposed overload rate is **75,938/s**. These rates
-and `proposed-gateway-service-formal.json` still require a separate formal freeze.
-The collection receipt verifies 705 files / 746,338,997 bytes.
+The formal freeze is `formal/freeze-01/freeze.json`, recorded at
+2026-10-18T16:19:55.525998Z, SHA-256
+`37646da98a7f6eda9fd287e22937c31869b5fe841d96bc931cd93bf82897f332`.
+It freezes ordinary **10,000/s**, near **22,781/s**, burst **2,000/s** and overload
+**75,938/s**. The original six calibration probes, failed 45,562/s confirmation,
+halved near retry and cumulative budgets remain in the history below.
 
-On recovery, first read that terminal journal, `carry-forward-audit.json`,
-`calibration/continuation-01/continuation-driver.json` and any newer journal in the
-current VM directory, then inspect the actual processes. If an attempt is running,
-monitor it only: do not restart it or launch a duplicate. If it is terminal, read its result
-and journal before selecting the next action under the existing rules and
-cumulative budget. The recorded next step is to review and freeze the formal
-manifest, identities and rules before G06, not to rerun completed calibration.
+G06 launched at **2026-10-18T16:21:25.121295Z**, Linux guard PID **10805**, using
+tools `f6765b5c0e096428115980c047f56e2a9190146f`. VM output is
+`/home/m2/gateway-formal-01/pairs`; its parent contains `guard-report.json`.
+The launch record is `/home/m2/gateway-formal-01-launch.json`; the host log is
+`build/gateway-optimization/formal/run-01-driver.log`. Local SSH PID **46491**
+and root exec session **49493** identify the existing driver at launch. These
+PIDs/session IDs must be rechecked, not assumed live. The log shows mixed_4 in
+progress; partial per-attempt completion lines are not formal conclusions.
+
+On recovery, read the freeze, launch identity, guard report and latest driver
+log, then verify the actual PID, command/start identity and output directory.
+While that run is active, monitor the existing process only: **do not restart,
+launch a duplicate or clear its directories**. Do not compile, run tests or
+revalidate large evidence trees during measurement. Once terminal, inspect the
+guard/result and all retained outcomes before selecting the next action. Do not
+rerun completed calibration or infer a production decision from partial output.
 
 ## Starting point and scope
 
@@ -61,8 +65,8 @@ manifest, identities and rules before G06, not to rerun completed calibration.
 | G02 | G00 | Versioned deep-book input, two distributions, full per-command comparison, measured occupancy/operation coverage, replayable failures | `correctness/deep-book/` | Normal/extended scales and corrected counter verified; Linux extended cases passed |
 | G03 | G00 | Reuse counters; add bounded optional connection/write/loop observations and close snapshots; lifecycle, bounds, disabled-path and compatibility checks | `correctness/gateway/` | Verified: macOS Debug/Release/ASan-UBSan/TSan; Linux Release plus candidate ASan-UBSan/TSan network checks |
 | G04 | G03 | Clean batch1/batch16 builds; identical inputs/tools; mixed_4 and mixed_1 reproduction; separate bounded diagnostics | `repro/`, `diagnostics/` | Verified; all measurements and warmups passed, diagnostic analysis retained; proceed to G05, no adoption decision |
-| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/` | run-01 stop retained; run-02 terminal `proposed` / decision `complete`; ordinary 10,000 reused, near 22,781 and burst 2,000 confirmed, overload 75,938 proposed; formal freeze pending |
-| G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/` | Conditional, not entered |
+| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/`, `formal/freeze-01/` | Complete: original stop and continuation retained; ordinary 10,000, near 22,781, burst 2,000 and overload 75,938 frozen before G06 |
+| G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/freeze-01/`, `formal/run-01-driver.log` | Running since 16:21:25.121295Z; VM `/home/m2/gateway-formal-01/pairs`; no formal conclusion yet |
 | G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Separate experiment directory | Conditional, not triggered |
 | G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Pending |
 | G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `delivery/` | Pending |
@@ -384,8 +388,11 @@ Terminal `run-02/journal/00009.json` records `status=proposed`, decision `comple
 `pending=null`, `formal_run=false`, and `adoption_evaluated=false`. The proposed
 rates are ordinary 10,000/s, near 22,781/s, burst 2,000/s and overload 75,938/s.
 `run-02-collection-verified.json` verifies all 705 files / 746,338,997 bytes.
-The formal source/host/rules freeze is still pending, G06 has not run, and
-production remains batch1. Recovery starts with the current checkpoint above.
+That calibration journal remains a proposal receipt, not a formal-run record.
+The subsequent source/host/rules freeze was recorded in `formal/freeze-01/` at
+16:19:55.525998Z, followed by the guarded G06 launch at 16:21:25.121295Z. G06 is
+running; production remains batch1 and no formal result is claimed. Recovery
+starts with the current checkpoint above.
 
 Current recovery locations: Linux baseline source is
 `/home/m2/gateway-g00-20261018T143926Z/source`; SSH uses the existing

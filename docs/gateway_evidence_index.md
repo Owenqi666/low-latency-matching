@@ -6,10 +6,11 @@ the archive has been created and independently verified. Historical M1–M5 asse
 and conclusions remain unchanged.
 
 Current recovery entry: [the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint),
-`calibration/run-02/journal/00009.json` and
-`calibration/continuation-01/continuation-driver.json`. Calibration is terminal
-`proposed` / decision `complete`; the separate formal freeze and G06 remain
-pending. Production remains batch1.
+`formal/freeze-01/freeze.json` and `formal/run-01-driver.log`. G05 is complete;
+G06 launched at 16:21:25.121295Z and is running in
+`/home/m2/gateway-formal-01/pairs`. Match Linux PID 10805 to its launch/start
+identity before monitoring; do not restart or clear the active run. Production
+remains batch1 and no formal conclusion is available.
 
 | Evidence | Location | Meaning |
 |---|---|---|
@@ -44,8 +45,10 @@ pending. Production remains batch1.
 | G05 classification correction and carry-forward | `calibration/continuation-01/tools-preparation.json`, `calibration/run-02/carry-forward-audit.json`, `plan.json` | Clean tools `f6765b5`; post-observation delivery-failure precedence correction; original tree SHA, six raw probe identities and lag data unchanged; original stop retained; cumulative budgets preserved |
 | G05 ordinary reuse | `calibration/run-02/g04-reuse.json` | G04 A identity and all five rounds of each ordinary row checked; ten stable lag assessments; 10,000/s reused with zero new ordinary measurements |
 | G05 near and burst confirmations | `calibration/run-02/attempts/007-near-45562/`, `008-near-22781/`, `009-burst-2000/` | 45,562/s retained as valid delivery failure (round 2: 178,708/455,621 complete, two empty lag bins); allowed halved retry 22,781/s passed all three rounds; burst 2,000/s passed; seven new measurements and three warmups retained |
-| G05 terminal proposal and collection | `calibration/continuation-01/continuation-driver.json`, `calibration/run-02/journal/00009.json`, `proposed-gateway-service-formal.json`, `calibration/run-02-collection-verified.json` | Driver exit 0; terminal `proposed` / decision `complete`, no pending attempt; proposed ordinary/near/burst/overload rates 10,000/22,781/2,000/75,938; 705 hashes / 746,338,997 bytes verified; no formal freeze, G06 run or adoption |
+| G05 terminal proposal and collection | `calibration/continuation-01/continuation-driver.json`, `calibration/run-02/journal/00009.json`, `proposed-gateway-service-formal.json`, `calibration/run-02-collection-verified.json` | Driver exit 0; terminal `proposed` / decision `complete`, no pending attempt; proposed ordinary/near/burst/overload rates 10,000/22,781/2,000/75,938; 705 hashes / 746,338,997 bytes verified; subsequent formal freeze recorded separately below |
 | Source-bound correctness prerequisites | `formal/preparation-01/correctness-receipt.json`, `correctness-audit.md`, `artifact-index.json` | Five prerequisite categories audited against A/B sources and concrete test artifacts; platform/scope limitations retained; not a formal adoption or G09 receipt |
+| G05 completed formal freeze | `formal/freeze-01/freeze.json`, `freeze-validation.json`, `gateway-service-formal.json`, `formal-plan.json` | Frozen at 16:19:55.525998Z; freeze SHA-256 `37646da98a7f6eda9fd287e22937c31869b5fe841d96bc931cd93bf82897f332`; validation receipt binds schema, source/binary and correctness gates before performance launch |
+| G06 active guarded run | `formal/run-01-driver.log`; VM `/home/m2/gateway-formal-01-launch.json`, `/home/m2/gateway-formal-01/guard-report.json`, `/home/m2/gateway-formal-01/pairs` | Launched 16:21:25.121295Z, Linux guard PID 10805; local SSH PID 46491 / root exec session 49493 at launch; mixed_4 in progress, no completed formal comparison or adoption claim |
 
 See [execution plan](gateway_optimization_plan.md) for the dependency map and
 completion contract. New correctness, reproduction, profiling, calibration,
