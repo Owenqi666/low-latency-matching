@@ -1,8 +1,9 @@
 # ADR 008: retain one-frame Gateway writes after the new formal comparison
 
 Status: decided; reject batch16 under the frozen rules and retain batch1.
-Date: 2026-10-18. G09 final delivery verification remains pending; this ADR is
-not a release or final-verification receipt.
+Date: 2026-10-18. G09 final delivery verification completed; its source-bound
+checks and archive recomputation are recorded in the [report](../gateway_report.md#g09-clean-delivery-verification).
+This ADR records the configuration decision, not a release.
 
 ## Context and fixed comparison
 
@@ -98,9 +99,9 @@ hypothesis, a short ADR before coding, the then-selected production version as
 A, and a separately frozen comparison. The current rejection stays intact.
 
 Preserve the common tool, coverage and diagnostic implementation while keeping
-the production frame bound at one. G09 must still bind the final selected source
-to this measured implementation and complete its applicable validation, clean
-Linux smoke/two-client demo/short A/B and independent archive-copy recomputation.
+the production frame bound at one. G09 bound the final selected source to this
+measured implementation and completed applicable validation, clean Linux
+smoke/two-client demo/short A/B and independent archive-copy recomputation.
 The [full report](../gateway_report.md), [all pairs](../benchmarks/gateway_service_pairs.md),
 [diagnostic limits](../gateway_diagnostics.md) and [evidence index](../gateway_evidence_index.md)
-retain the evidence and outstanding delivery work.
+retain the evidence, completed delivery checks and remaining explanatory limits.

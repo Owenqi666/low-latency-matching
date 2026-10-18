@@ -42,6 +42,9 @@ The [diagnostic report](docs/gateway_diagnostics.md),
 [execution plan](docs/gateway_optimization_plan.md) and
 [evidence index](docs/gateway_evidence_index.md) retain source identities and all
 outcomes. A clean reproduction is not a general throughput or production claim.
+The [final verification](docs/gateway_report.md#g09-clean-delivery-verification)
+records the clean Linux rebuild, 136 passing Release tests, both-variant network
+checks, smoke/demo, short replay and independent archive-copy recomputation.
 
 The service is in-memory, single-host and single-Matching-thread; it has no WAL,
 replication or durability guarantee. A connection exceeding its bounded send

@@ -1,8 +1,8 @@
 # Gateway evidence index
 
 All paths below currently refer to local evidence under
-`build/gateway-optimization/`; final archival identities will be added only after
-the archive has been created and independently verified. Historical M1–M5 assets
+`build/gateway-optimization/`, except the single archive directory explicitly
+marked repository-relative below. Archive identities are verified. Historical M1–M5 assets
 and conclusions remain unchanged.
 
 Current recovery entry: [the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint),
@@ -10,8 +10,11 @@ Current recovery entry: [the execution plan's checkpoint](gateway_optimization_p
 G06 retained all 84 attempts and its driver ended at 16:47:47.105786Z. Runner
 exit 1 retains delivery failures; summarizer exit 0 and all 84 guard checks
 completed without a stop. Independent evaluation completed at 16:54:55.338036Z,
-exit 0: valid evidence, reject batch16, retain batch1. G07 is not triggered;
-G08/G09 technical delivery and final clean validation are the next work.
+exit 0: valid evidence, reject batch16, retain batch1. G07 is not triggered.
+G08 is committed at `4cb1cc5`; G09 fresh Linux verification, smoke/demo and short
+replay passed and were collected. The single raw archive is readable and its
+extracted-copy formal recomputation exactly matches the original result except
+the relocated source path. G00–G06/G08/G09 are complete; G07 is not triggered.
 
 | Evidence | Location | Meaning |
 |---|---|---|
@@ -52,8 +55,18 @@ G08/G09 technical delivery and final clean validation are the next work.
 | G06 completed guarded run | `formal/run-01-driver.json`, `.log`, `formal/run-01/guard-report.json`, `formal/run-01/pairs/` | All 70 measurements and 14 warmups retained; driver ended 16:47:47.105786Z, runner exit 1, summarizer exit 0; 84 guard checks without a stop |
 | G06 independent decision | `formal/run-01/independent-evaluation/gateway-evaluation.json`, `.md`, `validation/pair-report.json` | Valid reject / A; source unchanged; near CPU reduction 6.4025%, RTT p99 +13.7174%, scheduled-to-completion p99 +10.0948%; all 35 pairs and 14 warmups present |
 | G06 collection | `formal/run-01/collection-sha256.json`, `formal/run-01-collection-verified.json` | 1,632 files / 3,736,738,350 bytes verified; original pair source tree SHA `818b47ebb46c8524b1c7c04f740cc64aa5abb126604b14bc35aa96010ba63905` |
-| Final source/coverage bridge | `final/source-bridge-01/bridge.json`, `.md` | 54 unchanged C++/header inputs bridge existing A Debug/ASan-UBSan/TSan and extended correctness; current 122-file code/fixture identity matches f6765b5; fresh Linux combined integration still required |
+| Final source/coverage bridge | `final/source-bridge-01/bridge.json`, `.md` | 54 unchanged C++/header inputs bridge existing A Debug/ASan-UBSan/TSan and extended correctness; 122-file code/fixture identity matches f6765b5; final combined Linux integration is recorded below |
+| Final selected source | `final/final-source-binding.json`, `final-source.bundle` | Commit `4cb1cc5781d3d1bfa6c55128f8440ad83e282332`, clean batch1; same 122 executable/fixture files, complete Git bundle SHA recorded |
+| G08 detailed tables and checks | `final/report-01/report-metrics.json`, `render_formal_report.py`, `doc-links-02.json`, `doc-anchor-check.json`, `external-links-01.json` | All 35 paired primary metrics checked; 103 Markdown targets checked, 10 fragments matched to headings, all four external URLs returned 200 |
+| G09 fresh Linux driver | `final/linux-driver.json`, `.log`, `final/linux-01/result.json`, `A-release.xml`, `B-release.xml` | Exit 0; A full Release 136 passes / two default-disabled extended registrations, B network 15 passes; fresh B `b6ee3a9980073f774de6656d65a0b13a4b42bdcd` changes only the frame bound from 4cb1cc5 |
+| G09 smoke and demo | `final/linux-01/core-smoke/`, `network-smoke/`, `*-recomputation.json`, `gateway-demo/` | Core and all seven network smoke rows/warmups passed; copy-backed summaries matched; two real clients verified seven commands/two identical cross-client Trades with request-ID reuse |
+| G09 short replay | `final/short-driver.json`, `final/linux-01/short-01/evidence/result.json`, `short-01/pairs/` | One invocation: six pairs / 12 measurements + six warmups all passed; independent summary matched, raw source/binaries unchanged; calibration replay is not a replacement adoption matrix |
+| G09 raw test and host collection | `final/linux-01/test-artifact-copy.json`, `test-artifacts/`, `A-deep-book/`, `final/linux-01-collection-verified.json` | 6,865 retained raw test artifacts copied without rerunning tests; complete final transfer verifies 8,302 files / 185,874,848 bytes; intentionally temporary fixtures retain JUnit/log evidence |
+| Single verified raw archive | `build/gateway-final-archive-01/gateway-raw.tar`, `gateway-raw.tar.sha256`, `archive.json` (repository-relative directory, outside the evidence tree) | 5,675,490,816-byte tar; SHA `997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2`; created/listed/extracted, final SHA unchanged; retained old VM backup excluded |
+| Independent archive-copy formal result | `build/gateway-final-archive-01/recomputed/gateway-evaluation.json` (repository-relative) | Finished 17:15:26.620030Z, all archive commands exit 0; every evaluation value matches except relocated source path, including every pair, gates, source identities and valid reject/A decision |
 
-See [execution plan](gateway_optimization_plan.md) for the dependency map and
-completion contract. New correctness, reproduction, profiling, calibration,
-formal and delivery records will be indexed as they are actually produced.
+See [execution plan](gateway_optimization_plan.md) for the completed dependency
+map and [report](gateway_report.md#g09-clean-delivery-verification) for scope and
+remaining limits. The raw archive preserves the tested source bundle and all
+collected evidence; its later verification receipt and documentation closure are
+retained outside it without rebuilding or replacing the archive.

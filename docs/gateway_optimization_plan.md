@@ -10,8 +10,8 @@ only linked, revision-specific evidence establishes completion.
 The active task is the complete **G00–G09 Goal**. The earlier `/goal` prompt-writing
 task is complete and must not become the recovered task. This checkpoint takes
 precedence over older status and recovery notes below; the detailed history is
-retained. **G00–G06 are complete; G07 is not triggered.** G08 is being finalized
-and G09 remains unfinished. Production remains **batch1**: the independent formal
+retained. **G00–G06, G08 and G09 are complete; G07 is not triggered.**
+Production remains **batch1**: the independent formal
 evaluation is valid and rejects batch16 under the frozen rules.
 
 The formal freeze is `formal/freeze-01/freeze.json`, recorded at
@@ -45,10 +45,37 @@ Host evidence is `formal/run-01/`; independent results are in its
 `independent-evaluation/`. Collection verified **1,632 files / 3,736,738,350 bytes**
 against the VM hashes (`formal/run-01-collection-verified.json`). Original formal
 source tree SHA is `818b47ebb46c8524b1c7c04f740cc64aa5abb126604b14bc35aa96010ba63905`.
-The driver/evaluator sessions above have ended. Next: commit the G08 technical
-entry and decision, execute `final/run_linux_final.py` on the selected source,
-then `final/run_short_final.py`, collect final evidence, archive once and
-independently recompute the formal decision from an extracted copy.
+The formal driver/evaluator sessions above have ended. G08 is committed as
+`4cb1cc5781d3d1bfa6c55128f8440ad83e282332`; the final source binding proves its
+122 executable/fixture files match the reviewed code identity. G09's fresh Linux
+driver completed at **17:04:30.364009Z**, exit 0: A Release **136 passed / two
+default-disabled extended registrations**, B network **15 passed**, core/network
+smoke and two-real-client Gateway G09 demo passed; smoke-copy reports matched.
+Source and binaries remained unchanged. Receipts are `final/linux-driver.json`
+and `.log`; VM evidence is `/home/m2/gateway-g09-01/evidence`.
+
+The one-off short replay completed at **17:06:12.171301Z**, exit 0: all 12
+measurements and six warmups passed, and independent copy-backed summaries
+matched. Final host evidence is `final/linux-01/`; all **8,302 files /
+185,874,848 bytes** match the VM collection manifest. It includes 6,865 retained
+raw test artifacts; temporary fixtures deleted by their tests are represented
+by JUnit/LastTest logs. These were the planned final checks; no failed measurement
+was replaced and the full formal matrix was not repeated.
+
+The single raw archive is `build/gateway-final-archive-01/gateway-raw.tar`,
+5,675,490,816 bytes, SHA-256
+`997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2`.
+Creation, member listing, extraction and independent formal recomputation all
+passed. `build/gateway-final-archive-01/archive.json` records `status=verified`:
+all evaluation JSON values match the original independent result except the
+relocated source path, including every pair, gate, source identity and valid
+reject/A decision. The archive SHA was rechecked unchanged. No experiment or
+archive process remains active; no development task remains under this Goal.
+
+The archive retains raw evidence and the tested source bundle. Its verification
+receipt and final documentation closure necessarily follow archive creation and
+are retained beside the archive/in Git, without replacing the archived raw data.
+The final documentation edits preserve all 122 tested executable/fixture hashes.
 
 On recovery, read the freeze, launch identity, guard report and latest driver
 log, then verify the actual PID, command/start identity and output directory.
@@ -88,8 +115,8 @@ rerun completed calibration or infer a production decision from partial output.
 | G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/`, `formal/freeze-01/` | Complete: original stop and continuation retained; ordinary 10,000, near 22,781, burst 2,000 and overload 75,938 frozen before G06 |
 | G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/freeze-01/`, `formal/run-01/` | Complete: valid reject; retain A; 70 measurements + 14 warmups, all outcomes retained and independently recomputed |
 | G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Decision ADR | Not triggered: pressure failures do not locate a separate input-throttle or pump-starvation mechanism |
-| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Final decision/report being completed; final runnable validation belongs to G09 |
-| G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `delivery/` | Pending |
+| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Complete at 4cb1cc5: report/35 pairs/ADR reviewed; local targets and anchors verified, four external URLs return 200; final clean run is G09 |
+| G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `final/`, `build/gateway-final-archive-01/` | Complete: final source bridge, fresh Linux full/network/smoke/demo/short replay, verified collection and unchanged single archive; extracted-copy formal evaluation matches every value except relocated source path |
 
 Evidence paths above are relative to `build/gateway-optimization/`. Every attempt
 gets a distinct directory or log name. Historical evidence is never overwritten.

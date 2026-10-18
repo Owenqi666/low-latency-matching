@@ -344,6 +344,58 @@ not establish that input throttling or a pump budget would solve the problem.
 No additional policy is implemented to seek a passing result. A future candidate
 requires a distinct hypothesis, mechanism evidence, ADR and frozen comparison.
 
+## G09 clean delivery verification
+
+The selected clean Linux checkout is commit
+`4cb1cc5781d3d1bfa6c55128f8440ad83e282332`, batch1. Its 122 executable/fixture
+files match the reviewed common code identity
+`5f8791bab89885c7bfb2c676770e5aa1bca227f3ceebc6fca3e77c4d04233b47`.
+All 54 C++/header inputs match the earlier A Debug, ASan/UBSan and separate TSan
+matrices (130 executed passes each, two extended registrations disabled by
+default). Their compiler/flags/source identities are retained in
+`final/source-bridge-01/`; this reuses unchanged C++ coverage, not old results
+for newly changed Python tools. The C=10,000 extended tests ran separately under
+G02. The final fresh Linux suite covers the combined current tool registrations.
+
+The fresh comparison B is `b6ee3a9980073f774de6656d65a0b13a4b42bdcd`, derived
+from that same final commit with only `src/send_queue.hpp`'s frame bound changed
+to 16. This is a delivery check; the formal A/B source identities above remain
+unchanged. No extra formal matrix or adoption decision was substituted.
+
+| Final check | Recorded outcome |
+|---|---|
+| Clean GNU 13.3.0 Linux Release A | 136 passed, zero failed/skipped; two documented default-disabled deep-book registrations |
+| Clean Release B SendQueue/lifecycle/diagnostics/network subset | 15 passed, zero failed/disabled/skipped |
+| Core smoke | Passed; independent copy-backed report matched |
+| Seven-row network smoke | All seven measurements and seven warmups delivered, drained and passed Reference; copy-backed report matched |
+| Two real CLI clients, stage Gateway G09 | Seven commands, two matching cross-client Trades, request-ID reuse and Reference verification passed |
+| Short mixed_4 / burst_4 / mixed_1 replay | One invocation, six pairs: all 12 measurements and six warmups passed; independent copied report matched |
+
+The short replay retains the seven-row manifest and seed positions, with two
+alternating pairs per selected row, commands=2,000 and minimum plan=2 seconds;
+actual mixed inputs contain 20,001 commands and burst inputs 4,001. Its rates
+are fixed at the formal ordinary/burst values. It checks reproducibility and
+delivery only, not capacity or the five-pair adoption contract. Both sources,
+binaries and tools remained unchanged during these checks.
+
+`final/linux-01/` contains the final results, exact commands, JUnit, compile
+commands, dependency/binary/source identities, smoke/demo and short evidence.
+All 8,302 collected files / 185,874,848 bytes match the VM hashes. This includes
+6,865 retained raw test outputs; temporary fixtures deliberately deleted by
+their tests have JUnit/LastTest evidence, not a claim of archived raw fixtures.
+
+The single raw archive is `build/gateway-final-archive-01/gateway-raw.tar`,
+5,675,490,816 bytes, SHA-256
+`997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2`.
+It excludes only the preserved old VM disk backup. Creation, member listing,
+extraction and **independent formal recomputation all passed**. Every evaluation
+JSON value matches the first independent result except the relocated source
+path: source identities, all pairs, gates and valid reject/A decision agree.
+The archive SHA was rechecked unchanged. `archive.json` beside the tar records
+`status=verified`; recomputed results are under `recomputed/`. This verification
+receipt and the final documentation closure follow archive creation; the raw
+archive is not replaced to include its own later verification record.
+
 ## Acceptance and remaining work
 
 The [execution plan](gateway_optimization_plan.md) contains the task-by-task
@@ -352,12 +404,14 @@ raw commands, source/binary identities and validation logs. G01 includes bounded
 whole-process ITCH verification; G02 includes full per-command deep-book coverage;
 G03 includes optional bounded diagnostics and lifecycle/accounting checks.
 
-G06 is complete and production remains batch1; G07 is not triggered. This report,
-the complete tables and [ADR 008](adr/008-retain-single-frame-gateway.md) record
-the G08 decision. Still required under G09: bind final selected source to the
-measured implementation, run its applicable checks, and complete the clean Linux
-build/smoke/two-client demo/short A/B plus archive-copy independent recomputation.
-The current source-bound sanitizer results do not by themselves complete G09.
+G00–G06, G08 and G09 are complete; production remains batch1 and G07 is not triggered.
+This report, the complete tables and [ADR 008](adr/008-retain-single-frame-gateway.md)
+record the decision. G09 has passed the source-bound matrix checks, clean Linux
+build/tests/smoke/demo/short replay and archive-copy formal recomputation above.
+The remaining limits are explanatory and operational: one shared local VM,
+unexplained near-tail regressions and A pressure failures, and no universal
+capacity or cross-environment improvement claim. They do not conceal an
+unfinished required verification or an unresolved observed correctness defect.
 
 Historical [M3 rejection](m3_report.md) and [M4 rejection](m4_report.md) are
 unchanged. No personal-contribution or CV claim follows from this investigation.
