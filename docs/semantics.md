@@ -76,5 +76,6 @@ file I/O, logging, clock reads, networking or test dependency. Full invariants a
 snapshots are validation operations outside benchmark timing. ReferenceEngine
 shares value contracts but implements matching and validation independently.
 
-M2 will require a separate, pausable execution/backpressure design. The M1 full
-result array does not implement a network service's output backpressure.
+The service adds a [pausable execution and backpressure design](service_architecture.md)
+around these matching semantics. This document's synchronous full-result-array
+contract describes the core entry point; the service emits results incrementally.

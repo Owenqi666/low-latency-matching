@@ -1,8 +1,8 @@
-# M2 service baseline
+# Service architecture
 
-Status: implementation and verification in progress. See [progress](progress.md)
-for observed results; this document describes the implemented interfaces, not a
-release or performance claim.
+This document describes the service's ownership, interfaces and resource model.
+See the [project overview](../README.md) for capabilities and entry points, and
+[progress](progress.md) for experiment and release records.
 
 ## Ownership and processing
 
