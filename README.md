@@ -1,7 +1,71 @@
 # llmatch — C++ matching core and TCP service
 
-For M4/M5 completion status and the evidence behind older pending items, start
-with the [milestone progress and acceptance index](docs/progress.md).
+A C++20 in-memory price-time matching engine with a bounded TCP Gateway,
+independent reference validation, deterministic replay and an offline ITCH reader.
+TCP clients communicate with one Gateway I/O thread; bounded command/event queues
+connect it to one Matching thread that exclusively owns the order book.
+
+## Build and run
+
+Requires a C++20 compiler, CMake >= 3.24, Ninja and Python >= 3.10. The first build
+downloads pinned GoogleTest 1.17.0 and Boost 1.89.0 sources; hashes are in
+`cmake/Dependencies.cmake`.
+
+```sh
+cmake --preset release
+cmake --build --preset release
+ctest --preset release
+python3 scripts/demo_service_clients.py . build/gateway-demo --stage Gateway
+```
+
+The demo starts a server and two real CLI clients, checks matching Trade events,
+request-ID reuse and BBO/Complete ordering, and verifies the recorded commands
+against the independent reference model. Use a new output directory to retain
+each demonstration. [Architecture](docs/service_architecture.md),
+[protocol](docs/protocol.md) and [semantics](docs/semantics.md) describe the contract.
+
+## Current evidence and limits
+
+Production writes remain **batch1** after the Gateway experiment's valid rejection
+of batch16. The seven-row Linux VM matrix retained all 35 pairs and 14 warmups:
+
+- At the frozen near rate of 22,781 commands/s, batch16 reduced server lifetime
+  CPU per measured completion by a paired median **6.40%**, below the 10% gate.
+- In that same row, RTT p99 and scheduled-to-completion p99 increased by paired
+  medians **13.72%** and **10.09%**, exceeding their 10% limits.
+- A delivered all requests in 28/35 measured runs and B in 35/35. A's burst,
+  single-client and overload failures remain in the record; all runs drained.
+
+These are finite results on one local VM, not general capacity guarantees.
+The [Gateway report](docs/gateway_report.md) records all outcomes and gates.
+The [diagnostic report](docs/gateway_diagnostics.md),
+[execution plan](docs/gateway_optimization_plan.md) and
+[evidence index](docs/gateway_evidence_index.md) retain source identities and all
+outcomes. A clean reproduction is not a general throughput or production claim.
+The [historical local verification](docs/gateway_report.md#g09-clean-delivery-verification)
+records the clean Linux rebuild, 136 passing Release tests plus two disabled
+registrations, both-variant network checks, smoke/demo, short replay and
+independent archive-copy recomputation. A later acceptance review found that
+those disabled registrations fail the existing strict CI checker. The
+[Gateway closeout record](docs/gateway_closeout_2026-10-18.md) tracks the explicit
+extended-test option, passing default/extended/ON→OFF local checks, and pending
+current-source CI and remote delivery. Historical experiment and archive verification do not
+establish that the revised source has passed those checks.
+
+
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
+
+The service is in-memory, single-host and single-Matching-thread; it has no WAL,
+replication or durability guarantee. A connection exceeding its bounded send
+allowance is isolated and its undelivered results are counted. Core benchmark
+timings exclude networking. The ITCH reader reconstructs an explicitly limited
+single-security visible book; historical feed events bypass the matching engine.
+
+## Milestone history
+
+For M4/M5 completion status and the evidence behind older pending items, see the
+[milestone progress and acceptance index](docs/progress.md).
 
 A single-threaded, in-memory C++20 matching core. The public contract is
 [docs/semantics.md](docs/semantics.md).
@@ -93,6 +157,46 @@ actual input, configuration and both outputs under the test working directory's
 `failures/`. `shrink_failure --config FILE --input FILE --output FILE` requires
 an input that still fails on the current binaries; a correctly fixed input will
 report that there is no failure to shrink.
+
+The separate deep-book suite covers long FIFO queues and sparse, wide price
+levels. Its routine cases use capacity 1,000, 850 prefill commands and 500 tail
+commands, with one fixed seed per distribution. They run in the normal CTest
+suite; to select just this suite and retain its inputs and coverage records:
+
+```sh
+cmake --preset release
+cmake --build --preset release --target deep_book_tests replay --parallel 2
+LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-routine-01" \
+  ctest --preset release -L deep_book --output-on-failure --no-tests=error
+```
+
+`LLMATCH_EXTENDED_TESTS` defaults to `OFF`: the normal build registers five
+routine deep-book tests, without disabled extended entries. To opt into the two
+normal `Extended*` CTest cases, use the independent `build/gateway-extended`
+directory. Each case covers two fixed seeds at capacity 10,000, with 8,500
+prefill commands and 1,000 tail commands per seed:
+
+```sh
+cmake -S . -B build/gateway-extended -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release -DLLMATCH_EXTENDED_TESTS=ON
+cmake --build build/gateway-extended --target deep_book_tests --parallel 2
+ctest --test-dir build/gateway-extended \
+  -R '^DeepBookTest[.]Extended(LongFifo|SparseWide)$' --show-only=json-v1
+LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-extended-01" \
+  ctest --test-dir build/gateway-extended \
+  -R '^DeepBookTest[.]Extended(LongFifo|SparseWide)$' \
+  --output-on-failure --no-tests=error \
+  --output-junit "$PWD/build/deep-book-extended-01.xml"
+```
+
+This runs the two extended tests through CTest; it is not a full-suite CI result.
+Choose new evidence paths for each run. Each trace includes any additional
+boundary and replenishment commands; every command compares full events,
+normalized snapshots and invariants. `LLMATCH_DEEP_BOOK_OUTPUT` retains the trace,
+configuration, metadata, coverage CSV and comparison result. These cases provide
+deep-book coverage separately from the small-capacity `LLMATCH_LONG_DIFFERENTIAL`
+entry above. Recorded runs and independent replays are in the
+[Gateway evidence index](docs/gateway_evidence_index.md).
 
 Build `release`, then run a short benchmark and independently check its report:
 

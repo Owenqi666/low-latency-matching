@@ -82,6 +82,14 @@ void append_bytes(std::vector<std::uint8_t>& bytes, const protocol::Frame& frame
 
 class SendQueueTest : public testing::Test {
 protected:
+    void TearDown() override {
+        EXPECT_EQ(diagnostics->whole_write_completion.count, stats.write_callbacks);
+        EXPECT_EQ(queue.observation().write_callbacks, stats.write_callbacks);
+        EXPECT_EQ(queue.observation().write_operations, stats.write_operations);
+        EXPECT_EQ(queue.observation().write_error_callbacks, stats.write_error_callbacks);
+        EXPECT_GE(queue.observation().max_bytes, queue.bytes());
+        EXPECT_GE(queue.observation().max_frames, queue.size());
+    }
     void start() {
         asio::async_write(stream, queue.begin_write(), [this](error_code error, std::size_t count) {
             ++callbacks;
@@ -94,7 +102,8 @@ protected:
 
     asio::io_context io;
     ServerStats stats;
-    detail::SendQueue queue{stats, 65536};
+    std::unique_ptr<GatewayDiagnostics> diagnostics = std::make_unique<GatewayDiagnostics>();
+    detail::SendQueue queue{stats, 65536, diagnostics.get(), 17};
     ManualWriteStream stream{io};
     std::size_t callbacks{};
     std::size_t transferred{};
@@ -178,6 +187,11 @@ TEST_F(SendQueueTest, ShortWriteThenCancellationPreservesBuffersAndCountsDiscard
     stream.step(partial);
     EXPECT_EQ(callbacks, 0U);
     EXPECT_EQ(queue.bytes(), (detail::batch_max_frames + 1) * frame.size);
+    const auto observed = queue.observation();
+    EXPECT_EQ(observed.client, 17U);
+    EXPECT_EQ(observed.in_flight_frames, detail::batch_max_frames);
+    EXPECT_EQ(observed.in_flight_bytes, detail::batch_max_frames * frame.size);
+    EXPECT_EQ(observed.write_callbacks, 0U); // Partial socket write is not a composed callback.
     queue.close();
     queue.close();
     EXPECT_TRUE(queue.writing());
@@ -196,6 +210,8 @@ TEST_F(SendQueueTest, ShortWriteThenCancellationPreservesBuffersAndCountsDiscard
     EXPECT_EQ(stats.unconfirmed_write_bytes, partial);
     EXPECT_EQ(stats.unconfirmed_write_complete_frames, prefix_frames);
     EXPECT_EQ(stats.write_error_callbacks, 1U);
+    EXPECT_EQ(queue.observation().in_flight_bytes, 0U);
+    EXPECT_EQ(queue.observation().in_flight_frames, 0U);
 }
 
 TEST_F(SendQueueTest, ErrorCallbackReportsFullPrefixWithoutConfirmingTheBatch) {

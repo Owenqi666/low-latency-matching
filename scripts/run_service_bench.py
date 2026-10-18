@@ -148,6 +148,8 @@ def run_one(root, entry, row, spec, binaries):
         for option, key in (("--command-capacity", "command_capacity"), ("--event-capacity", "event_capacity"),
                             ("--max-connections", "max_connections"), ("--send-limit", "send_limit"), ("--shutdown-ms", "shutdown_ms")):
             server_command.extend((option, str(limits[key])))
+        if spec.get("gateway_diagnostics", False):
+            server_command.extend(("--gateway-diagnostics", "1"))
         state["invocations"]["server"] = server_command
         with (directory / "logs/server.stdout.log").open("wb") as stdout, (directory / "logs/server.stderr.log").open("wb") as stderr:
             process = subprocess.Popen(server_command, stdout=subprocess.PIPE, stderr=stderr)

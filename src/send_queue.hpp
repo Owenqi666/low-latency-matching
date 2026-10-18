@@ -21,7 +21,9 @@ static_assert(protocol::max_frame_size <= batch_max_bytes);
 // ownership and server shutdown stay in MatchingServer::Connection.
 class SendQueue {
 public:
-    SendQueue(ServerStats& stats, std::size_t limit) : stats_(stats), limit_(limit) {}
+    SendQueue(ServerStats& stats, std::size_t limit,
+              GatewayDiagnostics* diagnostics = nullptr, ClientId client = 0)
+        : stats_(stats), limit_(limit), diagnostics_(diagnostics) { observation_.client = client; }
     SendQueue(const SendQueue&) = delete;
     SendQueue& operator=(const SendQueue&) = delete;
 
@@ -30,6 +32,14 @@ public:
     bool empty() const { return outgoing_.empty(); }
     std::size_t size() const { return outgoing_.size(); }
     std::size_t bytes() const { return outgoing_bytes_; }
+    OutboundObservation observation() const {
+        auto value = observation_;
+        value.bytes = outgoing_bytes_;
+        value.frames = outgoing_.size();
+        value.in_flight_bytes = active_bytes_;
+        value.in_flight_frames = active_frames_;
+        return value;
+    }
 
     // false means the incoming frame exceeds the original send bound. The
     // Connection then closes, accounting for the already-queued frames once.
@@ -43,6 +53,10 @@ public:
         outgoing_.push_back({frame, business});
         outgoing_bytes_ += frame.size;
         stats_.send_high_water = std::max(stats_.send_high_water, outgoing_bytes_);
+        if (diagnostics_) {
+            observation_.max_bytes = std::max(observation_.max_bytes, outgoing_bytes_);
+            observation_.max_frames = std::max(observation_.max_frames, outgoing_.size());
+        }
         return true;
     }
 
@@ -62,6 +76,12 @@ public:
         stats_.write_bytes_submitted += active_bytes_;
         ++stats_.write_batch_frames[active_frames_];
         ++stats_.write_batch_bytes[(active_bytes_ - 1) / 256];
+        if (diagnostics_) {
+            ++observation_.write_operations;
+            observation_.last_write_started_ns = steady_now_ns();
+            observation_.max_in_flight_bytes = std::max(observation_.max_in_flight_bytes, active_bytes_);
+            observation_.max_in_flight_frames = std::max(observation_.max_in_flight_frames, active_frames_);
+        }
         return {buffers_.data(), active_frames_};
     }
 
@@ -69,6 +89,16 @@ public:
     // queue for Connection::close; an earlier close has already discarded it.
     void complete(boost::system::error_code error, std::size_t transferred) {
         assert(writing_ && transferred <= active_bytes_);
+        if (diagnostics_) {
+            const auto now = steady_now_ns();
+            diagnostics_->whole_write_completion.observe(now - observation_.last_write_started_ns);
+            if (observation_.last_callback_ns) {
+                diagnostics_->callback_interval.observe(now - observation_.last_callback_ns);
+            }
+            observation_.last_callback_ns = now;
+            ++observation_.write_callbacks;
+            observation_.write_error_callbacks += bool(error);
+        }
         ++stats_.write_callbacks;
         stats_.write_error_callbacks += bool(error);
         stats_.write_bytes_transferred += transferred;
@@ -115,6 +145,8 @@ private:
 
     ServerStats& stats_;
     std::size_t limit_;
+    GatewayDiagnostics* diagnostics_;
+    OutboundObservation observation_;
     std::deque<Outgoing> outgoing_;
     std::size_t outgoing_bytes_{};
     std::array<boost::asio::const_buffer, batch_descriptor_capacity> buffers_{};

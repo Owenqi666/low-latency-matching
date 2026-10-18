@@ -1,4 +1,5 @@
 """Recorded command demonstration using two actual matching_client processes."""
+import argparse
 import json
 import os
 from pathlib import Path
@@ -8,9 +9,18 @@ import sys
 import threading
 import time
 
-checkout = Path(sys.argv[1]).resolve()
-evidence = Path(sys.argv[2]).resolve()
-executor = sys.argv[3] if len(sys.argv) > 3 else "Codex M5 T06"
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("checkout", type=Path)
+parser.add_argument("evidence", type=Path)
+parser.add_argument("executor", nargs="?", help="Recorded executor; defaults to Codex plus the stage label")
+parser.add_argument("--stage", default="M5 T06", help="Evidence stage label (default: M5 T06); does not affect paths")
+args = parser.parse_args()
+stage = args.stage.strip()
+if not stage:
+    parser.error("--stage must not be empty")
+checkout = args.checkout.resolve()
+evidence = args.evidence.resolve()
+executor = args.executor if args.executor is not None else f"Codex {stage}"
 evidence.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(checkout / "tests"))
 from service_harness import ServerRun
@@ -114,7 +124,7 @@ try:
         (evidence / "verifier.stdout.log").write_text(result.stdout)
         (evidence / "verifier.stderr.log").write_text(result.stderr)
         assert result.returncode == 0, result.stderr
-        summary = {"executor": executor, "milestone": "M5 T06", "status": "passed",
+        summary = {"executor": executor, "milestone": stage, "status": "passed",
                    "clients": [maker.client_id, taker.client_id], "commands": 7,
                    "identical_cross_client_trades": 2, "request_id_reused": 7,
                    "bbo_before_complete": True, "reference_verified": True,

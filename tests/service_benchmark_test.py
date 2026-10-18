@@ -6,8 +6,51 @@ import subprocess
 import sys
 import tempfile
 
-SERVER, LOADGEN, VERIFIER = [Path(value).resolve() for value in sys.argv[1:4]]
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from create_service_workloads import sha256
+from summarize_service_bench import summarize
+
+
+def diagnostic_contract_checks():
+    # Exercise the independent reader directly, bypassing the runner's admission
+    # checks. These deliberately stop before run I/O and never start a server.
+    cases = [(mode, "both", True, "detailed Gateway diagnostics require a separate non-formal run")
+             for mode in ("formal", "m4-formal")]
+    for where in ("source", "parameters"):
+        for value in (0, 1, 1.0, "true", None):
+            cases.append(("calibration", where, value, "gateway_diagnostics must be boolean"))
+        for mode in ("formal", "m4-formal"):
+            cases.append((mode, where, True, "detailed Gateway diagnostics require a separate non-formal run"))
+        cases.append(("calibration", where, True, "Gateway diagnostic setting differs from source manifest"))
+    with tempfile.TemporaryDirectory(prefix="diagnostic-contract-") as temporary:
+        directory = Path(temporary)
+        for mode, where, value, expected_error in cases:
+            source, parameters = {"mode": mode}, {"mode": mode}
+            if where == "both":
+                source["gateway_diagnostics"] = parameters["gateway_diagnostics"] = value
+            else:
+                (source if where == "source" else parameters)["gateway_diagnostics"] = value
+            source_path = directory / "source_manifest.json"
+            source_path.write_text(json.dumps(source) + "\n")
+            manifest = {"schema_version": 1, "status": "completed", "mode": mode,
+                        "expectedRuns": [{"id": "unread"}], "workload_parameters": parameters,
+                        "source_manifest_sha256": sha256(source_path)}
+            (directory / "manifest.json").write_text(json.dumps(manifest) + "\n")
+            try:
+                summarize(directory)
+            except ValueError as error:
+                assert str(error) == expected_error, (mode, where, value, str(error))
+            else:
+                raise AssertionError(("invalid diagnostic contract accepted", mode, where, value))
+    print(f"Independent diagnostic manifest contract: {len(cases)} pure rejection cases passed")
+
+
+diagnostic_contract_checks()
+if sys.argv[1:] == ["--diagnostic-contract-only"]:
+    raise SystemExit(0)
+
+SERVER, LOADGEN, VERIFIER = [Path(value).resolve() for value in sys.argv[1:4]]
 EVIDENCE = SERVER.parent / "service-benchmark-evidence"
 EVIDENCE.mkdir(exist_ok=True)
 directory = Path(tempfile.mkdtemp(prefix="round-check-", dir=EVIDENCE))
@@ -110,3 +153,32 @@ assert result.returncode == 0, (directory, result.stdout, result.stderr)
 legacy_report = json.loads((legacy / "report.json").read_text())
 assert all(run["client_resources"] is None for run in legacy_report["runs"])
 print(f"Real open-loop run, eleven corruption checks and explicit legacy resource absence passed: {directory}")
+
+# Detailed diagnostics use the same runner on a separately identified manifest.
+# They cannot be silently introduced into formal performance measurements.
+diagnostic_spec = json.loads((ROOT / "data/workloads/service-smoke.json").read_text())
+diagnostic_spec["gateway_diagnostics"] = True
+diagnostic_manifest = directory / "diagnostic-manifest.json"
+diagnostic_manifest.write_text(json.dumps(diagnostic_spec) + "\n")
+diagnostic_command = command.copy()
+diagnostic_command[diagnostic_command.index("--manifest") + 1] = str(diagnostic_manifest)
+diagnostic_output = directory / "diagnostic-run"
+diagnostic_command[diagnostic_command.index("--output-dir") + 1] = str(diagnostic_output)
+result = execute(diagnostic_command, directory / "diagnostic-run.log")
+assert result.returncode == 0, (directory, result.stdout, result.stderr)
+assert all(json.loads(path.read_text())["gateway_diagnostics_enabled"] for path in
+           diagnostic_output.glob("runs/*/*/server/server.json"))
+edit_json(diagnostic_output / "manifest.json", lambda value:
+          value["workload_parameters"].update(gateway_diagnostics=False))
+result = execute([sys.executable, str(checker), str(diagnostic_output)], directory / "diagnostic-setting-mismatch.log")
+assert result.returncode != 0, "diagnostic setting mismatch was accepted"
+from create_service_workloads import load_manifest
+for mutation in ({"gateway_diagnostics": 1}, {"mode": "formal", "gateway_diagnostics": True}):
+    diagnostic_manifest.write_text(json.dumps({**diagnostic_spec, **mutation}) + "\n")
+    try:
+        load_manifest(diagnostic_manifest)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(f"invalid diagnostic manifest accepted: {mutation}")
+print("Optional Gateway diagnostics and formal exclusion passed")

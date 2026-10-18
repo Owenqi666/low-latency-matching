@@ -82,6 +82,136 @@ def distribution(values):
             "p99_ns": ordered[math.ceil(.99 * len(values)) - 1], "max_ns": ordered[-1]}
 
 
+def validate_gateway_diagnostics(directory, server):
+    """Check optional bounded Gateway records without changing legacy summaries."""
+    path = directory / "gateway_diagnostics.json"
+    filenames = ("gateway_diagnostics.json", "gateway_closes.csv", "gateway_windows.csv", "gateway_connections.csv")
+    if not server.get("gateway_diagnostics_enabled", False):
+        require(not any((directory / name).exists() for name in filenames),
+                "disabled Gateway diagnostics left stale detailed artifacts")
+        return None
+    report = read_json(path)
+    require(report["schema_version"] == 1 and report["clock"] == "server_steady_clock_ns",
+            "unsupported Gateway diagnostics schema/clock")
+    require(report["sample_period_ns"] == 10_000_000, "unexpected Gateway sample period")
+    require(report["storage_bytes"] > 0, "missing bounded diagnostic storage size")
+    tables = {}
+    outbound = ("client,bytes,frames,in_flight_bytes,in_flight_frames,max_bytes,max_frames,"
+                "max_in_flight_bytes,max_in_flight_frames,write_operations,write_callbacks,"
+                "write_error_callbacks,last_write_started_ns,last_callback_ns")
+    headers = {"close": "closed_ns,reason," + outbound,
+               "connection_window": "observed_ns," + outbound,
+               "window": "planned_ns,observed_ns,command_depth,event_depth,connections,admitted,events_consumed,"
+                         "bbo_consumed,write_operations,write_callbacks,bytes_transferred,write_operations_delta,"
+                         "write_callbacks_delta,bytes_transferred_delta"}
+    for name, filename, capacity in (("close", "gateway_closes.csv", 128),
+                                     ("window", "gateway_windows.csv", 4096),
+                                     ("connection_window", "gateway_connections.csv", 16384)):
+        require(report[name + "_capacity"] == capacity and
+                0 <= report[name + "_count"] <= capacity and report[name + "_overflow"] >= 0,
+                "invalid Gateway diagnostic record bound")
+        require(not report[name + "_overflow"] or report[name + "_count"] == capacity,
+                "Gateway overflow without full retained storage")
+        with (directory / filename).open(newline="") as source:
+            reader = csv.DictReader(source)
+            require(reader.fieldnames == headers[name].split(","), "Gateway diagnostic CSV header mismatch")
+            rows = list(reader)
+        require(len(rows) == report[name + "_count"], "Gateway diagnostic CSV count mismatch")
+        for row in rows:
+            require(None not in row and all(value is not None for value in row.values()),
+                    "incomplete Gateway diagnostic CSV row")
+            for key in row:
+                if key != "reason":
+                    row[key] = int(row[key])
+                    require(row[key] >= 0, "negative Gateway diagnostic field")
+        tables[name] = rows
+    for name in ("whole_write_completion", "callback_interval", "loop_lateness"):
+        histogram = report[name]
+        require(len(histogram["buckets"]) == 64 and all(v >= 0 for v in histogram["buckets"])
+                and sum(histogram["buckets"]) == histogram["count"], "invalid Gateway histogram counts")
+        maximum = histogram["maximum_ns"]
+        require(0 <= maximum < 2**64 and (histogram["count"] > 0 or maximum == 0), "invalid Gateway histogram maximum")
+        if histogram["count"]:
+            require(max(i for i, n in enumerate(histogram["buckets"]) if n) == max(0, maximum.bit_length() - 1),
+                    "Gateway maximum differs from highest populated bucket")
+    require(report["whole_write_completion"]["count"] == server["write_callbacks"],
+            "Gateway composed callback count mismatch")
+    require(report["callback_interval"]["count"] <= server["write_callbacks"], "too many callback intervals")
+    require(report["loop_lateness"]["count"] == report["window_count"] + report["window_overflow"],
+            "Gateway timer sample count mismatch")
+    require(report["close_count"] + report["close_overflow"] == sum(server["close_reasons"].values()),
+            "Gateway close snapshot count mismatch")
+    reasons = Counter(row["reason"] for row in tables["close"])
+    require(all(reasons[name] <= count for name, count in server["close_reasons"].items()),
+            "Gateway close reason count mismatch")
+    require(len({row["client"] for row in tables["close"]}) == len(tables["close"]),
+            "duplicate Gateway close snapshot")
+    previous = {}
+    for row in tables["window"]:
+        require(row["observed_ns"] >= row["planned_ns"] and
+                row["observed_ns"] >= previous.get("observed_ns", 0), "Gateway sample time order mismatch")
+        require(row["command_depth"] <= server["command_capacity"] and
+                row["event_depth"] <= server["event_capacity"] and row["connections"] <= server["max_connections"],
+                "Gateway queue/connection depth exceeds capacity")
+        require(row["admitted"] <= server["admitted"] and row["events_consumed"] <= server["events_consumed"] and
+                row["bbo_consumed"] <= server["bbo_consumed"], "Gateway window exceeds final counters")
+        for name, total in (("write_operations", "write_operations"), ("write_callbacks", "write_callbacks"),
+                            ("bytes_transferred", "write_bytes_transferred")):
+            require(row[name] <= server[total] and
+                    row[name + "_delta"] == row[name] - previous.get(name, 0), "Gateway window delta mismatch")
+        previous = row
+    if tables["window"]:
+        require(report["first_window_ns"] == tables["window"][0]["observed_ns"] and
+                report["last_retained_window_ns"] == tables["window"][-1]["observed_ns"] and
+                report["last_observed_window_ns"] >= report["last_retained_window_ns"],
+                "Gateway retained time coverage mismatch")
+    else:
+        require(report["first_window_ns"] == report["last_retained_window_ns"] == report["last_observed_window_ns"] == 0
+                and not tables["connection_window"], "unexpected empty Gateway window coverage")
+    connection_times = [row["observed_ns"] for row in tables["connection_window"]]
+    require(connection_times == sorted(connection_times) and
+            all(t <= report["last_observed_window_ns"] for t in connection_times),
+            "Gateway connection time order mismatch")
+    for name, field, first_key, last_key in (
+            ("connection_window", "observed_ns", "first_connection_window_ns", "last_retained_connection_window_ns"),
+            ("close", "closed_ns", "first_retained_close_ns", "last_retained_close_ns")):
+        times = [row[field] for row in tables[name]]
+        require(times == sorted(times) and report[first_key] == (times[0] if times else 0) and
+                report[last_key] == (times[-1] if times else 0), "Gateway table time coverage mismatch")
+    per_tick = defaultdict(set)
+    for row in tables["connection_window"]:
+        ids = per_tick[row["observed_ns"]]
+        require(row["client"] not in ids, "duplicate connection in Gateway window")
+        ids.add(row["client"])
+    for row in tables["window"]:
+        if not report["connection_window_overflow"] or (connection_times and row["observed_ns"] < connection_times[-1]):
+            require(len(per_tick[row["observed_ns"]]) == row["connections"], "Gateway connection/window association mismatch")
+    for row in tables["close"] + tables["connection_window"]:
+        time_ns = row.get("closed_ns", row.get("observed_ns"))
+        require(0 < row["client"] <= server["connections"] and row["bytes"] <= row["max_bytes"] <= server["send_limit"]
+                and row["max_frames"] <= row["max_bytes"], "invalid connection identity/allowance")
+        for unit in ("bytes", "frames"):
+            require(row["in_flight_" + unit] <= row[unit] <= row["max_" + unit] and
+                    row["in_flight_" + unit] <= row["max_in_flight_" + unit], "Gateway in-flight/high-water mismatch")
+        require(row["in_flight_frames"] <= server["write_batch_max_frames"] and
+                row["in_flight_bytes"] <= server["write_batch_max_bytes"] and
+                row["max_in_flight_frames"] <= min(row["max_frames"], server["write_batch_max_frames"]) and
+                row["max_in_flight_bytes"] <= min(row["max_bytes"], server["write_batch_max_bytes"]),
+                "Gateway batch bound exceeded")
+        require(row["write_error_callbacks"] <= row["write_callbacks"] <= row["write_operations"] and
+                max(row["last_write_started_ns"], row["last_callback_ns"]) <= time_ns,
+                "Gateway connection callback count/time mismatch")
+        require(all(row[name] <= server[name] for name in
+                    ("write_operations", "write_callbacks", "write_error_callbacks")),
+                "Gateway connection write counts exceed global totals")
+        require(bool(row["in_flight_frames"]) == bool(row["in_flight_bytes"]) and
+                row["write_operations"] - row["write_callbacks"] == int(row["in_flight_frames"] > 0),
+                "Gateway outstanding write differs from in-flight state")
+        if "reason" in row:
+            require(row["reason"] in server["close_reasons"], "unknown Gateway close reason")
+    return report
+
+
 def client_samples(rows, commands, summary, mapping, schedule=None, start=0):
     require(len(rows) == len(commands), "client samples do not cover every planned request")
     counts = Counter({key: 0 for key in COUNTS})
@@ -153,6 +283,10 @@ def validate_run(directory, expected, parameters):
 
     client = read_json(directory / "client/client.json")
     server = read_json(directory / "server/server.json")
+    require(type(server.get("gateway_diagnostics_enabled", False)) is bool and
+            server.get("gateway_diagnostics_enabled", False) == parameters.get("gateway_diagnostics", False),
+            "Gateway diagnostic setting differs from experiment parameters")
+    validate_gateway_diagnostics(directory / "server", server)
     require(client["schema_version"] == server["schema_version"] == 1, "unsupported evidence schema")
     require(client["exit_status"] == run["loadgen_exit"] and server["exit_status"] == run["server_exit"], "process/report exit mismatch")
     require(all(server[key] == parameters["limits"][key] for key in ("command_capacity", "event_capacity", "max_connections", "send_limit", "shutdown_ms")) and
@@ -298,6 +432,12 @@ def summarize(directory):
     parameters = manifest["workload_parameters"]
     require(source["mode"] == parameters["mode"] == manifest["mode"], "experiment mode differs from source manifest")
     require(manifest["mode"] in {"smoke", "calibration", "formal", "m4-formal"}, "unknown service experiment mode")
+    for settings in (source, parameters):
+        require(type(settings.get("gateway_diagnostics", False)) is bool, "gateway_diagnostics must be boolean")
+        require(manifest["mode"] not in {"formal", "m4-formal"} or not settings.get("gateway_diagnostics", False),
+                "detailed Gateway diagnostics require a separate non-formal run")
+    require(source.get("gateway_diagnostics", False) == parameters.get("gateway_diagnostics", False),
+            "Gateway diagnostic setting differs from source manifest")
     planned = {(row["id"], number, "warmup" if number == 0 else "measurement")
                for row in parameters["rows"] for number in range(parameters["rounds"] + 1)}
     require(len(planned) == len(expected) and planned == {(row["row"], row["round"], row["kind"]) for row in expected},
