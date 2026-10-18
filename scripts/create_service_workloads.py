@@ -32,7 +32,11 @@ def load_manifest(path, rows=None, commands=None, rounds=None, rate=None):
         raise ValueError("unsupported service manifest/generator version")
     if spec.get("mode") not in {"smoke", "calibration", "formal", "m4-formal"}:
         raise ValueError("mode must be smoke, calibration, formal, or m4-formal")
+    if type(spec.get("gateway_diagnostics", False)) is not bool:
+        raise ValueError("gateway_diagnostics must be boolean")
     if spec["mode"] in {"formal", "m4-formal"}:
+        if spec.get("gateway_diagnostics", False):
+            raise ValueError("detailed Gateway diagnostics require a separate non-formal run")
         if any(value is not None for value in (rows, commands, rounds, rate)):
             raise ValueError("formal parameters must be fixed in the manifest, without CLI overrides")
         if not spec.get("rates_locked"):

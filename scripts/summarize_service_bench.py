@@ -201,6 +201,12 @@ def validate_gateway_diagnostics(directory, server):
         require(row["write_error_callbacks"] <= row["write_callbacks"] <= row["write_operations"] and
                 max(row["last_write_started_ns"], row["last_callback_ns"]) <= time_ns,
                 "Gateway connection callback count/time mismatch")
+        require(all(row[name] <= server[name] for name in
+                    ("write_operations", "write_callbacks", "write_error_callbacks")),
+                "Gateway connection write counts exceed global totals")
+        require(bool(row["in_flight_frames"]) == bool(row["in_flight_bytes"]) and
+                row["write_operations"] - row["write_callbacks"] == int(row["in_flight_frames"] > 0),
+                "Gateway outstanding write differs from in-flight state")
         if "reason" in row:
             require(row["reason"] in server["close_reasons"], "unknown Gateway close reason")
     return report
@@ -277,6 +283,8 @@ def validate_run(directory, expected, parameters):
 
     client = read_json(directory / "client/client.json")
     server = read_json(directory / "server/server.json")
+    require(server.get("gateway_diagnostics_enabled", False) == parameters.get("gateway_diagnostics", False),
+            "Gateway diagnostic setting differs from experiment parameters")
     validate_gateway_diagnostics(directory / "server", server)
     require(client["schema_version"] == server["schema_version"] == 1, "unsupported evidence schema")
     require(client["exit_status"] == run["loadgen_exit"] and server["exit_status"] == run["server_exit"], "process/report exit mismatch")

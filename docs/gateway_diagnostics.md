@@ -38,6 +38,11 @@ build; per-connection SendQueue observation fields are additionally bounded by
 the existing maximum connection count. No background thread or hot-path file
 writes are introduced.
 
+The existing single-version and paired runners also accept the optional boolean
+`gateway_diagnostics: true` in a separate smoke/calibration manifest. The setting
+is recorded with the workload and checked against each server report. Formal
+manifests reject detailed diagnostics; performance runs retain the default off.
+
 The nominal sample period is 10ms, scheduled after each actual callback, without
 catch-up bursts. At 64 persistent connections, connection records may cover only
 about 2.56 seconds even while global windows cover about 40.96 seconds; callbacks
@@ -55,7 +60,8 @@ the composed callback, even after an underlying partial socket write.
 
 The optional checker in `summarize_service_bench.py` validates headers, record
 bounds, overflow accounting, histogram extrema, callback/close totals, ClientId
-ranges, batch/allowance high-water bounds, window deltas and time association.
+ranges, per-connection totals and outstanding-write/in-flight consistency,
+batch/allowance high-water bounds, window deltas and time association.
 Legacy reports without the new switch remain readable. Disabled runs reject
 stale detailed artifacts. Tests mutate real artifacts to check rejection rather
 than merely checking that serialization reproduces its own values.

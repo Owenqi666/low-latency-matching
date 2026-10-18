@@ -110,3 +110,33 @@ assert result.returncode == 0, (directory, result.stdout, result.stderr)
 legacy_report = json.loads((legacy / "report.json").read_text())
 assert all(run["client_resources"] is None for run in legacy_report["runs"])
 print(f"Real open-loop run, eleven corruption checks and explicit legacy resource absence passed: {directory}")
+
+# Detailed diagnostics use the same runner on a separately identified manifest.
+# They cannot be silently introduced into formal performance measurements.
+diagnostic_spec = json.loads((ROOT / "data/workloads/service-smoke.json").read_text())
+diagnostic_spec["gateway_diagnostics"] = True
+diagnostic_manifest = directory / "diagnostic-manifest.json"
+diagnostic_manifest.write_text(json.dumps(diagnostic_spec) + "\n")
+diagnostic_command = command.copy()
+diagnostic_command[diagnostic_command.index("--manifest") + 1] = str(diagnostic_manifest)
+diagnostic_output = directory / "diagnostic-run"
+diagnostic_command[diagnostic_command.index("--output-dir") + 1] = str(diagnostic_output)
+result = execute(diagnostic_command, directory / "diagnostic-run.log")
+assert result.returncode == 0, (directory, result.stdout, result.stderr)
+assert all(json.loads(path.read_text())["gateway_diagnostics_enabled"] for path in
+           diagnostic_output.glob("runs/*/*/server/server.json"))
+edit_json(diagnostic_output / "manifest.json", lambda value:
+          value["workload_parameters"].update(gateway_diagnostics=False))
+result = execute([sys.executable, str(checker), str(diagnostic_output)], directory / "diagnostic-setting-mismatch.log")
+assert result.returncode != 0, "diagnostic setting mismatch was accepted"
+sys.path.insert(0, str(ROOT / "scripts"))
+from create_service_workloads import load_manifest
+for mutation in ({"gateway_diagnostics": 1}, {"mode": "formal", "gateway_diagnostics": True}):
+    diagnostic_manifest.write_text(json.dumps({**diagnostic_spec, **mutation}) + "\n")
+    try:
+        load_manifest(diagnostic_manifest)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(f"invalid diagnostic manifest accepted: {mutation}")
+print("Optional Gateway diagnostics and formal exclusion passed")
