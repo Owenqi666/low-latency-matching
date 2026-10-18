@@ -72,6 +72,10 @@ public:
     bool try_pop(ServiceMessage& message);
     bool has_output() const;
     bool has_command_space() const;
+    // Gateway-side snapshots of queue occupancy; may change immediately after
+    // observation. These do not read Matching-owned PipelineStats.
+    std::size_t command_depth() const;
+    std::size_t event_depth() const;
     void request_drain();
     void request_abort();
     bool done() const noexcept { return done_.load(std::memory_order_acquire); }

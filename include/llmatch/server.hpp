@@ -1,6 +1,7 @@
 #pragma once
 
 #include "llmatch/pipeline.hpp"
+#include "llmatch/gateway_diagnostics.hpp"
 #include <boost/asio.hpp>
 #include <array>
 #include <map>
@@ -18,6 +19,8 @@ struct ServerConfig {
     std::chrono::milliseconds shutdown_timeout{5000};
     // Zero uses the OS default. A small value makes slow-peer tests reproducible.
     int socket_send_buffer{};
+    // Optional bounded detailed observations. No diagnostic timer when false.
+    bool gateway_diagnostics{};
 };
 
 enum class CloseReason : std::size_t {
@@ -67,6 +70,7 @@ public:
     const ServerStats& stats() const { return stats_; }
     const MatchingPipeline& pipeline() const { return *pipeline_; }
     const std::string& failure() const { return failure_; }
+    const GatewayDiagnostics* diagnostics() const { return diagnostics_.get(); }
 
 private:
     friend struct ServerTestAccess;
@@ -82,6 +86,8 @@ private:
     void maybe_finish();
     void finish(bool timed_out);
     bool runnable_input() const;
+    void schedule_diagnostic_sample();
+    void sample_diagnostics(std::uint64_t planned_ns, std::uint64_t observed_ns);
 
     ServerConfig config_;
     boost::asio::io_context io_;
@@ -89,6 +95,8 @@ private:
     Tcp::acceptor acceptor_;
     boost::asio::signal_set signals_;
     boost::asio::steady_timer shutdown_timer_;
+    boost::asio::steady_timer diagnostic_timer_;
+    std::unique_ptr<GatewayDiagnostics> diagnostics_;
     std::unique_ptr<MatchingPipeline> pipeline_;
     std::map<ClientId, std::shared_ptr<Connection>> connections_;
     std::vector<ClientId> pump_clients_;

@@ -36,6 +36,92 @@ std::string json_string(const std::string& value) {
     return out.str();
 }
 
+void outbound_header(std::ostream& out) {
+    out << "client,bytes,frames,in_flight_bytes,in_flight_frames,max_bytes,max_frames,"
+           "max_in_flight_bytes,max_in_flight_frames,write_operations,write_callbacks,"
+           "write_error_callbacks,last_write_started_ns,last_callback_ns\n";
+}
+
+void outbound_fields(std::ostream& out, const OutboundObservation& value) {
+    out << value.client << ',' << value.bytes << ',' << value.frames << ','
+        << value.in_flight_bytes << ',' << value.in_flight_frames << ','
+        << value.max_bytes << ',' << value.max_frames << ',' << value.max_in_flight_bytes << ','
+        << value.max_in_flight_frames << ',' << value.write_operations << ',' << value.write_callbacks << ','
+        << value.write_error_callbacks << ',' << value.last_write_started_ns << ',' << value.last_callback_ns << '\n';
+}
+
+void histogram_json(std::ostream& out, const DurationHistogram& value) {
+    out << "{\"count\":" << value.count << ",\"maximum_ns\":" << value.maximum_ns << ",\"buckets\":[";
+    for (std::size_t i = 0; i < value.buckets.size(); ++i) {
+        if (i) out << ',';
+        out << value.buckets[i];
+    }
+    out << "]}";
+}
+
+void write_diagnostics(const GatewayDiagnostics& diagnostics, const std::filesystem::path& directory) {
+    std::ofstream report(directory / "gateway_diagnostics.json");
+    report << "{\"schema_version\":1,\"clock\":\"server_steady_clock_ns\","
+              "\"histogram_buckets\":\"bucket 0: 0..1 ns; bucket k: 2^k..2^(k+1)-1 ns\","
+              "\"retention\":\"first N records; overflow counted; no catch-up timer callbacks\","
+              "\"outbound_accounting\":\"bytes/frames include in-flight; queued-only equals total minus in-flight\","
+              "\"write_timing_scope\":\"whole composed write completion, including error and late callbacks\","
+              "\"loop_timing_scope\":\"Gateway timer lateness; not kernel wakeup latency\","
+              "\"sample_period_ns\":" << GatewayDiagnostics::sample_period_ns
+           << ",\"storage_bytes\":" << sizeof(GatewayDiagnostics)
+           << ",\"close_capacity\":" << GatewayDiagnostics::close_capacity
+           << ",\"close_count\":" << diagnostics.closes.size
+           << ",\"close_overflow\":" << diagnostics.closes.overflow
+           << ",\"window_capacity\":" << GatewayDiagnostics::window_capacity
+           << ",\"window_count\":" << diagnostics.windows.size
+           << ",\"window_overflow\":" << diagnostics.windows.overflow
+           << ",\"connection_window_capacity\":" << GatewayDiagnostics::connection_window_capacity
+           << ",\"connection_window_count\":" << diagnostics.connections.size
+           << ",\"connection_window_overflow\":" << diagnostics.connections.overflow
+           << ",\"first_connection_window_ns\":" << (diagnostics.connections.size ? diagnostics.connections.records[0].observed_ns : 0)
+           << ",\"last_retained_connection_window_ns\":" << (diagnostics.connections.size ? diagnostics.connections.records[diagnostics.connections.size - 1].observed_ns : 0)
+           << ",\"first_retained_close_ns\":" << (diagnostics.closes.size ? diagnostics.closes.records[0].closed_ns : 0)
+           << ",\"last_retained_close_ns\":" << (diagnostics.closes.size ? diagnostics.closes.records[diagnostics.closes.size - 1].closed_ns : 0)
+           << ",\"first_window_ns\":" << (diagnostics.windows.size ? diagnostics.windows.records[0].observed_ns : 0)
+           << ",\"last_retained_window_ns\":" << (diagnostics.windows.size ? diagnostics.windows.records[diagnostics.windows.size - 1].observed_ns : 0)
+           << ",\"last_observed_window_ns\":" << diagnostics.previous_window.observed_ns
+           << ",\"whole_write_completion\":";
+    histogram_json(report, diagnostics.whole_write_completion);
+    report << ",\"callback_interval\":";
+    histogram_json(report, diagnostics.callback_interval);
+    report << ",\"loop_lateness\":";
+    histogram_json(report, diagnostics.loop_lateness);
+    report << "}\n";
+    std::ofstream closes(directory / "gateway_closes.csv");
+    closes << "closed_ns,reason,";
+    outbound_header(closes);
+    for (std::size_t i = 0; i < diagnostics.closes.size; ++i) {
+        const auto& record = diagnostics.closes.records[i];
+        closes << record.closed_ns << ',' << close_reason_name(static_cast<CloseReason>(record.reason)) << ',';
+        outbound_fields(closes, record.outbound);
+    }
+    std::ofstream connections(directory / "gateway_connections.csv");
+    connections << "observed_ns,";
+    outbound_header(connections);
+    for (std::size_t i = 0; i < diagnostics.connections.size; ++i) {
+        const auto& record = diagnostics.connections.records[i];
+        connections << record.observed_ns << ',';
+        outbound_fields(connections, record.outbound);
+    }
+    std::ofstream windows(directory / "gateway_windows.csv");
+    windows << "planned_ns,observed_ns,command_depth,event_depth,connections,admitted,events_consumed,"
+               "bbo_consumed,write_operations,write_callbacks,bytes_transferred,write_operations_delta,"
+               "write_callbacks_delta,bytes_transferred_delta\n";
+    for (std::size_t i = 0; i < diagnostics.windows.size; ++i) {
+        const auto& w = diagnostics.windows.records[i];
+        windows << w.planned_ns << ',' << w.observed_ns << ',' << w.command_depth << ',' << w.event_depth << ','
+                << w.connections << ',' << w.admitted << ',' << w.events_consumed << ',' << w.bbo_consumed << ','
+                << w.write_operations << ',' << w.write_callbacks << ',' << w.bytes_transferred << ','
+                << w.write_operations_delta << ',' << w.write_callbacks_delta << ',' << w.bytes_transferred_delta << '\n';
+    }
+    if (!report || !closes || !connections || !windows) throw std::runtime_error("cannot write Gateway diagnostics");
+}
+
 void write_evidence(const MatchingServer& server, const std::filesystem::path& directory,
                     int exit_status, std::uint64_t started, std::uint64_t ended) {
     rusage usage{};
@@ -86,6 +172,7 @@ void write_evidence(const MatchingServer& server, const std::filesystem::path& d
            << ",\"send_limit\":" << config.send_limit
            << ",\"max_connections\":" << config.max_connections
            << ",\"socket_send_buffer\":" << config.socket_send_buffer
+           << ",\"gateway_diagnostics_enabled\":" << (config.gateway_diagnostics ? "true" : "false")
            << ",\"shutdown_ms\":" << config.shutdown_timeout.count()
            << ",\"admitted\":" << pipeline.admitted()
            << ",\"completed\":" << matching.completed
@@ -138,6 +225,7 @@ void write_evidence(const MatchingServer& server, const std::filesystem::path& d
     }
     report << "}}\n";
     if (!report || !samples || !snapshot) throw std::runtime_error("cannot write service evidence");
+    if (const auto* diagnostics = server.diagnostics()) write_diagnostics(*diagnostics, directory);
 }
 }
 
@@ -152,6 +240,7 @@ int main(int argc, char** argv) {
                              "  [--command-capacity 1024] [--event-capacity 1024] [--max-connections 64]\n"
                              "  [--send-limit 65536] [--shutdown-ms 5000] [--socket-send-buffer 0]\n"
                              "  [--max-price 20000] [--max-qty 1000000] [--record-limit 0] [--output-dir DIR]\n"
+                             "  [--gateway-diagnostics 0|1] (bounded detailed observations; default off)\n"
                              "SIGINT/SIGTERM stops admission and drains admitted commands. Port 0 selects a free port.\n";
                 return 0;
             }
@@ -168,6 +257,11 @@ int main(int argc, char** argv) {
             else if (option == "--send-limit") config.send_limit = number<std::size_t>(value);
             else if (option == "--shutdown-ms") config.shutdown_timeout = std::chrono::milliseconds(number<std::int64_t>(value));
             else if (option == "--socket-send-buffer") config.socket_send_buffer = number<int>(value);
+            else if (option == "--gateway-diagnostics") {
+                const auto enabled = number<unsigned>(value);
+                if (enabled > 1) throw std::invalid_argument("gateway-diagnostics must be 0 or 1");
+                config.gateway_diagnostics = enabled != 0;
+            }
             else if (option == "--record-limit") config.pipeline.record_limit = number<std::size_t>(value);
             else if (option == "--output-dir") output = value;
             else throw std::invalid_argument("unknown option: " + std::string(option));

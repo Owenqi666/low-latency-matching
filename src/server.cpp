@@ -47,7 +47,8 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
     detail::SendQueue outgoing;
 
     Connection(MatchingServer& owner, Tcp::socket stream, ClientId client)
-        : server(owner), socket(std::move(stream)), id(client), outgoing(owner.stats_, owner.config_.send_limit) {}
+        : server(owner), socket(std::move(stream)), id(client),
+          outgoing(owner.stats_, owner.config_.send_limit, owner.diagnostics_.get(), client) {}
 
     void start() {
         socket.set_option(Tcp::no_delay(true));
@@ -61,6 +62,10 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
 
     void close(CloseReason reason) {
         if (outgoing.closed()) return;
+        if (server.diagnostics_) {
+            server.diagnostics_->closes.append({steady_now_ns(), static_cast<std::size_t>(reason),
+                                               outgoing.observation()});
+        }
         outgoing.close();
         ++server.stats_.closes[static_cast<std::size_t>(reason)];
         error_code ignored;
@@ -156,7 +161,8 @@ struct MatchingServer::Connection : std::enable_shared_from_this<Connection> {
 
 MatchingServer::MatchingServer(ServerConfig config)
     : config_(checked_config(std::move(config))), work_(asio::make_work_guard(io_)),
-      acceptor_(io_), signals_(io_, SIGINT, SIGTERM), shutdown_timer_(io_) {
+      acceptor_(io_), signals_(io_, SIGINT, SIGTERM), shutdown_timer_(io_), diagnostic_timer_(io_) {
+    if (config_.gateway_diagnostics) diagnostics_ = std::make_unique<GatewayDiagnostics>();
     stats_.write_batch_max_frames = detail::batch_max_frames;
     stats_.write_batch_max_bytes = detail::batch_max_bytes;
     const Tcp::endpoint endpoint(asio::ip::make_address(config_.address), config_.port);
@@ -176,6 +182,7 @@ std::uint16_t MatchingServer::port() const { return acceptor_.local_endpoint().p
 
 int MatchingServer::run() {
     accept_next();
+    if (diagnostics_) schedule_diagnostic_sample();
     signals_.async_wait([this](error_code error, int) { if (!error) begin_shutdown(); });
     try {
         io_.run();
@@ -215,6 +222,46 @@ void MatchingServer::accept_next() {
 void MatchingServer::schedule_pump() {
     if (!pump_scheduled_.exchange(true, std::memory_order_acq_rel)) {
         asio::post(io_, [this] { pump(); });
+    }
+}
+
+void MatchingServer::schedule_diagnostic_sample() {
+    diagnostic_timer_.expires_after(std::chrono::nanoseconds(GatewayDiagnostics::sample_period_ns));
+    const auto planned = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+        diagnostic_timer_.expiry().time_since_epoch()).count());
+    diagnostic_timer_.async_wait([this, planned](error_code error) {
+        if (error || finished_) return;
+        sample_diagnostics(planned, steady_now_ns());
+        // Schedule from the current time. Missed periods never cause a catch-up
+        // storm; lateness and retained sample timestamps expose the gap.
+        schedule_diagnostic_sample();
+    });
+}
+
+void MatchingServer::sample_diagnostics(std::uint64_t planned_ns, std::uint64_t observed_ns) {
+    if (!diagnostics_) return;
+    auto& diagnostics = *diagnostics_;
+    diagnostics.loop_lateness.observe(observed_ns > planned_ns ? observed_ns - planned_ns : 0);
+    GatewayWindowObservation window;
+    window.planned_ns = planned_ns;
+    window.observed_ns = observed_ns;
+    window.command_depth = pipeline_->command_depth();
+    window.event_depth = pipeline_->event_depth();
+    window.connections = connections_.size();
+    window.admitted = pipeline_->admitted();
+    window.events_consumed = stats_.consumed_events;
+    window.bbo_consumed = stats_.consumed_bbo;
+    window.write_operations = stats_.write_operations;
+    window.write_callbacks = stats_.write_callbacks;
+    window.bytes_transferred = stats_.write_bytes_transferred;
+    window.write_operations_delta = window.write_operations - diagnostics.previous_window.write_operations;
+    window.write_callbacks_delta = window.write_callbacks - diagnostics.previous_window.write_callbacks;
+    window.bytes_transferred_delta = window.bytes_transferred - diagnostics.previous_window.bytes_transferred;
+    diagnostics.previous_window = window;
+    diagnostics.windows.append(window);
+    for (const auto& [id, connection] : connections_) {
+        (void)id;
+        diagnostics.connections.append({observed_ns, connection->outgoing.observation()});
     }
 }
 
@@ -319,6 +366,7 @@ void MatchingServer::finish(bool timed_out) {
     }
     error_code ignored;
     shutdown_timer_.cancel();
+    diagnostic_timer_.cancel();
     signals_.cancel(ignored);
     acceptor_.close(ignored);
     while (!connections_.empty()) {

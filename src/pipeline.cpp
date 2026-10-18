@@ -82,6 +82,10 @@ bool MatchingPipeline::try_pop(ServiceMessage& message) {
 
 bool MatchingPipeline::has_output() const { return events_.read_available() != 0; }
 bool MatchingPipeline::has_command_space() const { return commands_.write_available() != 0; }
+std::size_t MatchingPipeline::command_depth() const {
+    return config_.command_capacity - commands_.write_available();
+}
+std::size_t MatchingPipeline::event_depth() const { return events_.read_available(); }
 
 void MatchingPipeline::request_drain() {
     std::lock_guard lock(wake_mutex_);

@@ -11,10 +11,14 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 from service_harness import ServerRun
 from wire_helpers import EVENT_FIELDS, business, cancel, limit, market
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from summarize_service_bench import validate_gateway_diagnostics
 
 SERVER, VERIFIER, REPLAY = (Path(value).resolve() for value in sys.argv[1:4])
 del sys.argv[1:4]
@@ -75,8 +79,9 @@ def erase_recorded_work(directory):
 
 class ServiceEvidenceTest(unittest.TestCase):
     @contextmanager
-    def valid_evidence(self):
-        with ServerRun(SERVER, "evidence-valid", **{"record-limit": 32, "event-capacity": 1}) as server:
+    def valid_evidence(self, diagnostics=False):
+        with ServerRun(SERVER, "evidence-valid", **{"record-limit": 32, "event-capacity": 1,
+                       "gateway-diagnostics": int(diagnostics)}) as server:
             maker = server.connect()
             maker.send(limit(11, 1, 1, 100, 5))
             maker.through_complete()
@@ -97,6 +102,108 @@ class ServiceEvidenceTest(unittest.TestCase):
             self.assertEqual((verification["commands"], verification["trades"], verification["rejected"]),
                              (6, 1, 1))
             yield server.directory
+
+    def test_gateway_diagnostics_are_optional_and_independently_checked(self):
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled), self.valid_evidence(enabled) as directory:
+                server = json.loads((directory / "server.json").read_text())
+                self.assertEqual(server["gateway_diagnostics_enabled"], enabled)
+                detailed = validate_gateway_diagnostics(directory, server)
+                if not enabled:
+                    self.assertIsNone(detailed)
+                    self.assertFalse((directory / "gateway_windows.csv").exists())
+                    continue
+                self.assertGreater(detailed["whole_write_completion"]["count"], 0)
+                self.assertEqual(detailed["close_count"], 2)
+                path = directory / "gateway_diagnostics.json"
+                original = path.read_text()
+                corrupt = json.loads(original)
+                corrupt["whole_write_completion"]["count"] += 1
+                path.write_text(json.dumps(corrupt))
+                with self.assertRaisesRegex(ValueError, "histogram counts"):
+                    validate_gateway_diagnostics(directory, server)
+                path.write_text(original)
+                # A physically impossible in-flight snapshot must be rejected.
+                snapshot = directory / "gateway_closes.csv"
+                original_csv = snapshot.read_text()
+                with snapshot.open(newline="") as stream:
+                    reader = csv.DictReader(stream)
+                    fields, rows = reader.fieldnames, list(reader)
+                rows[0]["in_flight_bytes"] = str(server["send_limit"] + 1)
+                with snapshot.open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=fields)
+                    writer.writeheader()
+                    writer.writerows(rows)
+                with self.assertRaisesRegex(ValueError, "in-flight/high-water"):
+                    validate_gateway_diagnostics(directory, server)
+                snapshot.write_text(original_csv)
+
+    def test_live_gateway_windows_and_corrupted_observations(self):
+        with ServerRun(SERVER, "gateway-live-windows", **{"record-limit": 10000,
+                       "gateway-diagnostics": 1}) as server:
+            client = server.connect()
+            # Exercise real input/write callbacks while a real diagnostic timer
+            # can run. This is a bounded synchronization interval, not a latency
+            # performance threshold. Each peer read also has its own timeout.
+            deadline = time.monotonic() + .1
+            count = 0
+            while time.monotonic() < deadline and count < 10000:
+                count += 1
+                client.send(market(count, count, 0, 1))
+                client.through_complete()
+            report = server.finish()
+            self.assertEqual(report["completed"], count)
+            directory = server.directory
+            detailed = validate_gateway_diagnostics(directory, report)
+            self.assertGreater(detailed["window_count"], 0)
+            self.assertGreater(detailed["connection_window_count"], 0)
+            paths = [directory / name for name in ("gateway_diagnostics.json", "gateway_closes.csv",
+                     "gateway_windows.csv", "gateway_connections.csv")]
+            originals = {path: path.read_text() for path in paths}
+
+            def change_csv(path, column, value):
+                with path.open(newline="") as stream:
+                    reader = csv.DictReader(stream)
+                    fields, rows = reader.fieldnames, list(reader)
+                rows[0][column] = str(value)
+                with path.open("w", newline="") as stream:
+                    writer = csv.DictWriter(stream, fieldnames=fields)
+                    writer.writeheader()
+                    writer.writerows(rows)
+
+            mutations = {
+                "close-reason": lambda: change_csv(paths[1], "reason", "slow_client"),
+                "client-id": lambda: change_csv(paths[1], "client", report["connections"] + 1),
+                "max-bytes": lambda: change_csv(paths[1], "max_bytes", report["send_limit"] + 1),
+                "window-delta": lambda: change_csv(paths[2], "write_operations_delta", report["write_operations"] + 1),
+                "window-association": lambda: change_csv(paths[3], "observed_ns", 0),
+                "header": lambda: paths[2].write_text("bogus\n"),
+            }
+            def corrupt_maximum():
+                data = json.loads(originals[paths[0]])
+                histogram = data["whole_write_completion"]
+                histogram["maximum_ns"] = 0
+                # Preserve count and place a sample in bucket zero, while the
+                # original higher occupied bucket still disproves this maximum.
+                histogram["buckets"][0] += 1
+                histogram["count"] += 1
+                paths[0].write_text(json.dumps(data))
+            mutations["histogram-maximum"] = corrupt_maximum
+            for name, mutate in mutations.items():
+                with self.subTest(mutation=name):
+                    mutate()
+                    try:
+                        with self.assertRaises(ValueError):
+                            validate_gateway_diagnostics(directory, report)
+                    finally:
+                        for path, original in originals.items():
+                            path.write_text(original)
+            paths[0].unlink()
+            try:
+                with self.assertRaisesRegex(ValueError, "stale detailed artifacts"):
+                    validate_gateway_diagnostics(directory, {**report, "gateway_diagnostics_enabled": False})
+            finally:
+                paths[0].write_text(originals[paths[0]])
 
     def assert_rejected_without_stale_success(self, directory):
         result = verify(directory)
