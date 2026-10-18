@@ -124,6 +124,12 @@ if(BUILD_TESTING)
   add_test(NAME service_pair COMMAND ${Python3_EXECUTABLE}
     ${PROJECT_SOURCE_DIR}/tests/service_pair_test.py $<TARGET_FILE:matching_server> $<TARGET_FILE:loadgen> $<TARGET_FILE:verify_service>)
   set_tests_properties(service_pair PROPERTIES LABELS "service" TIMEOUT 120)
+  add_test(NAME gateway_experiment COMMAND ${Python3_EXECUTABLE}
+    ${PROJECT_SOURCE_DIR}/tests/gateway_experiment_test.py)
+  set_tests_properties(gateway_experiment PROPERTIES LABELS "service" TIMEOUT 30)
+  add_test(NAME gateway_calibration COMMAND ${Python3_EXECUTABLE}
+    ${PROJECT_SOURCE_DIR}/tests/gateway_calibration_test.py)
+  set_tests_properties(gateway_calibration PROPERTIES LABELS "service" TIMEOUT 30)
   foreach(fixture basic capacity reverse rejections)
     if(fixture STREQUAL "capacity")
       set(fixture_config capacity)

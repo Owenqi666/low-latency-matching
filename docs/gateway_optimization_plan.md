@@ -28,11 +28,11 @@ only linked, revision-specific evidence establishes completion.
 | Task | Depends on | Implementation and verification | Evidence | Current state |
 |---|---|---|---|---|
 | G00 | — | Current source/environment identity; official Release configure/build/test; compile commands and binary hashes | `baseline/` | Verified on macOS and Linux |
-| G01 | G00 | ITCH end-to-end deadline, independently bounded cleanup and failure evidence; hang/normal/mismatch regressions plus representative larger input | `correctness/itch/` | Verified on macOS and Linux; integrated matrix pending |
-| G02 | G00 | Versioned deep-book input, two distributions, full per-command comparison, measured occupancy/operation coverage, replayable failures | `correctness/deep-book/` | macOS normal/extended scales and corrected coverage counter verified |
-| G03 | G00 | Reuse counters; add bounded optional connection/write/loop observations and close snapshots; lifecycle, bounds, disabled-path and compatibility checks | `correctness/gateway/` | Implemented; 17 local regressions and full Release integration passed; cross-platform matrix pending |
-| G04 | G03 | Clean batch1/batch16 builds; identical inputs/tools; mixed_4 and mixed_1 reproduction; separate bounded diagnostics | `repro/`, `diagnostics/` | Pending |
-| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/` | Conditional, not entered |
+| G01 | G00 | ITCH end-to-end deadline, independently bounded cleanup and failure evidence; hang/normal/mismatch regressions plus representative larger input | `correctness/itch/` | Verified on macOS and Linux, including integrated Debug/Release/sanitizer coverage |
+| G02 | G00 | Versioned deep-book input, two distributions, full per-command comparison, measured occupancy/operation coverage, replayable failures | `correctness/deep-book/` | Normal/extended scales and corrected counter verified; Linux extended cases passed |
+| G03 | G00 | Reuse counters; add bounded optional connection/write/loop observations and close snapshots; lifecycle, bounds, disabled-path and compatibility checks | `correctness/gateway/` | Verified: macOS Debug/Release/ASan-UBSan/TSan; Linux Release plus candidate ASan-UBSan/TSan network checks |
+| G04 | G03 | Clean batch1/batch16 builds; identical inputs/tools; mixed_4 and mixed_1 reproduction; separate bounded diagnostics | `repro/`, `diagnostics/` | Verified; all measurements and warmups passed, diagnostic analysis retained; proceed to G05, no adoption decision |
+| G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/` | Tool implementation and validation in progress; no probe has started |
 | G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/` | Conditional, not entered |
 | G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Separate experiment directory | Conditional, not triggered |
 | G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Pending |
@@ -93,6 +93,28 @@ defect is not a valid completion shortcut.
 ## A-only calibration and formal freeze
 
 Before probes, record the send-lag growth criterion, thresholds and rationale.
+The following rule is fixed before the first probe. Divide the planned interval
+into four equal bins and save each bin's started-sample lag p50/p99, the pending
+command count at each right boundary, and the actual first-attempt send span.
+Require at least one started sample in every bin; otherwise stop as insufficient
+measurement. A point is stable only if all of these hold in both measured runs:
+
+- Median p50 of bins 3/4 minus median p50 of bins 1/2 is at most 1 ms.
+- The corresponding p99 growth is at most 5 ms.
+- Pending count at the last boundary minus the first boundary is at most
+  max(10, ceil(rate / 1,000)).
+- Actual first-attempt send span is at most 1.05 times the planned send span
+  plus 1 ms.
+
+These tolerances allow transient scheduling jitter while rejecting accumulating
+backlog or a materially stretched offered-load interval. They are engineering
+checks for these finite probes, not universal stable-capacity bounds. Lag growth
+alone does not identify a loadgen bottleneck. If the only upper boundary is a
+fully delivered but lag-unstable run, preserve it as failed offered-load stability
+and stop before freezing rates for load-path diagnosis. Do not relabel it as
+environmental noise or infer a server delivery-loss boundary. Invalid evidence,
+protocol/reference errors or worker faults stop calibration for correction.
+
 Probe mixed_4 with commands=2,000, minimum_plan_seconds=2, rounds=2,
 warmup_commands=1,000. Start at 10k/s; on success increase by ceil(1.5R), on
 initial failure halve with floor and a minimum of 1. Stop after finding a passed
@@ -184,10 +206,84 @@ observed absent-to-present transitions. G01 Linux passed all 15 fault cases,
 41 legacy CLI cases and the 150,000-message independent comparison; the complete
 process group is checked after cleanup. G03 tests-02 passed 17 selected tests,
 including an actual timer callback and diagnostic artifact corruption checks.
-No G04 performance experiment has started. Next: identify the common source,
-verify the Linux integration, build clean batch1/batch16 variants, then run the
-fixed G04 reproduction. The independent experiment evaluator is being added as
-a separate tool; macOS Debug/sanitizer verification is also in progress.
+At that checkpoint G04 had not started. Subsequent preparation, verification and
+measurements are recorded below; do not restart them from this historical entry.
+
+The common implementation was committed locally as `7d9d7dc0a6ab386d2d381f401ce644e621e33d33`.
+Clean Linux A and B checkouts at `/home/m2/gateway-repro-01/{A,B}` were rebuilt;
+B is `56d5c71e7daec7631272dbc7b10a0f430f3381e0` and the complete tracked-file
+comparison differs only by the one batch frame constant. Linux A passed 134
+executed tests with two default-disabled extended registrations; the two extended
+tests (four large cases) were explicitly run and completed. B passed all 17
+Gateway/network checks. Forty-six preparation artifacts were copied and hash
+verified. The separate clean measurement-tool checkout is
+`/home/m2/gateway-repro-01/tools` at `6f3ef0878668e428fb5fa69277226d0b19dcd6de`;
+it includes the post-review per-connection diagnostic accounting checks and an
+optional diagnostic manifest switch, verified on Linux and macOS. Tools are
+identical for A/B and detailed observation is off in the fixed reproduction.
+
+macOS Debug, ASan/UBSan and separate TSan each passed all 130 applicable tests;
+two default-disabled extended registrations were not rerun in each configuration.
+The four additional Release-only benchmark tests explain its higher count.
+Original configure failure and resolved fixed dependency-source overrides are
+retained. The final counter-corruption check also passed a focused Debug rerun.
+All build/test processes stopped before G04 began at 2026-10-18T15:26:09Z.
+G04 completed with exit 0: all 20 measured attempts and four warmups succeeded.
+The driver is recorded in `repro/prepare-linux-01/run-driver.log`, with terminal
+status at `/home/m2/gateway-repro-01/run.json`. The local immutable collection is
+`repro/pairs-01`; all 483 collected file hashes were checked. Its independent
+evaluation at `repro/evaluation-01` reports valid evidence, unchanged original
+data, and `not_evaluated` for adoption because this is the reproduction phase.
+The evaluator also has 20 passing unit counterexamples. No adoption decision
+exists yet, and the production batch limit remains one frame.
+
+G04 CPU/completed-request paired median reductions were 8.615% for mixed_4 and
+8.132% for mixed_1. RTT p99 paired median changes were -4.996% and +0.638%; the
+mixed_4 fifth pair had a +39.378% RTT p99 regression and remains in the dataset.
+No 10k/s delivery failure was reproduced in this environment. These figures do
+not replace the formal near-load benefit and latency gates.
+
+Independent profiling completed separately in `diagnostics/run-01`: four
+measurements plus four warmups, eight server/loadgen observation targets,
+24 observer commands with exit 0, and 276 collected file hashes checked.
+Only the covered observation windows support diagnostic claims. Hardware cycle
+and instruction events were unavailable. Detailed offline attribution is retained
+in `diagnostics/analysis-01`.
+
+G04 continuation decision: proceed to finite A-only G05. Both clean rows show
+CPU/completion improvement in all five pairs, with paired median RTT changes
+inside the eventual latency limit. Independent named sendmsg tracepoints and
+Gateway thread CPU move in the same direction as fewer application writes.
+This supports continuing the candidate, not adopting it. The unexplained
+mixed_4 fifth-pair regression remains a limitation; profiling cannot attribute
+an earlier clean run retrospectively. No current evidence justifies a G07
+input-throttling or pump-budget change. Keep all production behavior unchanged
+until the full formal gates are evaluated.
+
+Linux candidate B at `56d5c71e7daec7631272dbc7b10a0f430f3381e0` passed all 15
+selected SendQueue, lifecycle/diagnostics and service integration/evidence tests
+under GCC ASan/UBSan and separately Clang 18 TSan, with zero failures or disabled
+tests. Source hashes stayed identical and clean; 893 collected file hashes were
+checked. This is candidate-specific correctness evidence, not final G09 delivery.
+
+Recovery checkpoint: the G05 helper is implemented and independently reviewed.
+Its 32 deterministic tests cover finite progression/budgets, lag/identity/error
+classification, G04 A-only reuse, evidence integrity and refusing to restart
+unresolved attempts. The evaluator has 23 passing counterexamples after review
+corrections. Official Release CMake registration plus gateway_calibration,
+gateway_experiment and service_benchmark passed together in
+`correctness/tools-integration-03`, with before/after tool hashes unchanged.
+The pre-probe lag rule also reads all ten existing G04 A runs successfully;
+each is stable. That read-only check is not a new capacity measurement.
+
+The five source-bound correctness prerequisites are audited in
+`formal/preparation-01/correctness-receipt.json` and its audit/index. Both versions
+have concrete healthy-client completion and bounded-send evidence; sanitizer
+platform and suite differences are stated. The receipt does not replace formal
+performance gates or final G09 delivery. No calibration or formal measurement
+has started at this checkpoint. Next: create a clean frozen tools checkout,
+verify its Linux tests and prepared plan, then execute the finite A-only run.
+Preserve the original A/B checkouts and all completed experiment directories.
 
 Current recovery locations: Linux baseline source is
 `/home/m2/gateway-g00-20261018T143926Z/source`; SSH uses the existing

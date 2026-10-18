@@ -283,7 +283,8 @@ def validate_run(directory, expected, parameters):
 
     client = read_json(directory / "client/client.json")
     server = read_json(directory / "server/server.json")
-    require(server.get("gateway_diagnostics_enabled", False) == parameters.get("gateway_diagnostics", False),
+    require(type(server.get("gateway_diagnostics_enabled", False)) is bool and
+            server.get("gateway_diagnostics_enabled", False) == parameters.get("gateway_diagnostics", False),
             "Gateway diagnostic setting differs from experiment parameters")
     validate_gateway_diagnostics(directory / "server", server)
     require(client["schema_version"] == server["schema_version"] == 1, "unsupported evidence schema")
@@ -431,6 +432,12 @@ def summarize(directory):
     parameters = manifest["workload_parameters"]
     require(source["mode"] == parameters["mode"] == manifest["mode"], "experiment mode differs from source manifest")
     require(manifest["mode"] in {"smoke", "calibration", "formal", "m4-formal"}, "unknown service experiment mode")
+    for settings in (source, parameters):
+        require(type(settings.get("gateway_diagnostics", False)) is bool, "gateway_diagnostics must be boolean")
+        require(manifest["mode"] not in {"formal", "m4-formal"} or not settings.get("gateway_diagnostics", False),
+                "detailed Gateway diagnostics require a separate non-formal run")
+    require(source.get("gateway_diagnostics", False) == parameters.get("gateway_diagnostics", False),
+            "Gateway diagnostic setting differs from source manifest")
     planned = {(row["id"], number, "warmup" if number == 0 else "measurement")
                for row in parameters["rows"] for number in range(parameters["rounds"] + 1)}
     require(len(planned) == len(expected) and planned == {(row["row"], row["round"], row["kind"]) for row in expected},

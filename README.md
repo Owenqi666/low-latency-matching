@@ -1,7 +1,49 @@
 # llmatch — C++ matching core and TCP service
 
-For M4/M5 completion status and the evidence behind older pending items, start
-with the [milestone progress and acceptance index](docs/progress.md).
+A C++20 in-memory price-time matching engine with a bounded TCP Gateway,
+independent reference validation, deterministic replay and an offline ITCH reader.
+TCP clients communicate with one Gateway I/O thread; bounded command/event queues
+connect it to one Matching thread that exclusively owns the order book.
+
+## Build and run
+
+Requires a C++20 compiler, CMake >= 3.24, Ninja and Python >= 3.10. The first build
+downloads pinned GoogleTest 1.17.0 and Boost 1.89.0 sources; hashes are in
+`cmake/Dependencies.cmake`.
+
+```sh
+cmake --preset release
+cmake --build --preset release
+ctest --preset release
+python3 scripts/demo_service_clients.py . build/gateway-demo --stage Gateway
+```
+
+The demo starts a server and two real CLI clients, checks matching Trade events,
+request-ID reuse and BBO/Complete ordering, and verifies the recorded commands
+against the independent reference model. Use a new output directory to retain
+each demonstration. [Architecture](docs/service_architecture.md),
+[protocol](docs/protocol.md) and [semantics](docs/semantics.md) describe the contract.
+
+## Current evidence and limits
+
+Production writes remain **batch1** while the Gateway investigation continues.
+The current [Gateway report](docs/gateway_report.md) separates completed 10k/s
+reproduction from the pending capacity calibration and formal adoption decision.
+The [diagnostic report](docs/gateway_diagnostics.md),
+[execution plan](docs/gateway_optimization_plan.md) and
+[evidence index](docs/gateway_evidence_index.md) retain source identities and all
+outcomes. A clean reproduction is not a general throughput or production claim.
+
+The service is in-memory, single-host and single-Matching-thread; it has no WAL,
+replication or durability guarantee. A connection exceeding its bounded send
+allowance is isolated and its undelivered results are counted. Core benchmark
+timings exclude networking. The ITCH reader reconstructs an explicitly limited
+single-security visible book; historical feed events bypass the matching engine.
+
+## Milestone history
+
+For M4/M5 completion status and the evidence behind older pending items, see the
+[milestone progress and acceptance index](docs/progress.md).
 
 A single-threaded, in-memory C++20 matching core. The public contract is
 [docs/semantics.md](docs/semantics.md).
