@@ -1,9 +1,16 @@
 # ADR 008: retain one-frame Gateway writes after the new formal comparison
 
 Status: decided; reject batch16 under the frozen rules and retain batch1.
-Date: 2026-10-18. G09 final delivery verification completed; its source-bound
-checks and archive recomputation are recorded in the [report](../gateway_report.md#g09-clean-delivery-verification).
-This ADR records the configuration decision, not a release.
+Date: 2026-10-18. Historical local G09 checks and archive recomputation are
+recorded in the [report](../gateway_report.md#g09-clean-delivery-verification).
+The later default-CI registration issue, revised-source verification and remote
+delivery are tracked separately in the [closeout record](../gateway_closeout_2026-10-18.md)
+with default Release, extended and ON→OFF local checks verified; current-source
+CI and remote delivery remain pending. This ADR records the configuration decision, not a release
+or a claim that the current revision has passed CI.
+
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
 
 ## Context and fixed comparison
 
@@ -99,9 +106,12 @@ hypothesis, a short ADR before coding, the then-selected production version as
 A, and a separately frozen comparison. The current rejection stays intact.
 
 Preserve the common tool, coverage and diagnostic implementation while keeping
-the production frame bound at one. G09 bound the final selected source to this
-measured implementation and completed applicable validation, clean Linux
+the production frame bound at one. Historical local G09 checks bound the
+then-selected source to this measured implementation and recorded Linux
 smoke/two-client demo/short A/B and independent archive-copy recomputation.
+Their two disabled default registrations do not meet the existing strict CI
+contract; the closeout must verify the explicit test option and the revised
+source's CI without changing the performance gates or rebuilding the archive.
 The [full report](../gateway_report.md), [all pairs](../benchmarks/gateway_service_pairs.md),
 [diagnostic limits](../gateway_diagnostics.md) and [evidence index](../gateway_evidence_index.md)
-retain the evidence, completed delivery checks and remaining explanatory limits.
+retain the historical evidence, outstanding closeout checks and explanatory limits.

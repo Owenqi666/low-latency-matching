@@ -1,5 +1,10 @@
 # Milestone progress and acceptance
 
+For the 2026-10-18 Gateway experiment's test-registration repair and separate
+current-source CI/remote-delivery status, see the
+[Gateway closeout record](gateway_closeout_2026-10-18.md). The M1–M5 history below
+is unchanged.
+
 Status index updated on 2026-10-17. M4 and M5 have completed T00–T08, including
 their final PR/main checks and publication verification. The entries below
 identify the delivered revisions and link the evidence that closes the earlier

@@ -12,8 +12,16 @@ G00–G06 have completed evidence. G07 is **not triggered** because the observat
 do not isolate a mechanism for an additional policy change. The
 [decision ADR](adr/008-retain-single-frame-gateway.md) and
 [all 35 pairs](benchmarks/gateway_service_pairs.md) preserve the result.
-**G09 final delivery verification remains pending**; this is a measured production
-decision, not a release or final-verification receipt.
+The historical G09 Linux checks and immutable archive verification are recorded
+below. A subsequent acceptance review found that the two default-disabled
+deep-book registrations fail the existing strict CI checker. **The registration
+fix, current-source CI and remote delivery require separate closeout evidence**;
+default Release, extended and ON→OFF checks have passed; current-source CI and
+remote delivery remain pending in the [closeout record](gateway_closeout_2026-10-18.md).
+The measured production decision and archived experiment remain unchanged.
+
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
 
 ## Scope and source identity
 
@@ -346,7 +354,14 @@ requires a distinct hypothesis, mechanism evidence, ADR and frozen comparison.
 
 ## G09 clean delivery verification
 
-The selected clean Linux checkout is commit
+This section is a historical local-verification record. Its successful CTest
+exit did not satisfy the later-reviewed strict CI requirement of no disabled
+registrations. Preserve these results and the original archive; use the
+[closeout record](gateway_closeout_2026-10-18.md) for the revised source's default,
+extended, configuration-switch and PR/main acceptance. None of those new checks
+is implied by the records below.
+
+The selected clean Linux checkout was commit
 `4cb1cc5781d3d1bfa6c55128f8440ad83e282332`, batch1. Its 122 executable/fixture
 files match the reviewed common code identity
 `5f8791bab89885c7bfb2c676770e5aa1bca227f3ceebc6fca3e77c4d04233b47`.
@@ -355,7 +370,8 @@ matrices (130 executed passes each, two extended registrations disabled by
 default). Their compiler/flags/source identities are retained in
 `final/source-bridge-01/`; this reuses unchanged C++ coverage, not old results
 for newly changed Python tools. The C=10,000 extended tests ran separately under
-G02. The final fresh Linux suite covers the combined current tool registrations.
+G02. That fresh Linux suite covered the combined tool registrations at the
+recorded source revision, with the two disabled registrations noted below.
 
 The fresh comparison B is `b6ee3a9980073f774de6656d65a0b13a4b42bdcd`, derived
 from that same final commit with only `src/send_queue.hpp`'s frame bound changed
@@ -404,14 +420,20 @@ raw commands, source/binary identities and validation logs. G01 includes bounded
 whole-process ITCH verification; G02 includes full per-command deep-book coverage;
 G03 includes optional bounded diagnostics and lifecycle/accounting checks.
 
-G00–G06, G08 and G09 are complete; production remains batch1 and G07 is not triggered.
-This report, the complete tables and [ADR 008](adr/008-retain-single-frame-gateway.md)
-record the decision. G09 has passed the source-bound matrix checks, clean Linux
-build/tests/smoke/demo/short replay and archive-copy formal recomputation above.
-The remaining limits are explanatory and operational: one shared local VM,
-unexplained near-tail regressions and A pressure failures, and no universal
-capacity or cross-environment improvement claim. They do not conceal an
-unfinished required verification or an unresolved observed correctness defect.
+G00–G06's evidence, the configuration decision and the historical local G09
+smoke/demo/short replay and archive-copy recomputation remain verified.
+Production remains batch1 and G07 is not triggered. This report, the complete
+tables and [ADR 008](adr/008-retain-single-frame-gateway.md) retain that decision.
+The newly identified default-CI registration problem prevents a blanket claim
+of completed current-version delivery. The revised default Release entry now
+passes both strict checks, and the extended and ON→OFF checks also pass. The four
+existing CI configurations and separate PR/main verification remain pending in the
+[closeout record](gateway_closeout_2026-10-18.md).
+
+The experimental limits also remain: one shared local VM, unexplained near-tail
+regressions and A pressure failures, with no universal capacity or
+cross-environment improvement claim. The registration repair does not solve
+those observed service-pressure outcomes or create a new performance result.
 
 Historical [M3 rejection](m3_report.md) and [M4 rejection](m4_report.md) are
 unchanged. No personal-contribution or CV claim follows from this investigation.

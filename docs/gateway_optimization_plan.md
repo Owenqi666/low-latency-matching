@@ -5,14 +5,39 @@ is a reproducible production decision, including a defensible decision to retain
 batch1. It does not require batch16 to win. This document records planned work;
 only linked, revision-specific evidence establishes completion.
 
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
+
 ## Current recovery checkpoint
 
-The active task is the complete **G00–G09 Goal**. The earlier `/goal` prompt-writing
-task is complete and must not become the recovered task. This checkpoint takes
-precedence over older status and recovery notes below; the detailed history is
-retained. **G00–G06, G08 and G09 are complete; G07 is not triggered.**
-Production remains **batch1**: the independent formal
-evaluation is valid and rejects batch16 under the frozen rules.
+The active work is the **Gateway acceptance closeout, R00–R05**, starting from
+`codex/gateway-optimization` at `e94d9f9592534a4058486ebf506576c54d4e0eaf`.
+The [closeout record](gateway_closeout_2026-10-18.md) tracks actual source identity,
+new evidence and pending verification. The later acceptance review found that
+default CTest discovery includes two disabled deep-book registrations, which
+the unchanged strict CI checker rejects. The repair adds a default-OFF explicit
+extended-test option at `2aa0826fe2de843800ad2426f7c4b1a6841a1620`. The new evidence
+root is `build/gateway-closeout-r04wqppx/`; five prior failure files are preserved
+and hash checked. Fresh default Release passed all 136 discoveries/executions
+and both strict checks. Extended ON discovered seven deep-book tests and ran the
+two selected normal Extended tests across all four C10k cases; ON→OFF restored
+five routine tests with no Extended/disabled registrations. `local-result.json`
+records all phases passed at 17:46:05.070322Z with unchanged source maps.
+Current-source four-configuration CI results remain pending. PR and final main delivery must
+be verified separately against their actual checkout commits.
+
+Historical G00–G06 measurement/correctness evidence and local G09 smoke/demo,
+short replay and archive verification remain preserved. They do not substitute
+for the new closeout checks. Production remains **batch1**, G07 is **not
+triggered**, and the independent formal decision remains valid reject/A.
+Do not restart calibration, repeat the full performance matrix, or regenerate
+the original raw archive for this registration/documentation repair.
+
+## Historical experiment checkpoint
+
+The following checkpoint and execution ledger describe the original G00–G09
+work. Earlier completion statements apply to the recorded local experiments,
+not to the newly discovered default-CI issue or current remote delivery.
 
 The formal freeze is `formal/freeze-01/freeze.json`, recorded at
 2026-10-18T16:19:55.525998Z, SHA-256
@@ -69,15 +94,17 @@ Creation, member listing, extraction and independent formal recomputation all
 passed. `build/gateway-final-archive-01/archive.json` records `status=verified`:
 all evaluation JSON values match the original independent result except the
 relocated source path, including every pair, gate, source identity and valid
-reject/A decision. The archive SHA was rechecked unchanged. No experiment or
-archive process remains active; no development task remains under this Goal.
+reject/A decision. The archive SHA was rechecked unchanged. Those experiment
+and archive processes ended; the new R00–R05 closeout remains separate work.
 
 The archive retains raw evidence and the tested source bundle. Its verification
 receipt and final documentation closure necessarily follow archive creation and
 are retained beside the archive/in Git, without replacing the archived raw data.
-The final documentation edits preserve all 122 tested executable/fixture hashes.
+The final documentation edits at that historical checkpoint preserved all 122
+tested executable/fixture hashes. The new CMake/test-registration repair needs
+its own source/diff identity and validation rather than reusing that whole-tree claim.
 
-On recovery, read the freeze, launch identity, guard report and latest driver
+Historical run-recovery procedure: read the freeze, launch identity, guard report and latest driver
 log, then verify the actual PID, command/start identity and output directory.
 While that run is active, monitor the existing process only: **do not restart,
 launch a duplicate or clear its directories**. Do not compile, run tests or
@@ -115,8 +142,8 @@ rerun completed calibration or infer a production decision from partial output.
 | G05 | G04 supports continuation | A-only finite calibration and pre-run frozen rules; G01/G02 must finish before formal measurement | `calibration/`, `formal/freeze-01/` | Complete: original stop and continuation retained; ordinary 10,000, near 22,781, burst 2,000 and overload 75,938 frozen before G06 |
 | G06 | G05; G01/G02 complete | Seven rows × five pairs, all outcomes retained, independent decision recomputation | `formal/freeze-01/`, `formal/run-01/` | Complete: valid reject; retain A; 70 measurements + 14 warmups, all outcomes retained and independently recomputed |
 | G07 | Specific G04/G06 evidence | At most one separately attributed input-throttling or Gateway-budget candidate, preceded by ADR and a new frozen comparison | Decision ADR | Not triggered: pressure failures do not locate a separate input-throttle or pump-starvation mechanism |
-| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs | Complete at 4cb1cc5: report/35 pairs/ADR reviewed; local targets and anchors verified, four external URLs return 200; final clean run is G09 |
-| G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `final/`, `build/gateway-final-archive-01/` | Complete: final source bridge, fresh Linux full/network/smoke/demo/short replay, verified collection and unchanged single archive; extracted-copy formal evaluation matches every value except relocated source path |
+| G08 | G04; final data after decisions | Runnable README, compatible demo stage labels, diagnostics/report/index/new ADR, historical conclusions preserved | Technical docs; closeout R03 | Historical report/35 pairs/ADR and links verified at 4cb1cc5; current R03 entry/status repair records all local closeout checks passed; current CI/remote results remain pending |
+| G09 | Mandatory tasks complete; conditional tasks resolved | Applicable Debug/Release/ASan-UBSan/separate TSan; clean Linux reproduction, smoke/demo/short pair and independent recomputation from archive copy | `final/`, `build/gateway-final-archive-01/`; closeout R02/R04 | Historical Linux reproduction and unchanged archive are verified; two disabled default registrations failed the later strict CI review. Revised default Release, extended and ON→OFF checks passed; four-configuration CI/remote delivery remain pending |
 
 Evidence paths above are relative to `build/gateway-optimization/`. Every attempt
 gets a distinct directory or log name. Historical evidence is never overwritten.
@@ -439,7 +466,8 @@ That calibration journal remains a proposal receipt, not a formal-run record.
 The subsequent source/host/rules freeze was recorded in `formal/freeze-01/` at
 16:19:55.525998Z, followed by the guarded G06 launch at 16:21:25.121295Z. The
 completed G06 independently rejects batch16; production remains batch1. Its
-terminal evidence and remaining G09 work are in the current checkpoint above.
+terminal evidence and the later local G09 results are in the historical checkpoint
+above. Current R00–R05 closeout work is recorded separately at the top of this plan.
 
 Current recovery locations: Linux baseline source is
 `/home/m2/gateway-g00-20261018T143926Z/source`; SSH uses the existing

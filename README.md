@@ -42,9 +42,19 @@ The [diagnostic report](docs/gateway_diagnostics.md),
 [execution plan](docs/gateway_optimization_plan.md) and
 [evidence index](docs/gateway_evidence_index.md) retain source identities and all
 outcomes. A clean reproduction is not a general throughput or production claim.
-The [final verification](docs/gateway_report.md#g09-clean-delivery-verification)
-records the clean Linux rebuild, 136 passing Release tests, both-variant network
-checks, smoke/demo, short replay and independent archive-copy recomputation.
+The [historical local verification](docs/gateway_report.md#g09-clean-delivery-verification)
+records the clean Linux rebuild, 136 passing Release tests plus two disabled
+registrations, both-variant network checks, smoke/demo, short replay and
+independent archive-copy recomputation. A later acceptance review found that
+those disabled registrations fail the existing strict CI checker. The
+[Gateway closeout record](docs/gateway_closeout_2026-10-18.md) tracks the explicit
+extended-test option, passing default/extended/ON→OFF local checks, and pending
+current-source CI and remote delivery. Historical experiment and archive verification do not
+establish that the revised source has passed those checks.
+
+
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
 
 The service is in-memory, single-host and single-Matching-thread; it has no WAL,
 replication or durability guarantee. A connection exceeding its bounded send
@@ -160,18 +170,27 @@ LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-routine-01" \
   ctest --preset release -L deep_book --output-on-failure --no-tests=error
 ```
 
-The two `DISABLED_Extended*` GoogleTest cases are disabled in normal CTest runs.
-Each covers two fixed seeds at capacity 10,000, with 8,500 prefill commands and
-1,000 tail commands per seed. Run the full deep-book suite, including those four
-extended traces, explicitly in Release:
+`LLMATCH_EXTENDED_TESTS` defaults to `OFF`: the normal build registers five
+routine deep-book tests, without disabled extended entries. To opt into the two
+normal `Extended*` CTest cases, use the independent `build/gateway-extended`
+directory. Each case covers two fixed seeds at capacity 10,000, with 8,500
+prefill commands and 1,000 tail commands per seed:
 
 ```sh
+cmake -S . -B build/gateway-extended -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release -DLLMATCH_EXTENDED_TESTS=ON
+cmake --build build/gateway-extended --target deep_book_tests --parallel 2
+ctest --test-dir build/gateway-extended \
+  -R '^DeepBookTest[.]Extended(LongFifo|SparseWide)$' --show-only=json-v1
 LLMATCH_DEEP_BOOK_OUTPUT="$PWD/build/deep-book-extended-01" \
-  ./build/release/deep_book_tests --gtest_also_run_disabled_tests \
-  --gtest_output=xml:build/deep-book-extended-01/all.xml
+  ctest --test-dir build/gateway-extended \
+  -R '^DeepBookTest[.]Extended(LongFifo|SparseWide)$' \
+  --output-on-failure --no-tests=error \
+  --output-junit "$PWD/build/deep-book-extended-01.xml"
 ```
 
-Choose new output directories for each run. Each trace includes any additional
+This runs the two extended tests through CTest; it is not a full-suite CI result.
+Choose new evidence paths for each run. Each trace includes any additional
 boundary and replenishment commands; every command compares full events,
 normalized snapshots and invariants. `LLMATCH_DEEP_BOOK_OUTPUT` retains the trace,
 configuration, metadata, coverage CSV and comparison result. These cases provide

@@ -5,8 +5,15 @@ All paths below currently refer to local evidence under
 marked repository-relative below. Archive identities are verified. Historical M1–M5 assets
 and conclusions remain unchanged.
 
-Current recovery entry: [the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint),
-`formal/freeze-01/freeze.json` and `formal/run-01-driver.json`. G05 is complete;
+Current recovery entry: [the closeout record](gateway_closeout_2026-10-18.md) and
+[the execution plan's checkpoint](gateway_optimization_plan.md#current-recovery-checkpoint).
+The default-CI registration repair now passes fresh local Release discovery
+and execution checks; extended ON and ON→OFF checks also passed. Current-source
+CI/PR/main delivery remains pending. The original experiment's history follows;
+none of its receipts establishes that a later repaired revision has passed CI.
+
+Historical experiment entry: `formal/freeze-01/freeze.json` and
+`formal/run-01-driver.json`. G05 is complete;
 G06 retained all 84 attempts and its driver ended at 16:47:47.105786Z. Runner
 exit 1 retains delivery failures; summarizer exit 0 and all 84 guard checks
 completed without a stop. Independent evaluation completed at 16:54:55.338036Z,
@@ -14,7 +21,33 @@ exit 0: valid evidence, reject batch16, retain batch1. G07 is not triggered.
 G08 is committed at `4cb1cc5`; G09 fresh Linux verification, smoke/demo and short
 replay passed and were collected. The single raw archive is readable and its
 extracted-copy formal recomputation exactly matches the original result except
-the relocated source path. G00–G06/G08/G09 are complete; G07 is not triggered.
+the relocated source path. G00–G06 and the recorded local G09 experiments/archive
+are verified; G07 is not triggered. The two disabled registrations retained in
+the historical Linux suite are the separate strict-CI issue now being repaired.
+
+Delivery status below is a pre-merge snapshot; the final head, PR/main checkout
+SHAs and CI results are recorded in [PR #7](https://github.com/Owenqi666/low-latency-matching/pull/7).
+
+## Acceptance closeout evidence
+
+New receipts are under `build/gateway-closeout-r04wqppx/`; paths in this section
+are relative to that new root and are local-only, not published Git files.
+Baseline e94d9f9 and repaired source
+`2aa0826fe2de843800ad2426f7c4b1a6841a1620` remain separately identified.
+
+| Closeout item | Evidence location | Current state |
+|---|---|---|
+| R00 baseline, worktree diff and retained review failure | `baseline/record.json`, `head.txt`, `status.txt`, `fix.patch`, copied review logs | Starting e94d9f9; five copied prior failure materials hash-verified; repaired two-file commit 2aa0826 |
+| R02-A default discovery and full JUnit consistency | `default/discovery-check.json`, `execution-check.json`, `ctest.xml` | Fresh cache OFF; 136 discovered and executed successfully, both strict checks valid=true; five routine deep-book cases, no disabled/skipped entries |
+| R02-B explicit Extended CTest entry | `extended/deep-book-discovery.json`, `selected-discovery.json`, `ctest.xml`, `deep-book/` | Passed: seven deep-book discoveries, two selected/executed normal Extended tests, four C10k cases each with six hashed files and successful comparisons |
+| R02-C ON→OFF discovery refresh | `switch-off/deep-book-discovery.json`, configure/build logs | Passed: exactly five routine cases, zero Extended and zero disabled entries |
+| Combined local acceptance | `local-result.json` | Passed at 17:46:05.070322Z; source 2aa0826, source-before/source-after equal; actual compiler/dependency overrides recorded |
+| Original raw archive preservation | `archive-preservation.json` | Read-only SHA matches 997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2, 5,675,490,816 bytes; archive not regenerated |
+| R04 PR CI and remote main | `baseline/remote-before.json`; PR/run and final-main receipts pending | Refresh at 17:44:07Z found old main 4abdccc and no branch PR; current-version four configurations, required smoke and delivery remain pending |
+| Evidence-driver recovery | `run_local.py`, `local-initial-result.json`, `resume_local.py`, `driver-note.md` | Default suite passed before an artifact-name assertion expected metadata.json instead of metadata.txt; original failure retained, only unstarted phases resumed |
+| R03/R05 status and source boundary | [Gateway closeout record](gateway_closeout_2026-10-18.md) | Local results and source boundary recorded; current CI/remote delivery intentionally pending at this pre-merge snapshot |
+
+## Historical experiment and archive evidence
 
 | Evidence | Location | Meaning |
 |---|---|---|
@@ -65,8 +98,10 @@ the relocated source path. G00–G06/G08/G09 are complete; G07 is not triggered.
 | Single verified raw archive | `build/gateway-final-archive-01/gateway-raw.tar`, `gateway-raw.tar.sha256`, `archive.json` (repository-relative directory, outside the evidence tree) | 5,675,490,816-byte tar; SHA `997b2edac92038b7aed1c4e2353cd67b56ad4eef1284756271313f0c88e6b2b2`; created/listed/extracted, final SHA unchanged; retained old VM backup excluded |
 | Independent archive-copy formal result | `build/gateway-final-archive-01/recomputed/gateway-evaluation.json` (repository-relative) | Finished 17:15:26.620030Z, all archive commands exit 0; every evaluation value matches except relocated source path, including every pair, gates, source identities and valid reject/A decision |
 
-See [execution plan](gateway_optimization_plan.md) for the completed dependency
-map and [report](gateway_report.md#g09-clean-delivery-verification) for scope and
-remaining limits. The raw archive preserves the tested source bundle and all
+See [execution plan](gateway_optimization_plan.md) for the dependency map,
+[report](gateway_report.md#g09-clean-delivery-verification) for the historical
+local-verification scope, and [closeout record](gateway_closeout_2026-10-18.md)
+for the revised source's passing local checks and pending CI/remote-delivery state.
+The raw archive preserves the tested source bundle and all
 collected evidence; its later verification receipt and documentation closure are
 retained outside it without rebuilding or replacing the archive.
